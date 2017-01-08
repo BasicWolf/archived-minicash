@@ -1,0 +1,16 @@
+-r base.txt
+
+bpython
+behave-django  # requires phantomjs
+django-debug-toolbar
+django-extensions
+django-pdb
+factory_boy
+flake8
+ipython
+lizard
+pudb
+pylint
+pylint-django
+selenium
+werkzeug

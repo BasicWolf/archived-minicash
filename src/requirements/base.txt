@@ -1,0 +1,7 @@
+django==1.10.*
+djangorestframework==3.5.*
+django-jsonfield
+django-settings-export
+psycopg2
+
+git+https://github.com/BasicWolf/django-js-utils.git

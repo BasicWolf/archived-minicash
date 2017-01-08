@@ -1,0 +1,11 @@
+[flake8]
+exclude = .git,__pycache,*/settings/*.py,*/migrations/*.py,node_modules
+#filename = *.py
+#select =
+ignore = E501
+max-line-length = 79
+#format =
+#max-complexity =
+
+
+# E501 - line too long

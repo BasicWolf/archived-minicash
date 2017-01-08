@@ -1,0 +1,46 @@
+{% extends "frontend/base.html" %}
+
+{% load static %}
+
+
+{% block title %}Minicash - personal finance management {% endblock %}
+
+{% block scripts %}
+{% include "frontend/context.inc.html" %}
+
+<script defer src="{% static '/lib/jquery.js' %}"></script>
+<script defer src="{% static '/lib/underscore.js' %}"></script>
+<script defer src="{% static '/lib/backbone.js' %}"></script>
+<script defer src="{% static '/lib/backbone.radio.js' %}"></script>
+<script defer src="{% static '/lib/backbone.marionette.js' %}"></script>
+<script defer src="{% static '/lib/bootstrap.js' %}"></script>
+<script defer src="{% static '/lib/bootstrap-notify.js' %}"></script>
+<script defer src="{% static '/lib/jquery.dataTables.js' %}"></script>
+<script defer src="{% static '/lib/jquery.validate.js' %}"></script>
+<script defer src="{% static '/lib/dataTables.bootstrap.js' %}"></script>
+<script defer src="{% static '/lib/moment-with-locales.js' %}"></script>
+<script defer src="{% static '/lib/bootstrap-datetimepicker.min.js' %}"></script>
+
+<script type="text/javascript" src="{% static 'django_js_utils.js' %}"></script>
+<script type="text/javascript" src="{% url 'jsurls' %}"></script>
+
+<script defer src="{% static '/minicash.js' %}"></script>
+{% endblock %}
+
+
+{% block body %}
+{% include "frontend/navbar.inc.html" %}
+
+<div class="container">
+  <div id="tabview_container">
+    <!-- Nav tabs -->
+    <div id="tabview_nav_region"></div>
+
+    <!-- Tab panels -->
+    <div id="tabview_panel_region"></div>
+  </div>
+
+
+</div>
+{% endblock %}
+

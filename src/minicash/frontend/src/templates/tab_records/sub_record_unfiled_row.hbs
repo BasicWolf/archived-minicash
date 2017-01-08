@@ -1,0 +1,15 @@
+<td>
+  <button data-spec="add-sub-record" type="button" class="btn btn-xs btn-primary">
+    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+  </button>
+</td>
+
+<td>{{delta}}</td>
+
+<td>
+  {{#each tags}}
+    {{this}}{{#ifnot @last}},{{/ifnot}}
+  {{/each}}
+</td>
+
+<td>{{description}}</td>
