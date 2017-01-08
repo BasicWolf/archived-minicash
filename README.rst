@@ -1,7 +1,7 @@
 Minicash
 ========
 
-Minicash is an open-source personal finances management tools.
+Minicash is a libre personal finances management application.
 
 
 .. image:: https://travis-ci.org/BasicWolf/minicash.svg?branch=master
