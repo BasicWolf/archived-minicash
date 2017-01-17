@@ -1,7 +1,8 @@
+import 'typeahead'
+
 import {TabPanelView, TabModel} from './tabbar'
 import * as utils from './utils'
-
-recordTabTemplate = require('templates/tab_record.hbs')
+import * as views from './views'
 
 
 export RecordTab = TabModel.extend
@@ -14,13 +15,14 @@ export RecordTab = TabModel.extend
 export NewRecordTabPanelView = TabPanelView.extend
     validator: null
 
-    template: recordTabTemplate
+    template: require('templates/tab_record.hbs')
 
     ui:
         saveBtn: 'button[data-spec="save"]'
         cancelBtn: 'button[data-spec="cancel"]'
         modeSelect: 'select[name="mode"]'
         createdDateInput: 'input[name="created_date"]'
+        tagsInput: 'input[name="tags"]'
         toAssetSelect: 'select[name="asset_to"]'
         fromAssetSelect: 'select[name="asset_from"]'
         form: 'form'
@@ -35,6 +37,7 @@ export NewRecordTabPanelView = TabPanelView.extend
         @initializeValidator()
         @renderModeSelectState()
         @renderAssets()
+        @renderTags()
 
     initializeDateTimePicker: ->
         options =
@@ -52,10 +55,10 @@ export NewRecordTabPanelView = TabPanelView.extend
         @validator = @getUI('form').validate
             rules:
                 createdDate: {required: true}
-                expense: {required: true}
+                delta: {required: true}
             messages:
                 createdDate: tr("Please enter a valid date/time")
-                expense: tr("Please enter a valid expense value")
+                delta: tr("Please enter a valid expense value")
 
     onSaveBtnClick: ->
         @saveForm()
@@ -88,15 +91,53 @@ export NewRecordTabPanelView = TabPanelView.extend
         # TODO: keep the old selected values shown
         for $sel in $selects
             $sel.empty()
+
         minicash.collections.assets.forEach (asset) ->
             for $sel in $selects
                 $sel.append(new Option(asset.get('name'), asset.id))
             return
 
+    renderTags: ->
+        @getUI('tagsInput').tokenfield
+            typeahead: [
+                null,
+                {
+                    displayKey: 'name',
+                    source: minicash.collections.tags.bloodhound.adapter()
+                }
+            ]
+
     saveForm: ->
         if not @validator.form()
             return
+
         formData = @getUI('form').serializeForm()
-        formData.tags = utils.splitToNonEmpty(formData.tags)
-        console.debug('Saving record: ', formData)
-        rec = minicash.collections.records.create(formData)
+        tagTokens = @getUI('tagsInput').tokenfield('getTokens')
+        formData.tags = _.map(tagTokens, (t) -> t.value)
+
+        RECORD_MODES = minicash.CONTEXT.RECORD_MODES
+        switch parseInt(formData.mode)
+            when RECORD_MODES.INCOME then formData.asset_to = null
+            when RECORD_MODES.EXPENSE then formData.asset_from = null
+            when RECORD_MODES.TRANSFER then ;
+            else throw 'Invalid record mode'
+
+        minicash.status.show()
+        rec = minicash.collections.records.create(formData, {
+            wait: true
+            success: =>
+                minicash.status.hide()
+                @unlockControls()
+                @model.destroy()
+            error: =>
+                minicash.status.hide()
+                @unlockControls()
+        })
+
+    lockControls: ->
+        @uiDisable(['saveBtn', 'cancelBtn'])
+
+    unlockControls: ->
+        @uiEnable(['saveBtn', 'cancelBtn'])
+
+_.extend(NewRecordTabPanelView.prototype, views.UIMixin);

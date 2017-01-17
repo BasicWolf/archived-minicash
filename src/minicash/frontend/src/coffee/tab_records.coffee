@@ -1,18 +1,11 @@
+import 'bootstrap-tokenfield'
+import 'typeahead'
+import Decimal from 'jsdecimal'
 import Mn from 'backbone.marionette'
 
 import * as models from './models'
-import {TabPanelView, TabModel} from './tabbar'
 import * as utils from './utils'
-
-import 'bootstrap-tokenfield'
-
-recordsTabTemplate = require('templates/tab_records/tab_records.hbs')
-recordRowTemplate = require('templates/tab_records/record_row.hbs')
-recordsTableHeadTemplate = require('templates/tab_records/records_table_head.hbs')
-subRecordsTableTemplate = require('templates/tab_records/sub_records_table.hbs')
-subRecordRowTemplate = require('templates/tab_records/sub_record_row.hbs')
-subRecordNewRowTemplate = require('templates/tab_records/sub_record_new_row.hbs')
-subRecordUnfiledRowTemplate = require('templates/tab_records/sub_record_unfiled_row.hbs')
+import {TabPanelView, TabModel} from './tabbar'
 
 
 export RecordsTab = TabModel.extend
@@ -23,7 +16,7 @@ export RecordsTab = TabModel.extend
 
 
 SubRecordsTableView = Mn.View.extend
-    template: subRecordsTableTemplate
+    template: require('templates/tab_records/sub_records_table.hbs')
 
     initialize: (model, options) ->
         @subRecords = new models.SubRecords(
@@ -73,7 +66,7 @@ SubRecordsTableBodyView = Mn.CollectionView.extend
 
 SubRecordView = Mn.View.extend
     tagName: 'tr'
-    template: subRecordRowTemplate
+    template: require('templates/tab_records/sub_record_row.hbs')
 
     ui:
         deleteBtn: 'button[data-spec="delete-sub-record"]'
@@ -87,7 +80,7 @@ SubRecordView = Mn.View.extend
 
 SubRecordNewView = Mn.View.extend
     tagName: 'tr'
-    template: subRecordNewRowTemplate
+    template: require('templates/tab_records/sub_record_new_row.hbs')
 
     validator: null
 
@@ -117,8 +110,14 @@ SubRecordNewView = Mn.View.extend
                 delta: {required: true}
 
     initializeTagsInput: ->
-        tagsInput = @getUI('tagsInput')
-        tagsInput.tokenfield()
+        @getUI('tagsInput').tokenfield
+            typeahead: [
+                null,
+                {
+                    displayKey: 'name',
+                    source: minicash.collections.tags.bloodhound.adapter()
+                }
+            ]
 
     onAttach: ->
         @getUI('deltaInput').focus()
@@ -146,22 +145,48 @@ SubRecordNewView = Mn.View.extend
 
 SubRecordUnfiledView = Mn.View.extend
     tagName: 'tr'
-    template: subRecordUnfiledRowTemplate
+    template: require('templates/tab_records/sub_record_unfiled_row.hbs')
+
+    ui:
+        totalSubRecordsDeltaTxt: 'span[data-spec="total-sub-records-delta"]'
 
     triggers:
         'click button[data-spec="add-sub-record"]': 'new:subrecord'
 
+    modelEvents:
+        'change:sub_records': 'onSubRecordsChange'
+
+    initialize: ->
+        totalSubRecordsDelta = @getTotalSubRecordsDelta(@model.get('sub_records'))
+        @model.set('view_total_sub_records_delta', totalSubRecordsDelta)
+
+    onSubRecordsChange: (model, value, options) ->
+        totalSubRecordsDelta = @getTotalSubRecordsDelta(model.get('sub_records'))
+        model.set('view_total_sub_records_delta', totalSubRecordsDelta)
+        @getUI('totalSubRecordsDeltaTxt').text(totalSubRecordsDelta)
+
+    getTotalSubRecordsDelta: (subRecords) ->
+        val = _.reduce(
+            subRecords
+            (memo, subRecord) -> memo.add(Decimal(subRecord['delta'])),
+            Decimal(0)
+        )
+        ret = val or Decimal(0)
+        utils.decimalToString(ret)
+
 
 RecordRowView = Mn.View.extend
     tagName: 'tbody'
-    template: recordRowTemplate
+    template: require('templates/tab_records/record_row.hbs')
 
     ui:
         toggleSubRecordsBtn: 'button[data-spec="toggle-sub-records"]'
+        deleteBtn: 'button[data-spec="delete-record"]'
         subRecordRow: 'tr[data-spec="sub-record-row"]'
 
     events:
         'click @ui.toggleSubRecordsBtn': 'toggleSubRecord'
+        'click @ui.deleteBtn': 'deleteRecord'
 
     regions:
         subRecordRegion: {el: '[data-spec="sub-record-region"]'}
@@ -182,6 +207,9 @@ RecordRowView = Mn.View.extend
         toggleSubRecordsBtnIcon.toggleClass('glyphicon-plus', visible)
         toggleSubRecordsBtnIcon.toggleClass('glyphicon-minus', not visible)
 
+    deleteRecord: ->
+        @model.destroy()
+
 
 RecordsTableView = Mn.CollectionView.extend
     tagName: 'table'
@@ -196,12 +224,13 @@ RecordsTableView = Mn.CollectionView.extend
     childView: RecordRowView
 
     onRender: ->
-        $tableHead = $(recordsTableHeadTemplate())
+        template = require('templates/tab_records/records_table_head.hbs')
+        $tableHead = $(template())
         @$el.prepend($tableHead)
 
 
 RecordsTabPanelView = TabPanelView.extend
-    template: recordsTabTemplate
+    template: require('templates/tab_records/tab_records.hbs')
 
     ui:
         newRecordBtn: 'button[data-spec="new-record"]'

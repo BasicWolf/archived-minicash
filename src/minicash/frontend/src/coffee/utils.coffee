@@ -1,3 +1,6 @@
+import Bb from 'backbone'
+import Bhound from 'bloodhound'
+import Decimal from 'jsdecimal'
 import Mn from 'backbone.marionette'
 
 ### --- CONSTANTS --- ###
@@ -7,28 +10,45 @@ export KEYS =
     ESCAPE: 27
 
 
-### --- NOTIFICATIONS --- ###
+### --- NOTIFICATIONS AND STATUS --- ###
 
-export notify = do ->
-    _notify = (options={}, settings={}) ->
-        $.notify(options, settings)
+export class Notify
+    constructor: ->
+        # make a class callable with default call being Class.info(...)
+        shortcut = -> shortcut.info(arguments...)
+        for key, value of @
+            shortcut[key] = value
+        return shortcut
 
-    notifySimple = (message, type='info') ->
-        _notify({
+    _invoke: (message, type='info') ->
+        $.notify({
             message: message
         }, {
             type: type
             allow_dismiss: true
         })
 
-    _notify.info = (message) -> notifySimple(message, 'info')
-    _notify.success = (message) -> notifySimple(message, 'success')
-    _notify.warning = (message) -> notifySimple(message, 'warning')
-    _notify.error = (message) -> notifySimple(message, 'danger')
-    _notify
+    info: (message) -> @_invoke(message, 'info')
+    success: (message) -> @_invoke(message, 'success')
+    warning: (message) -> @_invoke(message, 'warning')
+    error: (message) -> @_invoke(message, 'danger')
+
+
+export class Status
+    constructor: ->
+        @$el = $('<div class="minicash-status" style="display:none;"><div></div></div>')
+        $('body').append(@$el)
+
+    show: ->
+        @$el.show()
+
+    hide: ->
+        @$el.fadeOut(500)
 
 ### ====================== ###
 
+
+### --- HELPER CLASSES --- ###
 
 
 export UnwrappedView = Mn.View.extend
@@ -42,6 +62,31 @@ export UnwrappedView = Mn.View.extend
         @setElement(@$el)
 
 
+export class Bloodhound extends Bb.Events
+    _.extend @prototype, Bb.Events
+
+    _bloodhound: null
+
+    constructor: (@collection, @attribute) ->
+        @listenTo(@collection, 'update', @refreshBloodhound)
+        @listenTo(@collection, 'reset', @refreshBloodhound)
+
+    refreshBloodhound: ->
+        @_bloodhound = new Bhound
+            local: @collection.toJSON()
+            datumTokenizer: Bhound.tokenizers.obj.whitespace(@attribute)
+            queryTokenizer: Bhound.tokenizers.whitespace
+
+        @_bloodhound.initialize()
+
+    adapter: ->
+        return @_bloodhound.ttAdapter()
+
+### ====================== ###
+
+
+### --- HELPER FUNCTIONS --- ###
+
 # generateId :: Integer -> String
 export generateId = (len) ->
     dec2hex = (dec) -> dec.toString(16)
@@ -52,3 +97,8 @@ export generateId = (len) ->
 
 export splitToNonEmpty = (s, splitter) ->
     s.split(splitter).filter((s) -> s)
+
+
+export decimalToString = (dec) ->
+    DIGITS = 3
+    Decimal.Round(dec, DIGITS, Decimal.MidpointRounding.ToEven).toString()

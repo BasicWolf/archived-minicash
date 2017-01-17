@@ -1,8 +1,9 @@
 from collections import OrderedDict
+from django.conf import settings
 from django.core import urlresolvers
 
-from minicash.core.models import Record, Asset
-from minicash.core.serializers import AssetSerializer
+from minicash.core.models import Asset, Record, Tag
+from minicash.core.serializers import AssetSerializer, TagSerializer
 
 
 
@@ -10,6 +11,7 @@ def build_context(**kwargs):
     assert 'user' in kwargs
 
     builders = [
+        build_settings,
         build_record_modes,
         build_bootstrap,
         build_jsurls,
@@ -24,6 +26,16 @@ def build_context(**kwargs):
     return context
 
 
+def build_settings(**kwargs):
+    ctx_settings = {
+        'STATIC_URL': settings.STATIC_URL
+    }
+
+    return {
+        'settings': ctx_settings
+    }
+
+
 def build_record_modes(**kwargs):
     return {
         'RECORD_MODES': OrderedDict([
@@ -36,7 +48,8 @@ def build_record_modes(**kwargs):
 
 def build_bootstrap(**kwargs):
     bootstrap = {
-        'assets': _build_assets(**kwargs)
+        'assets': _build_assets(**kwargs),
+        'tags': _build_tags(**kwargs),
     }
     return {'bootstrap': bootstrap}
 
@@ -45,6 +58,12 @@ def _build_assets(**kwargs):
     user = kwargs['user']
     assets = Asset.objects.filter(owner=user)
     return AssetSerializer(assets, many=True).data
+
+
+def _build_tags(**kwargs):
+    user = kwargs['user']
+    tags = Tag.objects.filter(owner=user)
+    return TagSerializer(tags, many=True).data
 
 
 def build_jsurls(**kwargs):

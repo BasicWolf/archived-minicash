@@ -1,6 +1,6 @@
 import Bb from 'backbone'
 import Mn from 'backbone.marionette'
-import './lib/backbone-chooser'
+import 'backbone.choosy'
 
 import * as utils from './utils'
 
@@ -10,7 +10,7 @@ navTemplate = require('../templates/tabbar/nav.hbs')
 
 export TabModel = Bb.Model.extend
     initialize: ->
-        new Backbone.Chooser(@)
+        new Backbone.Choosy(@)
 
     defaults: ->
         name: utils.generateId()

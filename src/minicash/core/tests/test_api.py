@@ -12,16 +12,21 @@
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #    GNU General Public License for more details.
 
+import factory
 import random
 from decimal import Decimal
 
 from rest_framework.reverse import reverse
 
-from minicash.core.models import Record, SubRecord
-from minicash.core.serializers import RecordSerializer, SubRecordSerializer
+from minicash.core.models import Record, SubRecord, Tag
+from minicash.core.serializers import (
+    RecordSerializer,
+    SubRecordSerializer,
+    TagSerializer,
+)
 from minicash.utils.testing import RESTTestCase, permissions_for
 
-from .factories import AssetFactory, RecordFactory, TagFactory, SubRecordFactory
+from .factories import AssetFactory, RecordFactory, SubRecordFactory, TagFactory
 
 
 class RecordsAPITest(RESTTestCase):
@@ -71,7 +76,7 @@ class RecordsAPITest(RESTTestCase):
         res_attributes = frozenset(res.data.keys())
         self.assertEqual(attributes, res_attributes)
 
-    def test_create(self):
+    def test_create_full(self):
         asset_to = AssetFactory.create(owner=self.owner)
         asset_from = AssetFactory.create(owner=self.owner)
         record = RecordFactory.build(owner=self.owner, asset_to=asset_to, asset_from=asset_from)
@@ -81,10 +86,35 @@ class RecordsAPITest(RESTTestCase):
         tags = TagFactory.build_batch(3)
         data_in = serializer.data
         data_in['tags'] = [tag.name for tag in tags]
+
         res = self.jpost(reverse('records-list'), data_in)
         self.assert_created(res)
-        data_out = res.data
+        self._compare_records_data(data_in, res.data)
 
+    def test_create_asset_partial(self):
+        asset_to = AssetFactory.create(owner=self.owner)
+        asset_from = AssetFactory.create(owner=self.owner)
+        record = RecordFactory.build(owner=self.owner, asset_to=asset_to, asset_from=None)
+        serializer = RecordSerializer(record)
+
+        data_in = serializer.data
+        res = self.jpost(reverse('records-list'), data_in)
+        self.assert_created(res)
+        self._compare_records_data(data_in, res.data)
+
+    def test_update(self):
+        record = RecordFactory.create(owner=self.owner)
+        record.delta = random.randint(0, 1000)
+        serializer = RecordSerializer(record)
+        res = self.jpatch(reverse('records-detail', args=[record.pk]), serializer.data)
+        self.assert_updated(res)
+
+    def test_create_invalid_assets(self):
+        record_data = factory.build(dict, FACTORY_CLASS=RecordFactory)
+        serializer = RecordSerializer(data=record_data)
+        self.assertFalse(serializer.is_valid())
+
+    def _compare_records_data(self, data_in, data_out):
         # pk's are not equal (None vs. PK from database)
         data_in_pk, data_out_pk = data_in.pop('pk'), data_out.pop('pk')
         self.assertNotEqual(data_in_pk, data_out_pk)
@@ -99,14 +129,6 @@ class RecordsAPITest(RESTTestCase):
         data_internal = ser_internal.data
         data_internal.pop('pk')
         self.assertEqual(data_out, data_internal)
-
-
-    def test_update(self):
-        record = RecordFactory.create(owner=self.owner)
-        record.delta = random.randint(0, 1000)
-        serializer = RecordSerializer(record)
-        res = self.jpatch(reverse('records-detail', args=[record.pk]), serializer.data)
-        self.assert_updated(res)
 
 
 class AssetAPITest(RESTTestCase):
@@ -156,6 +178,36 @@ class SubRecordsAPITest(RESTTestCase):
         self.assertEqual(1, rec.sub_records.count())
 
         ser_internal = SubRecordSerializer(srec_internal)
+        data_internal = ser_internal.data
+        data_internal.pop('pk')
+        self.assertEqual(data_out, data_internal)
+
+
+class TagsAPITest(RESTTestCase):
+    def test_smoke(self):
+        pass
+
+    def test_list_smoke(self):
+        self.assert_success(self.jget(reverse('tags-list')))
+
+    def test_create(self):
+        tag = TagFactory.build(owner=self.owner)
+        serializer = TagSerializer(tag)
+        data_in = serializer.data
+        res = self.jpost(reverse('tags-list'), data_in)
+        self.assert_created(res)
+        data_out = res.data
+
+        # pk's are not equal (None vs. PK from database)
+        data_in_pk, data_out_pk = data_in.pop('pk'), data_out.pop('pk')
+        self.assertNotEqual(data_in_pk, data_out_pk)
+
+        # the rest data is equal
+        self.assertEqual(data_in, data_out)
+
+        # ensure internal structure via ORM
+        tag_internal = Tag.objects.get(pk=data_out_pk)
+        ser_internal = TagSerializer(tag_internal)
         data_internal = ser_internal.data
         data_internal.pop('pk')
         self.assertEqual(data_out, data_internal)

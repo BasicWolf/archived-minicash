@@ -1,8 +1,11 @@
-import * as Hb from 'handlebars/runtime'
+import Bb from 'backbone'
+import Hb from 'handlebars/runtime'
 
 # Temporal stub for translation function
 window.tr = (s) -> s
 
+
+#--------- Handlebars -----------#
 
 Hb.registerHelper 'ifnot', (v, options) ->
     return if not v
@@ -17,6 +20,8 @@ Hb.registerHelper 'context', (keys) ->
     for key in keys.split('.')
         val = val[key]
     val
+
+#================================#
 
 
 (($) -> $.fn.extend
@@ -78,4 +83,5 @@ $.ajaxSetup
             if lastChar != '/'
                settings.url = url + '/'
 
-#-------- END CSRF ---------- #
+#================================#
+

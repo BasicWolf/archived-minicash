@@ -1,29 +1,34 @@
-import 'bootstrap/dist/css/bootstrap.css';
-import 'eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css';
+# NOTE, this MUST be loaded before anything, because monkey-patching happens here
+import './extensions'
 
 import {sprintf} from 'sprintf-js'
+import Mn from 'backbone.marionette'
 
-import './extensions'
 import './defaults'
 
-import Mn from 'backbone.marionette'
 import {TabbarManager} from './tabbar_manager'
-import {Assets, Records} from './models'
-import {url} from './utils'
-
+import * as models from './models'
+import * as utils from './utils'
 
 
 export default Mn.Application.extend
+    status: null
+    notify: null
+
     initialize: ->
         @CONTEXT = window._minicashContext
         @initCollections()
 
     initCollections: ->
         @collections =
-            assets: new Assets
-            records: new Records
+            assets: new models.Assets
+            records: new models.Records
+            tags: new models.Tags
 
     onStart: ->
+        @status = new utils.Status
+        @notify = new utils.Notify
+
         @bootstrapData()
         @tabbarManager = new TabbarManager
 
@@ -33,9 +38,13 @@ export default Mn.Application.extend
 
     bootstrapData: ->
         @collections.assets.reset(@CONTEXT.bootstrap.assets)
+        @collections.tags.reset(@CONTEXT.bootstrap.tags)
         @collections.records.fetch()
 
     url: (name, args) ->
         args ?= {}
         u = minicash.CONTEXT.urls[name].url
         return sprintf(u, args)
+
+    static: (url) ->
+        return minicash.CONTEXT.settings.STATIC_URL + url

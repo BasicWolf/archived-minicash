@@ -97,6 +97,15 @@ class RecordSerializer(ModelSerializer):
         allow_null=True,
     )
 
+    def validate(self, data):
+        # Validate assets
+        _to, _from = bool(data['asset_to']), bool(data['asset_from'])
+
+        if (_to, _from) not in Record.modes_mapping:
+            raise serializers.ValidationError('Either of the assets must be '
+                                              'defined in a record')
+        return data
+
 
 class TagSerializer(ModelSerializer):
     class Meta:

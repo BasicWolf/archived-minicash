@@ -29,16 +29,18 @@ module.exports = {
                 }
             },
 
+            /* Handlebars */
             { test: /\.hbs$/, loader: "handlebars-loader"},
 
-            /* CSS and Bootstrap */
+            /* CSS and SCSS */
             { test: /\.css$/, loaders: ["style", "css"] },
-            { test: /\.eot(\?v=\d+\.\d+\.\d+)?$/, loader: "file" },
-            { test: /\.(woff|woff2)$/, loader: "url?prefix=font/&limit=5000" },
-            { test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/, loader: "url?limit=10000&mimetype=application/octet-stream" },
-            { test: /\.svg(\?v=\d+\.\d+\.\d+)?$/, loader: "url?limit=10000&mimetype=image/svg+xml" },
+            {test: /\.scss$/, loaders: ["style", "css", "sass"]},
 
-            {test: /\.scss$/, loaders: ["style", "css", "sass"]}
+            /* Binary and related */
+            { test: /\.eot(\?v=\d+\.\d+\.\d+)?$/, loader: "file" },
+            { test: /\.(woff|woff2)$/, loader: "url?prefix=font/&limit=4096" },
+            { test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/, loader: "url?limit=8096&mimetype=application/octet-stream" },
+            { test: /\.svg(\?v=\d+\.\d+\.\d+)?$/, loader: "url?limit=8096&mimetype=image/svg+xml" }
         ]
     },
 
@@ -71,7 +73,14 @@ module.exports = {
         root: path.join(__dirname, './src'),
         extensions: ["", ".coffee", ".js"],
         alias: {
-            templates: path.join(__dirname, './src/templates')
+            'templates': path.join(__dirname, './src/templates'),
+            'img': path.join(__dirname, './src/img'),
+
+            // import 'lib_name' aliases
+            'cocktail': 'backbone.cocktail/Cocktail.js',
+            'bloodhound': 'typeahead.js/dist/bloodhound.js',
+            'typeahead': 'typeahead.js/dist/typeahead.jquery',
+            'jsdecimal': 'jsdecimal/lib/decimal.js'
         }
     },
     resolveLoader: {

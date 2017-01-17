@@ -43,17 +43,17 @@ class Record(models.Model):
     owner = models.ForeignKey(User, related_name='records')
     tags = models.ManyToManyField('Tag', blank=True)
 
+    modes_mapping = {
+        (True, True): TRANSFER,
+        (True, False): INCOME,
+        (False, True): EXPENSE
+    }
+
     @property
     def mode(self):
-        mapping = {
-            (True, True): self.TRANSFER,
-            (True, False): self.INCOME,
-            (False, True): self.EXPENSE
-        }
-
         try:
             _to, _from = bool(self.asset_to), bool(self.asset_from)
-            return mapping[(_to, _from)]
+            return self.modes_mapping[(_to, _from)]
         except KeyError:
             raise ValueError("Invalid asset attributes' values")
 

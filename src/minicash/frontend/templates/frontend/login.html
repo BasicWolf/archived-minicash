@@ -12,28 +12,33 @@
 {% block body %}
 <div class="container">
 
-  <form method="post" action="{% url 'login' %}" class="form-login">
-    {% csrf_token %}
-    <h2 class="form-login-heading">Log in to Minicash</h2>
+  <div class="row">
+    <div class="col-md-4"></div>
+    <div class="col-md-4">
+      <form method="post" action="{% url 'login' %}" class="form-login">
+        {% csrf_token %}
+        <h2 class="form-login-heading">Log in to Minicash</h2>
 
-    <label for="username" class="sr-only">Username</label>
-    <input type="text" id="username" name="username" class="form-control" placeholder="Username" required autofocus>
+        <label for="username" class="sr-only">Username</label>
+        <input type="text" id="username" name="username" class="form-control" placeholder="Username" required autofocus>
 
-    <label for="password" class="sr-only">Password</label>
-    <input id="password" name="password" type="password" class="form-control" placeholder="Password" required>
+        <label for="password" class="sr-only">Password</label>
+        <input id="password" name="password" type="password" class="form-control" placeholder="Password" required>
 
-    <div class="checkbox">
-      <label>
-        <input type="checkbox" value="remember_me"> Remember me
-      </label>
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" value="remember_me"> Remember me
+          </label>
+        </div>
+
+        {% if form.errors %}
+        <p class="text-danger"><strong>Invalid username or password. Please try again.</strong></p>
+        {% endif %}
+
+        <button type="submit" name="submit" class="btn btn-lg btn-primary btn-block">Log in</button>
+      </form>
     </div>
-
-    {% if form.errors %}
-    <p class="text-danger"><strong>Invalid username or password. Please try again.</strong></p>
-    {% endif %}
-
-    <button type="submit" name="submit" class="btn btn-lg btn-primary btn-block">Log in</button>
-  </form>
-
+    <div class="col-md-4"></div>
+  </div>
 </div> <!-- /container -->
 {% endblock %}
