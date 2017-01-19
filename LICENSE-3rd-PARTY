@@ -1,8 +1,17 @@
 3rd-party libraries used by Minicash
 ====================================
 
+Backbone.js
+-----------
+
+Copyright (c) 2010-2017 Jeremy Ashkenas, DocumentCloud
+http://backbonejs.org
+License: MIT
+
+
 jQuery
 ------
+
 Copyright JS Foundation and other contributors, https://js.foundation/
 
 This software consists of voluntary contributions made by many
@@ -10,8 +19,21 @@ individuals. For exact contribution history, see the revision history
 available at https://github.com/jquery/jquery
 
 http://jquery.com
-LICENSE: MIT
+License: MIT
 
+
+MarionetteJS
+------------
+
+MarionetteJS is distributed under [MIT license](http://mutedsolutions.mit-license.org/).
+
+
+Underscore.js
+-------------
+
+Copyright (c) 2009-2017 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+http://underscorejs.org
+License: MIT
 
 
 Licenses
