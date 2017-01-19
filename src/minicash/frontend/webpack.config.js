@@ -79,6 +79,7 @@ module.exports = {
             // import 'lib_name' aliases
             'cocktail': 'backbone.cocktail/Cocktail.js',
             'bloodhound': 'typeahead.js/dist/bloodhound.js',
+            'tagsinput': 'bootstrap-tagsinput/dist/bootstrap-tagsinput.js',
             'typeahead': 'typeahead.js/dist/typeahead.jquery',
             'jsdecimal': 'jsdecimal/lib/decimal.js'
         }

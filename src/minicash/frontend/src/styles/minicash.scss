@@ -1,8 +1,7 @@
 @import '~bootstrap/dist/css/bootstrap.css';
 @import '~eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css';
-@import "~bootstrap-tokenfield/dist/css/bootstrap-tokenfield.css";
-@import "lib/tokenfield-typeahead.scss";
-
+@import '~bootstrap-tagsinput/dist/bootstrap-tagsinput.css';
+@import '~bootstrap-tagsinput/dist/bootstrap-tagsinput-typeahead.css';
 
 /* ====== Typography ====== */
 /* ======================== */
@@ -143,3 +142,7 @@ col.sub-record-description {
 
 /* ====== Overrides ====== */
 /* ======================= */
+
+.bootstrap-tagsinput {
+    width:100%;
+}

@@ -1,4 +1,4 @@
-import 'bootstrap-tokenfield'
+import 'tagsinput'
 import 'typeahead'
 import Decimal from 'jsdecimal'
 import Mn from 'backbone.marionette'
@@ -58,10 +58,30 @@ SubRecordsTableBodyView = Mn.CollectionView.extend
         @addChildView(new SubRecordNewView(collection: @collection))
 
     onChildviewSaveNewSubrecord: (childView) ->
-        @removeChildView(childView)
+        if childView.model.id == models.ID_NOT_SAVED
+            @removeChildView(childView)
+        else
+            @replaceView(childView, SubRecordView)
 
     onChildviewCancelNewSubrecord: (childView) ->
-        @removeChildView(childView)
+        if childView.model.id == models.ID_NOT_SAVED
+            @removeChildView(childView)
+        else
+            @replaceView(childView, SubRecordView)
+
+    replaceView: (oldView, NewViewClass) ->
+        model = oldView.model
+        index = oldView._index
+
+        @removeChildView(oldView)
+
+        newView = new NewViewClass
+            model: model
+            collection: @collection
+        @addChildView(newView, index)
+
+    onChildviewEditSubrecord: (childView) ->
+        @replaceView(childView, SubRecordNewView)
 
 
 SubRecordView = Mn.View.extend
@@ -70,9 +90,13 @@ SubRecordView = Mn.View.extend
 
     ui:
         deleteBtn: 'button[data-spec="delete-sub-record"]'
+        editBtn: 'button[data-spec="edit-sub-record"]'
 
     events:
         'click @ui.deleteBtn': 'onDeleteBtnClick'
+
+    triggers:
+        'click @ui.editBtn': 'edit:subrecord'
 
     onDeleteBtnClick: ->
         @model.destroy()
@@ -110,14 +134,12 @@ SubRecordNewView = Mn.View.extend
                 delta: {required: true}
 
     initializeTagsInput: ->
-        @getUI('tagsInput').tokenfield
-            typeahead: [
-                null,
-                {
-                    displayKey: 'name',
-                    source: minicash.collections.tags.bloodhound.adapter()
-                }
-            ]
+        @getUI('tagsInput').tagsinput
+            tagClass: 'label label-primary'
+            typeaheadjs:
+                displayKey: 'name',
+                valueKey: 'name'
+                source: minicash.collections.tags.bloodhound.adapter()
 
     onAttach: ->
         @getUI('deltaInput').focus()

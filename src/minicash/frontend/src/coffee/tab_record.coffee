@@ -1,4 +1,4 @@
-import 'typeahead'
+import 'tagsinput'
 
 import {TabPanelView, TabModel} from './tabbar'
 import * as utils from './utils'
@@ -98,22 +98,20 @@ export NewRecordTabPanelView = TabPanelView.extend
             return
 
     renderTags: ->
-        @getUI('tagsInput').tokenfield
-            typeahead: [
-                null,
-                {
-                    displayKey: 'name',
-                    source: minicash.collections.tags.bloodhound.adapter()
-                }
-            ]
+        @getUI('tagsInput').tagsinput
+            tagClass: 'label label-primary'
+            typeaheadjs:
+                displayKey: 'name',
+                valueKey: 'name'
+                source: minicash.collections.tags.bloodhound.adapter()
+
 
     saveForm: ->
         if not @validator.form()
             return
 
         formData = @getUI('form').serializeForm()
-        tagTokens = @getUI('tagsInput').tokenfield('getTokens')
-        formData.tags = _.map(tagTokens, (t) -> t.value)
+        formData.tags = @getUI('tagsInput').tagsinput('items')
 
         RECORD_MODES = minicash.CONTEXT.RECORD_MODES
         switch parseInt(formData.mode)
