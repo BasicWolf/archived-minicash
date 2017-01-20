@@ -1,3 +1,9 @@
+import Decimal from 'decimal.js'
+
+
+Decimal.set({ rounding: 3 })
+
+
 $.validator.setDefaults
     highlight: (element) ->
         $(element).closest('.form-group').addClass('has-error')

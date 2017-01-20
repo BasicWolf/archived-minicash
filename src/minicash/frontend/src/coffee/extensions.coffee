@@ -1,4 +1,5 @@
 import Bb from 'backbone'
+import Decimal from 'decimal.js'
 import Hb from 'handlebars/runtime'
 
 # Temporal stub for translation function
@@ -21,6 +22,11 @@ Hb.registerHelper 'context', (keys) ->
         val = val[key]
     val
 
+
+Hb.registerHelper 'decimal', (options) ->
+    val = new Decimal(options.fn(this))
+    text = val.toString()
+    return new Hb.SafeString(text);
 #================================#
 
 

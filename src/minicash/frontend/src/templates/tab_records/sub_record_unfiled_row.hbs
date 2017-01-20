@@ -33,9 +33,11 @@
 </td>
 
 <td>
-  <span data-spec="parent-delta">{{delta}}</span>
-  <span data-spec="total-sub-records-delta" class="text-success">
-    [{{view_total_sub_records_delta}}]
+  <span data-spec="parent-delta">{{#decimal}}{{delta}}{{/decimal}}</span>
+  <span class="text-success"> /
+    <span data-spec="total-sub-records-delta">
+      {{#decimal}}{{view_total_sub_records_delta}}{{/decimal}}
+    </span>
   </span>
 </td>
 

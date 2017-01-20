@@ -1,6 +1,6 @@
 import 'tagsinput'
 import 'typeahead'
-import Decimal from 'jsdecimal'
+import Decimal from 'decimal.js'
 import Mn from 'backbone.marionette'
 
 import * as models from './models'
@@ -23,9 +23,10 @@ SubRecordsTableView = Mn.View.extend
             @model.get('sub_records'),
             modelDefaults: {'parent_record': @model.id}
         )
-        @listenTo(@subRecords, 'update', @onSubRecordsUpdate)
+        @listenTo(@subRecords, 'update', @onSubRecordsChange)
+        @listenTo(@subRecords, 'change', @onSubRecordsChange)
 
-    onSubRecordsUpdate: ->
+    onSubRecordsChange: ->
         @model.set('sub_records', @subRecords.toJSON())
 
     regions:
@@ -58,13 +59,13 @@ SubRecordsTableBodyView = Mn.CollectionView.extend
         @addChildView(new SubRecordNewView(collection: @collection))
 
     onChildviewSaveNewSubrecord: (childView) ->
-        if childView.model.id == models.ID_NOT_SAVED
+        if not childView.model?
             @removeChildView(childView)
         else
             @replaceView(childView, SubRecordView)
 
     onChildviewCancelNewSubrecord: (childView) ->
-        if childView.model.id == models.ID_NOT_SAVED
+        if not childView.model?
             @removeChildView(childView)
         else
             @replaceView(childView, SubRecordView)
@@ -154,7 +155,11 @@ SubRecordNewView = Mn.View.extend
         formData = @getUI('form').serializeForm()
         formData.tags = utils.splitToNonEmpty(formData.tags)
         _.extend(formData, @collection.modelDefaults)
-        @collection.create(formData, wait: true)
+
+        if @model?
+            @model.save(formData, wait: true)
+        else
+            @collection.create(formData, wait: true)
 
     cancel: ->
         @triggerMethod('cancel:new:subrecord', @)
@@ -190,11 +195,10 @@ SubRecordUnfiledView = Mn.View.extend
     getTotalSubRecordsDelta: (subRecords) ->
         val = _.reduce(
             subRecords
-            (memo, subRecord) -> memo.add(Decimal(subRecord['delta'])),
-            Decimal(0)
+            (memo, subRecord) -> memo.add(new Decimal(subRecord['delta'])),
+            new Decimal(0)
         )
-        ret = val or Decimal(0)
-        utils.decimalToString(ret)
+        val or new Decimal(0)
 
 
 RecordRowView = Mn.View.extend

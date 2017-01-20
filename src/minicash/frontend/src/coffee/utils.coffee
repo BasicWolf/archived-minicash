@@ -1,6 +1,5 @@
 import Bb from 'backbone'
 import Bhound from 'bloodhound'
-import Decimal from 'jsdecimal'
 import Mn from 'backbone.marionette'
 
 ### --- CONSTANTS --- ###
@@ -100,5 +99,4 @@ export splitToNonEmpty = (s, splitter) ->
 
 
 export decimalToString = (dec) ->
-    DIGITS = 3
-    Decimal.Round(dec, DIGITS, Decimal.MidpointRounding.ToEven).toString()
+    dec.toFixed(3)

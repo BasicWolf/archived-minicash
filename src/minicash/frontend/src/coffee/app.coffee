@@ -1,10 +1,9 @@
-# NOTE, this MUST be loaded before anything, because monkey-patching happens here
+# NOTE, these MUST be loaded before anything, because monkey-patching happens here
+import './defaults'
 import './extensions'
 
 import {sprintf} from 'sprintf-js'
 import Mn from 'backbone.marionette'
-
-import './defaults'
 
 import {TabbarManager} from './tabbar_manager'
 import * as models from './models'

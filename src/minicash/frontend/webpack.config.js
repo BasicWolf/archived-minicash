@@ -81,7 +81,6 @@ module.exports = {
             'bloodhound': 'typeahead.js/dist/bloodhound.js',
             'tagsinput': 'bootstrap-tagsinput/dist/bootstrap-tagsinput.js',
             'typeahead': 'typeahead.js/dist/typeahead.jquery',
-            'jsdecimal': 'jsdecimal/lib/decimal.js'
         }
     },
     resolveLoader: {
