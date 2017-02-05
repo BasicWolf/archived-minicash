@@ -25,6 +25,10 @@
 <script defer src="{% static '/minicash.js' %}"></script>
 {% endblock %}
 
+{% block css %}
+<link href="{% static 'minicash.css' %}" rel="stylesheet">
+{% endblock %}
+
 
 {% block body %}
 {% include "frontend/navbar.inc.html" %}

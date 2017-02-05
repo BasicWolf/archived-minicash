@@ -100,6 +100,26 @@ class RecordsAPITest(RESTTestCase):
         serializer = RecordSerializer(data=record_data)
         self.assertFalse(serializer.is_valid())
 
+    def test_create_invalid_mode(self):
+        asset_to = AssetFactory.create(owner=self.owner)
+        asset_from = AssetFactory.create(owner=self.owner)
+
+        record = RecordFactory.build(owner=self.owner, asset_to=asset_to, mode=Record.TRANSFER)
+        res = self.jpost(reverse('records-list'), RecordSerializer(record).data)
+        self.assert_status(res, 400)
+
+        record = RecordFactory.build(owner=self.owner, asset_to=asset_to, mode=Record.EXPENSE)
+        res = self.jpost(reverse('records-list'), RecordSerializer(record).data)
+        self.assert_status(res, 400)
+
+        record = RecordFactory.build(owner=self.owner, asset_from=asset_from, mode=Record.TRANSFER)
+        res = self.jpost(reverse('records-list'), RecordSerializer(record).data)
+        self.assert_status(res, 400)
+
+        record = RecordFactory.build(owner=self.owner, asset_from=asset_from, mode=Record.INCOME)
+        res = self.jpost(reverse('records-list'), RecordSerializer(record).data)
+        self.assert_status(res, 400)
+
     def _compare_records_data(self, data_in, data_out):
         # pk's are not equal (None vs. PK from database)
         data_in_pk, data_out_pk = data_in.pop('pk'), data_out.pop('pk')

@@ -15,8 +15,9 @@ class TestCase(TransactionTestCase):
 class WithOwnerTestMixin:
     def _setUp(self):
         self.user = UserFactory(permissions=permissions_for('record'))
-        self.client.login(username=self.user.username,
-                          password=self.user.raw_password)
+        if getattr(self, 'client', False):
+            self.client.login(username=self.user.username,
+                              password=self.user.raw_password)
         self.owner = self.user
 
 

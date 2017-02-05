@@ -1,10 +1,14 @@
 'use strict';
 
 const webpack = require('webpack');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+let ExtractTextPlugin = require('extract-text-webpack-plugin');
 const path = require('path');
 
+const extractSASS = new ExtractTextPlugin('minicash.css');
+const extractLoginCSS = new ExtractTextPlugin('login.css');
+
 const nodeDir = __dirname + '/node_modules';
+
 
 
 module.exports = {
@@ -33,8 +37,10 @@ module.exports = {
             { test: /\.hbs$/, loader: "handlebars-loader"},
 
             /* CSS and SCSS */
-            { test: /\.css$/, loaders: ["style", "css"] },
-            {test: /\.scss$/, loaders: ["style", "css", "sass"]},
+            {test: /login.scss_$/, loader: extractLoginCSS.extract("style", ["css", "sass"])},
+
+            {test: /\.css$/, loaders: ["style", "css"] },
+            {test: /\.scss$/, loader: extractSASS.extract(["css", "sass"])},
 
             /* Binary and related */
             { test: /\.eot(\?v=\d+\.\d+\.\d+)?$/, loader: "file" },
@@ -51,8 +57,8 @@ module.exports = {
     },
 
     plugins: [
-        new ExtractTextPlugin('minicash.css'),
-
+        extractSASS,
+        extractLoginCSS,
         new webpack.ProvidePlugin({
             $: 'jquery',
             jQuery: 'jquery',
@@ -80,7 +86,7 @@ module.exports = {
             'cocktail': 'backbone.cocktail/Cocktail.js',
             'bloodhound': 'typeahead.js/dist/bloodhound.js',
             'tagsinput': 'bootstrap-tagsinput/dist/bootstrap-tagsinput.js',
-            'typeahead': 'typeahead.js/dist/typeahead.jquery',
+            'typeahead': 'typeahead.js/dist/typeahead.jquery'
         }
     },
     resolveLoader: {

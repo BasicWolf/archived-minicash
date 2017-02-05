@@ -7,7 +7,7 @@ window.tr = (s) -> s
 
 
 #--------- Handlebars -----------#
-
+#================================#
 Hb.registerHelper 'ifnot', (v, options) ->
     return if not v
         options.fn(this)
@@ -15,12 +15,26 @@ Hb.registerHelper 'ifnot', (v, options) ->
         options.inverse(this)
 
 
-Hb.registerHelper 'context', (keys) ->
+Hb.registerHelper 'ifeq', (v, v2, options) ->
+    return if v == v2
+        options.fn(this)
+    else
+        options.inverse(this)
+
+
+Hb.registerHelper 'ifdef', (v, options) ->
+    return if v?
+        options.fn(this)
+    else
+        options.inverse(this)
+
+
+Hb.registerHelper 'context', (keys, options) ->
     val = window.minicash.CONTEXT
 
     for key in keys.split('.')
         val = val[key]
-    val
+    return val
 
 
 Hb.registerHelper 'decimal', (options) ->
@@ -90,4 +104,3 @@ $.ajaxSetup
                settings.url = url + '/'
 
 #================================#
-

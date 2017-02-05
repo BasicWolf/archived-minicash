@@ -9,10 +9,11 @@ export RecordTab = TabModel.extend
     defaults: ->
         title: 'New record'
         name: 'new_record_' + utils.generateId()
-        viewClass: NewRecordTabPanelView
+        viewClass: RecordTabPanelView
+        record: null
 
 
-export NewRecordTabPanelView = TabPanelView.extend
+export RecordTabPanelView = TabPanelView.extend
     validator: null
 
     template: require('templates/tab_record.hbs')
@@ -32,11 +33,16 @@ export NewRecordTabPanelView = TabPanelView.extend
         'click @ui.cancelBtn': 'onCancelBtnClick'
         'change @ui.modeSelect': 'onModeChange'
 
+    serializeModel: ->
+        renderData = TabPanelView.prototype.serializeModel.apply(this, arguments);
+        renderData.record = renderData.record?.serialize()
+        renderData.assets = minicash.collections.assets.serialize()
+        return renderData
+
     onRender: ->
         @initializeDateTimePicker()
         @initializeValidator()
         @renderModeSelectState()
-        @renderAssets()
         @renderTags()
 
     initializeDateTimePicker: ->
@@ -45,13 +51,17 @@ export NewRecordTabPanelView = TabPanelView.extend
             allowInputToggle: true
             format: minicash.CONTEXT.user.dtFormat
 
-        createdDateInputWrapper = @getUI('createdDateInput').parent()
+        $dtInput = @getUI('createdDateInput')
+        createdDateInputWrapper = $dtInput.parent()
         createdDateInputWrapper.datetimepicker(options)
         # set initial value in textbox
-        nowStr = moment().format(options.format)
-        @getUI('createdDateInput').val(nowStr)
+        if $dtInput.val() == ''
+            nowStr = moment().format(options.format)
+            @getUI('createdDateInput').val(nowStr)
 
     initializeValidator: ->
+        RECORD_MODES = minicash.CONTEXT.RECORD_MODES
+
         @validator = @getUI('form').validate
             rules:
                 createdDate: {required: true}
@@ -69,33 +79,34 @@ export NewRecordTabPanelView = TabPanelView.extend
     onModeChange: (e) ->
         @renderModeSelectState($(e.target).val())
 
-    renderModeSelectState: (val) ->
-        val ?= @getUI('modeSelect').val()
-        val = parseInt(val)
+    renderModeSelectState: (mode) ->
+        mode ?= @getUI('modeSelect').val()
+        mode = parseInt(mode)
 
         RECORD_MODES = minicash.CONTEXT.RECORD_MODES
 
         showTo = false
         showFrom = false
 
-        switch val
-            when RECORD_MODES.INCOME then showTo = true
-            when RECORD_MODES.EXPENSE then showFrom = true
-            when RECORD_MODES.TRANSFER then showTo = showFrom = true
+        $fromAssetSelect = @getUI('fromAssetSelect')
+        $toAssetSelect = @getUI('toAssetSelect')
+
+        switch mode
+            when RECORD_MODES.INCOME.value
+                showTo = true
+                @getUI('toAssetSelect').rules('add', 'required')
+            when RECORD_MODES.EXPENSE.value
+                showFrom = true
+                @getUI('fromAssetSelect').rules('add', 'required')
+            when RECORD_MODES.TRANSFER.value
+                showTo = showFrom = true
+                @getUI('fromAssetSelect').rules('add', 'required')
+                @getUI('toAssetSelect').rules('add', 'required')
+            else throw 'Invalid record mode value'
 
         @getUI('fromAssetSelect').parentsUntil('form', '.form-group').toggle(showFrom)
         @getUI('toAssetSelect').parentsUntil('form', '.form-group').toggle(showTo)
 
-    renderAssets: ->
-        $selects = [@getUI('fromAssetSelect'), @getUI('toAssetSelect')]
-        # TODO: keep the old selected values shown
-        for $sel in $selects
-            $sel.empty()
-
-        minicash.collections.assets.forEach (asset) ->
-            for $sel in $selects
-                $sel.append(new Option(asset.get('name'), asset.id))
-            return
 
     renderTags: ->
         @getUI('tagsInput').tagsinput
@@ -105,32 +116,49 @@ export NewRecordTabPanelView = TabPanelView.extend
                 valueKey: 'name'
                 source: minicash.collections.tags.bloodhound.adapter()
 
-
     saveForm: ->
+        saveData = @_prepareSaveData()
+
+
+        dfd = $.Deferred ->
+            minicash.status.show()
+        dfd.then =>
+            @model.destroy()
+        .always =>
+            minicash.status.hide()
+            @unlockControls()
+
+
+        saveOptions =
+            wait: true
+            success: ->
+                dfd.resolve()
+            error: ->
+                dfd.reject()
+
+        if record = @model.get('record')
+            record.save(saveData, saveOptions)
+        else
+            minicash.collections.records.create(saveData, saveOptions)
+
+    _prepareSaveData: ->
+        RECORD_MODES = minicash.CONTEXT.RECORD_MODES
+
         if not @validator.form()
             return
 
         formData = @getUI('form').serializeForm()
         formData.tags = @getUI('tagsInput').tagsinput('items')
 
-        RECORD_MODES = minicash.CONTEXT.RECORD_MODES
-        switch parseInt(formData.mode)
-            when RECORD_MODES.INCOME then formData.asset_to = null
-            when RECORD_MODES.EXPENSE then formData.asset_from = null
-            when RECORD_MODES.TRANSFER then ;
+        # mode either from Form Data, or if not available (control disabled, i.e. editing)
+        # - from existing record which is being edited
+        mode = formData.mode or (@model.get('record') and @model.get('record').get('mode'))
+        switch parseInt(mode)
+            when RECORD_MODES.INCOME.value then formData.asset_from = null
+            when RECORD_MODES.EXPENSE.value then formData.asset_to = null
+            when RECORD_MODES.TRANSFER.value then ; # both assets are used
             else throw 'Invalid record mode'
-
-        minicash.status.show()
-        rec = minicash.collections.records.create(formData, {
-            wait: true
-            success: =>
-                minicash.status.hide()
-                @unlockControls()
-                @model.destroy()
-            error: =>
-                minicash.status.hide()
-                @unlockControls()
-        })
+        return formData
 
     lockControls: ->
         @uiDisable(['saveBtn', 'cancelBtn'])
@@ -138,4 +166,4 @@ export NewRecordTabPanelView = TabPanelView.extend
     unlockControls: ->
         @uiEnable(['saveBtn', 'cancelBtn'])
 
-_.extend(NewRecordTabPanelView.prototype, views.UIMixin);
+_.extend(RecordTabPanelView.prototype, views.UIMixin);

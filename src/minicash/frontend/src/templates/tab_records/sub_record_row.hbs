@@ -9,5 +9,9 @@
   </div>
 </td>
 <td>{{#decimal}}{{delta}}{{/decimal}}</td>
-<td>{{tags}}</td>
+<td>
+  {{#each tags}}
+    {{this}}{{#ifnot @last}},{{/ifnot}}
+  {{/each}}
+</td>
 <td>{{description}}</td>

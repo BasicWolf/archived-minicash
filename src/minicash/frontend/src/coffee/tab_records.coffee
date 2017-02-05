@@ -1,6 +1,7 @@
 import 'tagsinput'
 import 'typeahead'
 import Decimal from 'decimal.js'
+import Hb from 'handlebars/runtime'
 import Mn from 'backbone.marionette'
 
 import * as models from './models'
@@ -94,12 +95,12 @@ SubRecordView = Mn.View.extend
         editBtn: 'button[data-spec="edit-sub-record"]'
 
     events:
-        'click @ui.deleteBtn': 'onDeleteBtnClick'
+        'click @ui.deleteBtn': 'deleteSubRecord'
 
     triggers:
         'click @ui.editBtn': 'edit:subrecord'
 
-    onDeleteBtnClick: ->
+    deleteSubRecord: ->
         @model.destroy()
 
 
@@ -145,15 +146,12 @@ SubRecordNewView = Mn.View.extend
     onAttach: ->
         @getUI('deltaInput').focus()
 
-    onSaveBtnClick: ->
-        @save()
-
     save: ->
         if not @validator.form()
             return
 
         formData = @getUI('form').serializeForm()
-        formData.tags = utils.splitToNonEmpty(formData.tags)
+        formData.tags = @getUI('tagsInput').tagsinput('items')
         _.extend(formData, @collection.modelDefaults)
 
         if @model?
@@ -176,12 +174,20 @@ SubRecordUnfiledView = Mn.View.extend
 
     ui:
         totalSubRecordsDeltaTxt: 'span[data-spec="total-sub-records-delta"]'
+        editBtn: 'button[data-spec="edit-record"]'
+        deleteBtn: 'button[data-spec="delete-record"]'
+
+    events:
+        'click @ui.editBtn': 'editRecord'
+        'click @ui.deleteBtn': 'deleteRecord'
 
     triggers:
         'click button[data-spec="add-sub-record"]': 'new:subrecord'
 
     modelEvents:
         'change:sub_records': 'onSubRecordsChange'
+        'change:delta': 'render'
+        'change:description': 'render'
 
     initialize: ->
         totalSubRecordsDelta = @getTotalSubRecordsDelta(@model.get('sub_records'))
@@ -200,41 +206,61 @@ SubRecordUnfiledView = Mn.View.extend
         )
         val or new Decimal(0)
 
+    editRecord: ->
+        @triggerMethod('opentab', 'newRecord', {record: @model})
+
+    deleteRecord: ->
+        @model.destroy()
+
+
+RecordDataView = Mn.View.extend
+    tagName: 'tr'
+    template: require('templates/tab_records/record_row_data.hbs')
+
+    _subRecordsOpen: false
+
+    ui:
+        toggleSubRecordsBtn: 'button[data-spec="toggle-sub-records"]'
+
+    events:
+        'click @ui.toggleSubRecordsBtn': 'toggleSubRecord'
+
+    modelEvents:
+        'sync': 'render'
+
+    toggleSubRecord: ->
+        toggleSubRecordsBtnIcon = @getUI('toggleSubRecordsBtn').children('span')
+
+        @_subRecordsOpen = not @_subRecordsOpen
+        toggleSubRecordsBtnIcon.toggleClass('glyphicon-plus', not @_subRecordsOpen)
+        toggleSubRecordsBtnIcon.toggleClass('glyphicon-minus', @_subRecordsOpen)
+
+        @triggerMethod('toggleSubRecord', @_subRecordsOpen)
+
 
 RecordRowView = Mn.View.extend
     tagName: 'tbody'
     template: require('templates/tab_records/record_row.hbs')
 
     ui:
-        toggleSubRecordsBtn: 'button[data-spec="toggle-sub-records"]'
-        deleteBtn: 'button[data-spec="delete-record"]'
         subRecordRow: 'tr[data-spec="sub-record-row"]'
-
-    events:
-        'click @ui.toggleSubRecordsBtn': 'toggleSubRecord'
-        'click @ui.deleteBtn': 'deleteRecord'
 
     regions:
         subRecordRegion: {el: '[data-spec="sub-record-region"]'}
+        recordDataRegion:
+            el: '[data-spec="record-data-region"]'
+            replaceElement: true
 
-    toggleSubRecord: ->
-        subRecordRegion = @getRegion('subRecordRegion')
-        subRecordRow = @getUI('subRecordRow')
-        toggleSubRecordsBtnIcon = @getUI('toggleSubRecordsBtn').children('span')
+    onRender: ->
+        @showChildView('recordDataRegion', new RecordDataView(model: @model))
 
-        visible = subRecordRegion.hasView()
-
-        if not visible
-            subRecordRegion.show(new SubRecordsTableView(model: @model))
+    onChildviewToggleSubRecord: (show) ->
+        if show
+            @showChildView('subRecordRegion', new SubRecordsTableView(model: @model))
         else
-            subRecordRegion.empty()
+            @getRegion('subRecordRegion').empty()
 
-        subRecordRow.toggleClass('hidden', visible)
-        toggleSubRecordsBtnIcon.toggleClass('glyphicon-plus', visible)
-        toggleSubRecordsBtnIcon.toggleClass('glyphicon-minus', not visible)
-
-    deleteRecord: ->
-        @model.destroy()
+        @getUI('subRecordRow').toggleClass('hidden', not show)
 
 
 RecordsTableView = Mn.CollectionView.extend
@@ -255,6 +281,7 @@ RecordsTableView = Mn.CollectionView.extend
         @$el.prepend($tableHead)
 
 
+
 RecordsTabPanelView = TabPanelView.extend
     template: require('templates/tab_records/tab_records.hbs')
 
@@ -265,32 +292,39 @@ RecordsTabPanelView = TabPanelView.extend
         recordsTableRegion: {el: '[data-spec="records-table-region"]'}
 
     events:
-        'click @ui.newRecordBtn': 'onNewRecordBtnClick'
-
-    initialize: ->
-        @initializeEvents()
-
-    initializeEvents: ->
-        @listenTo(minicash.collections.records, 'add', @onRecordAdded)
+        'click @ui.newRecordBtn': 'startNewRecord'
 
     onRender: ->
         @showChildView('recordsTableRegion', new RecordsTableView(collection: minicash.collections.records))
 
-    onNewRecordBtnClick: ->
+    startNewRecord: ->
         minicash.tabbarManager.openTab('newRecord', source: @model)
 
-    onRecordAdded: (model, collection, options) ->
-        # data =
-        #     asset_to:"1"
-        #     asset_from:"1"
-        #     created_date:"23/12/2016 16:38"
-        #     delta:"100"
-        #     description:""
-        #     tags:"tags"
-        # @$table.row.add(data)
-        # @$table.draw()
+    onChildviewChildviewChildviewOpentab: (tabtype, options) ->
+        options = _.extend({
+            source: @model
+        }, options)
+        minicash.tabbarManager.openTab('newRecord', options)
 
-#v         data = model.attributes
-#        $table.rows.add(data)
-#        $table.draw()
-#        console.log('Added')
+
+# ------ Handlebar helpers ------ #
+
+Hb.registerHelper 'record_account', (assetFrom, assetTo, options) ->
+    empty = ''
+    assetFrom = minicash.collections.assets.get(assetFrom)
+    assetTo = minicash.collections.assets.get(assetTo)
+
+    assetFromName = if assetFrom? then assetFrom.get('name') else empty
+    assetToName = if assetTo? then assetTo.get('name') else empty
+
+    return "#{assetFromName} → #{assetToName}".trim()
+
+
+Hb.registerHelper 'record_mode_sign', (mode, options) ->
+    return switch mode
+        when minicash.CONTEXT.RECORD_MODES.EXPENSE.value then '-'
+        when minicash.CONTEXT.RECORD_MODES.INCOME.value then '+'
+        when minicash.CONTEXT.RECORD_MODES.TRANSFER.value then ''
+        else 'ERROR'
+
+#=================================#

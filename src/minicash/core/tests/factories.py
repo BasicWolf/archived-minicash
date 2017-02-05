@@ -1,6 +1,7 @@
 import datetime
 import factory.fuzzy as fuzzy
-from factory import SubFactory, Faker, SelfAttribute, post_generation
+from factory import (SubFactory, Faker, SelfAttribute, post_generation,
+                     lazy_attribute)
 from factory.django import DjangoModelFactory
 
 
@@ -74,6 +75,16 @@ class RecordFactory(TagsMixin, DjangoModelFactory):
         for tag in tags:
             self.tags.add(tag)
 
+    @lazy_attribute
+    def mode(self):
+        if self.asset_from and self.asset_to:
+            return models.Record.TRANSFER
+        elif self.asset_from:
+            return models.Record.EXPENSE
+        elif self.asset_to:
+            return models.Record.INCOME
+        else:
+            return None
 
 class SubRecordFactory(TagsMixin, DjangoModelFactory):
     class Meta:

@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.utils.translation import ugettext as _
 
 from rest_framework import serializers
 
@@ -83,13 +84,25 @@ class RecordSerializer(ModelSerializer):
         allow_null=True,
     )
 
-    def validate(self, data):
-        # Validate assets
-        _to, _from = bool(data['asset_to']), bool(data['asset_from'])
+    VALID_MODES_MAPPING = {
+            (True, True): Record.TRANSFER,
+            (True, False): Record.INCOME,
+            (False, True): Record.EXPENSE
+    }
 
-        if (_to, _from) not in Record.modes_mapping:
-            raise serializers.ValidationError('Either of the assets must be '
-                                              'defined in a record')
+
+    def validate(self, data):
+        return self._validate_assets(data)
+
+    def _validate_assets(self, data):
+        to_from_mode = (bool(data['asset_to']), bool(data['asset_from']))
+
+        try:
+            if data['mode'] != self.VALID_MODES_MAPPING[to_from_mode]:
+                raise serializers.ValidationError(_('VERIFY-0002: Invalid mode or assets data'))
+        except KeyError as e:
+            raise serializers.ValidationError(_('VERIFY-0001: Either of the assets and mode must be defined in a record')) from e
+
         return data
 
 

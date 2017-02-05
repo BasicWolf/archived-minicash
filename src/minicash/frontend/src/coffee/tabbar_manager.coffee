@@ -2,7 +2,6 @@ import Mn from 'backbone.marionette'
 import * as tabbar from './tabbar'
 import {RecordsTab} from './tab_records'
 import {RecordTab} from './tab_record'
-import {Record} from './models'
 
 
 export TabbarManager = Mn.Object.extend

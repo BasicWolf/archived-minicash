@@ -39,9 +39,9 @@ def build_settings(**kwargs):
 def build_record_modes(**kwargs):
     return {
         'RECORD_MODES': OrderedDict([
-            ('INCOME', Record.INCOME),
-            ('EXPENSE', Record.EXPENSE),
-            ('TRANSFER', Record.TRANSFER),
+            ('EXPENSE', {'value': Record.EXPENSE, 'label': Record.MODES[1][1]}),
+            ('INCOME', {'value': Record.INCOME, 'label': Record.MODES[0][1]}),
+            ('TRANSFER', {'value': Record.TRANSFER, 'label': Record.MODES[2][1]}),
         ])
     }
 

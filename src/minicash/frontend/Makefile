@@ -15,6 +15,7 @@ lib: ${STATIC_LIB_DIR}
 	ln -sr -f ./node_modules/jquery/dist/jquery.js ${STATIC_LIB_DIR}
 	ln -sr -f ./node_modules/bootstrap/dist/js/bootstrap.js ${STATIC_LIB_DIR}
 	ln -sr -f ./node_modules/bootstrap-notify/bootstrap-notify.js ${STATIC_LIB_DIR}
+	ln -sr -f ./node_modules/bootstrap/dist/css/bootstrap.min.css ${STATIC_LIB_DIR}
 	ln -sr -f ./node_modules/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js ${STATIC_LIB_DIR}
 	ln -sr -f ./node_modules/moment/min/moment-with-locales.js ${STATIC_LIB_DIR}
 	ln -sr -f ./node_modules/jquery-validation/dist/jquery.validate.js ${STATIC_LIB_DIR}

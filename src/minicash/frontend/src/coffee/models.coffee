@@ -17,6 +17,20 @@ export BaseModel = Bb.Model.extend
 
         Backbone.Model.prototype.save.call(@, attrs, options)
 
+    serialize: ->
+        data = _.clone(@attributes)
+        data['id'] = @id
+        return data
+
+
+export BaseCollection = Bb.Collection.extend
+    serialize: ->
+	    return @map (model) ->
+            if model instanceof BaseModel
+                model.serialize()
+            else
+                _.clone(model.attributes)
+
 
 export SubRecord = BaseModel.extend
     idAttribute: 'pk'
@@ -35,7 +49,7 @@ export SubRecord = BaseModel.extend
         'change:delta': 'setDelta'
 
 
-export SubRecords = Bb.Collection.extend
+export SubRecords = BaseCollection.extend
     model: SubRecord
 
     initialize: (models, options) ->
@@ -56,12 +70,15 @@ export Record = BaseModel.extend
         'delta',
         'description',
         'extra',
+        'mode',
         'owner',
         'tags',
     ]
 
+    initialize: ->
+        @on('change', @onChange)
 
-export Records = Bb.Collection.extend
+export Records = BaseCollection.extend
     model: Record
     url: -> minicash.url('records-list')
 
@@ -79,7 +96,7 @@ export Asset = BaseModel.extend
     ]
 
 
-export Assets = Bb.Collection.extend
+export Assets = BaseCollection.extend
     model: Asset
 
 
@@ -94,7 +111,7 @@ export Tag = BaseModel.extend
     ]
 
 
-export Tags = Bb.Collection.extend
+export Tags = BaseCollection.extend
     model: Tag
     url: -> minicash.url('tag-list')
 

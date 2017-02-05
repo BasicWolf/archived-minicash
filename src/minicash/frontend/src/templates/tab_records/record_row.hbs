@@ -1,20 +1,4 @@
-<tr>
-  <td>
-    <button data-spec="toggle-sub-records" type="button" class="btn btn-xs">
-      <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-    </button>
-  </td>
-
-  <td>{{created_date}}</td>
-  <td>{{#decimal}}{{delta}}{{/decimal}}</td>
-  <td>{{asset_from}}</td>
-  <td>{{asset_to}}</td>
-  <td>
-    {{#each tags}}
-      {{this}}{{#ifnot @last}},{{/ifnot}}
-    {{/each}}
-  </td>
-  <td>{{description}}</td>
+<tr data-spec="record-data-region">
 </tr>
 <tr class="hidden" data-spec="sub-record-row">
   <td data-spec="sub-record-region" colspan="7"></td>
