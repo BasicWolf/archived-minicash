@@ -23,6 +23,7 @@ export RecordTabPanelView = TabPanelView.extend
         cancelBtn: 'button[data-spec="cancel"]'
         modeSelect: 'select[name="mode"]'
         createdDateInput: 'input[name="created_date"]'
+        deltaInput: 'input[name="delta"]'
         tagsInput: 'input[name="tags"]'
         toAssetSelect: 'select[name="asset_to"]'
         fromAssetSelect: 'select[name="asset_from"]'
@@ -32,6 +33,7 @@ export RecordTabPanelView = TabPanelView.extend
         'click @ui.saveBtn': 'onSaveBtnClick'
         'click @ui.cancelBtn': 'onCancelBtnClick'
         'change @ui.modeSelect': 'onModeChange'
+        'keydown @ui.deltaInput': 'onDeltaInputKeyDown'
 
     serializeModel: ->
         renderData = TabPanelView.prototype.serializeModel.apply(this, arguments);
@@ -69,6 +71,21 @@ export RecordTabPanelView = TabPanelView.extend
             messages:
                 createdDate: tr("Please enter a valid date/time")
                 delta: tr("Please enter a valid expense value")
+
+    onDeltaInputKeyDown: (e) ->
+        switch e.keyCode
+            when utils.KEYS.ENTER then @calculateDelta()
+            when utils.KEYS.ESCAPE then @restoreCalculatedDelta()
+
+    calculateDelta: ->
+        deltaTxt = @getUI('deltaInput').val()
+        @previousDeltaTxt = deltaTxt
+        @getUI('deltaInput').val(eval(deltaVal))
+
+    restoreCalculatedDelta: ->
+        if @previousDeltaTxt?
+            @getUI('deltaInput').val(@previousDeltaTxt)
+            @previousDeltaTxt = null
 
     onSaveBtnClick: ->
         @saveForm()
@@ -166,4 +183,6 @@ export RecordTabPanelView = TabPanelView.extend
     unlockControls: ->
         @uiEnable(['saveBtn', 'cancelBtn'])
 
-_.extend(RecordTabPanelView.prototype, views.UIMixin);
+
+_.extend(RecordTabPanelView.prototype, views.UIEnableDisableMixin);
+

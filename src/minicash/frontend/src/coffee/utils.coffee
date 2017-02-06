@@ -1,5 +1,6 @@
 import Bb from 'backbone'
 import Bhound from 'bloodhound'
+import Decimal from 'decimal.js'
 import Mn from 'backbone.marionette'
 
 ### --- CONSTANTS --- ###
@@ -100,3 +101,7 @@ export splitToNonEmpty = (s, splitter) ->
 
 export decimalToString = (dec) ->
     dec.toFixed(3)
+
+
+export compareStringsAsDecimals = (s1, s2) ->
+    decimalToString(new Decimal(s1)) == decimalToString(new Decimal(s2))

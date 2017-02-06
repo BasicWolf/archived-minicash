@@ -1,7 +1,7 @@
 import 'tagsinput'
 import 'typeahead'
-import Decimal from 'decimal.js'
 import Hb from 'handlebars/runtime'
+import Decimal from 'decimal.js'
 import Mn from 'backbone.marionette'
 
 import * as models from './models'
@@ -119,7 +119,8 @@ SubRecordNewView = Mn.View.extend
         form: 'form'
 
     events:
-        'keydown @ui.deltaInput,@ui.descriptionInput': 'onInputKeyDown'
+        'keydown @ui.deltaInput': 'onDeltaInputKeyDown'
+        'keydown @ui.descriptionInput': 'onDescriptionInputKeyDown'
         'click @ui.saveBtn': 'save'
         'click @ui.cancelBtn': 'cancel'
 
@@ -162,10 +163,34 @@ SubRecordNewView = Mn.View.extend
     cancel: ->
         @triggerMethod('cancel:new:subrecord', @)
 
-    onInputKeyDown: (e) ->
+    onDescriptionInputKeyDown: (e) ->
         switch e.keyCode
             when utils.KEYS.ENTER then @save()
             when utils.KEYS.ESCAPE then @cancel()
+
+    onDeltaInputKeyDown: (e) ->
+        switch e.keyCode
+            when utils.KEYS.ENTER then @calculateDeltaOrSave()
+            when utils.KEYS.ESCAPE then @restoreCalculatedDelta()
+
+    calculateDeltaOrSave: ->
+        deltaTxt = @getUI('deltaInput').val()
+        @previousDeltaTxt = deltaTxt
+
+        deltaEvalTxt = '' + eval(deltaTxt)
+        @getUI('deltaInput').val(deltaEvalTxt)
+
+        # save if text has not changed after evaluation
+        try
+            if utils.compareStringsAsDecimals(deltaTxt, deltaEvalTxt)
+                @save()
+        catch
+
+
+    restoreCalculatedDelta: ->
+        if @previousDeltaTxt?
+            @getUI('deltaInput').val(@previousDeltaTxt)
+            @previousDeltaTxt = null
 
 
 SubRecordUnfiledView = Mn.View.extend

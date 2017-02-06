@@ -1,4 +1,4 @@
-export UIMixin =
+export UIEnableDisableMixin =
     uiEnable: (names) ->
         if not _.isArray(names)
             names = [names]

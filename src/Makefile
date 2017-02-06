@@ -34,6 +34,10 @@ test:
 	$(MANAGEPY_CMD) test -v 2 $(TESTS) --settings $(MANAGEPY_DEV_SETTINGS) --noinput
 
 
+test-behave:
+	$(MANAGEPY_CMD) behave --settings $(MANAGEPY_DEV_SETTINGS)
+
+
 check: pycheck
 
 
