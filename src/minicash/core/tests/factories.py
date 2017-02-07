@@ -86,6 +86,7 @@ class RecordFactory(TagsMixin, DjangoModelFactory):
         else:
             return None
 
+
 class SubRecordFactory(TagsMixin, DjangoModelFactory):
     class Meta:
         model = models.SubRecord

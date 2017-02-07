@@ -1,12 +1,10 @@
 from behave import given, when, then
 
-from django.contrib.auth.models import User
-
 from minicash.auth.tests.factories import UserFactory
 
 
 @given('an anonymous user')
-def step_impl(context):
+def step_anon_user(context):
     # Creates a dummy user for our tests (user is not authenticated at this point)
     u = UserFactory(username='foo', email='foo@example.com')
     u.set_password('bar')
@@ -14,7 +12,7 @@ def step_impl(context):
 
 
 @when('I submit a valid login page')
-def step_impl(context):
+def step_submit_login_page(context):
     br = context.browser
     br.get(context.base_url + '/login/')
 
@@ -28,7 +26,7 @@ def step_impl(context):
 
 
 @then('I am redirected to the root')
-def step_impl(context):
+def step_redirect_to_root(context):
     br = context.browser
 
     # Checks success status
@@ -36,7 +34,7 @@ def step_impl(context):
 
 
 @when('I submit an invalid login page')
-def step_impl(context):
+def step_submit_invalid_login_page(context):
     br = context.browser
 
     br.get(context.base_url + '/login/')
@@ -51,7 +49,7 @@ def step_impl(context):
 
 
 @then('I am redirected to the login fail page')
-def step_impl(context):
+def step_redirect_to_login_fail_page(context):
     br = context.browser
 
     # Checks redirection URL

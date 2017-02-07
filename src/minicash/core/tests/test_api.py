@@ -10,7 +10,7 @@ from minicash.core.serializers import (
     SubRecordSerializer,
     TagSerializer,
 )
-from minicash.utils.testing import RESTTestCase, permissions_for
+from minicash.utils.testing import RESTTestCase
 
 from .factories import AssetFactory, RecordFactory, SubRecordFactory, TagFactory
 
@@ -55,9 +55,9 @@ class RecordsAPITest(RESTTestCase):
         self.assert_success(res)
 
         attributes = frozenset([
-                'pk',
-                'asset_from', 'asset_to', 'created_date', 'delta',
-                'description', 'extra', 'mode', 'sub_records', 'tags',
+            'pk',
+            'asset_from', 'asset_to', 'created_date', 'delta',
+            'description', 'extra', 'mode', 'sub_records', 'tags',
         ])
         res_attributes = frozenset(res.data.keys())
         self.assertEqual(attributes, res_attributes)
@@ -79,7 +79,6 @@ class RecordsAPITest(RESTTestCase):
 
     def test_create_asset_partial(self):
         asset_to = AssetFactory.create(owner=self.owner)
-        asset_from = AssetFactory.create(owner=self.owner)
         record = RecordFactory.build(owner=self.owner, asset_to=asset_to, asset_from=None)
         serializer = RecordSerializer(record)
 

@@ -2,7 +2,7 @@ MANAGEPY_CMD = python manage.py
 MANAGEPY_LOCAL_SETTINGS = minicash.app.settings.local
 MANAGEPY_DEV_SETTINGS = minicash.app.settings.dev
 
-TESTS = minicash.core minicash.auth minicash.frontend
+TESTS = minicash.utils minicash.core minicash.auth minicash.frontend
 
 all:
 	@echo 'Available actions:'

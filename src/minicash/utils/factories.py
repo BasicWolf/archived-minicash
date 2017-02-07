@@ -3,6 +3,7 @@ from datetime import timezone
 
 from factory import fuzzy
 
+
 class FuzzyFactorySequence(fuzzy.FuzzyAttribute):
     def __init__(self, sub_factory, min_count=0, max_count=10, *args, **kwargs):
         self.sub_factory = sub_factory

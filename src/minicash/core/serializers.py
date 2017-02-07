@@ -48,6 +48,12 @@ class RecordSerializer(ModelSerializer):
             'description', 'extra', 'mode', 'sub_records', 'tags',
         ]
 
+    VALID_MODES_MAPPING = {
+        (True, True): Record.TRANSFER,
+        (True, False): Record.INCOME,
+        (False, True): Record.EXPENSE
+    }
+
     owner = serializers.PrimaryKeyRelatedField(
         queryset=User.objects,
         write_only=True,
@@ -84,13 +90,6 @@ class RecordSerializer(ModelSerializer):
         allow_null=True,
     )
 
-    VALID_MODES_MAPPING = {
-            (True, True): Record.TRANSFER,
-            (True, False): Record.INCOME,
-            (False, True): Record.EXPENSE
-    }
-
-
     def validate(self, data):
         return self._validate_assets(data)
 
@@ -116,7 +115,6 @@ class TagSerializer(ModelSerializer):
         write_only=True,
         default=serializers.CurrentUserDefault(),
     )
-
 
     def validate(self, data):
         return self._validate_name(data)

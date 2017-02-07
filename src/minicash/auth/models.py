@@ -1,21 +1,18 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-# Create your models here.
-
-
 
 DT_FORMATS = [
     # ('frontend format', 'backend format')
     ('DD/MM/YYYY HH:mm', '%d/%m/%Y %H:%M'),
 ]
 
+
 class UserProfile(models.Model):
     DT_FORMAT_CHOICES = tuple(
         (i, dtf[0])
         for i, dtf in enumerate(DT_FORMATS)
     )
-
 
     user = models.OneToOneField(
         User,

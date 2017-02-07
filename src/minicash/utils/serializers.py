@@ -1,8 +1,9 @@
 from collections import Iterable
 
+from django.core.exceptions import ObjectDoesNotExist
+from django.utils.encoding import smart_text
 from rest_framework import serializers
 from rest_framework.renderers import JSONRenderer
-from rest_framework import serializers
 
 from .errors import UserNotLoggedInError
 
@@ -47,18 +48,19 @@ class UserPrimaryKeyRelatedField(UserRelatedFieldBase,
                                  serializers.PrimaryKeyRelatedField):
     def __init__(self, *args, user_field_name, **kwargs):
         UserRelatedFieldBase.__init__(self, user_field_name=user_field_name,
-                                       *args, **kwargs)
+                                      *args, **kwargs)
         serializers.PrimaryKeyRelatedField.__init__(self, *args, **kwargs)
 
 
 class UserSlugRelatedField(UserRelatedFieldBase, serializers.SlugRelatedField):
     def __init__(self, *args, user_field_name, **kwargs):
         UserRelatedFieldBase.__init__(self, user_field_name=user_field_name,
-                                       *args, **kwargs)
+                                      *args, **kwargs)
         serializers.SlugRelatedField.__init__(self, *args, **kwargs)
 
 
 class CreatableUserSlugRelatedField(UserSlugRelatedField):
+
     def to_internal_value(self, data):
         try:
             obj, _ = self.get_queryset().get_or_create(

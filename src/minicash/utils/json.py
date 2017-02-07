@@ -8,5 +8,4 @@ class JSONEncoder(DjangoJSONEncoder):
         # Encode lazy translations properly
         if isinstance(obj, Promise):
             return force_text(obj)
-        return super(LazyEncoder, self).default(obj)
-
+        return super().default(obj)
