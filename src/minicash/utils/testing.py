@@ -55,6 +55,9 @@ class RESTTestCase(WithOwnerTestMixin, APITransactionTestCase):
     def assert_updated(self, response):
         return self.assert_success(response)
 
+    def assert_bad(self, response):
+        return self.assert_status(response, status.HTTP_400_BAD_REQUEST)
+
     def assert_status(self, response, status_code):
         if response.status_code != status_code:
             msg = "Response status is {} ({}), not {} ({})".format(

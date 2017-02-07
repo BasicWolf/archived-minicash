@@ -1,5 +1,3 @@
-
-
-
-VERIFY-0001     VERIFY-0001: Either of the assets and mode must be defined in a record
-VERIFY-0002     VERIFY-0002: Invalid mode or assets data
+VERIFY-0001: Either of the assets and mode must be defined in a record
+VERIFY-0002: Invalid mode or assets data
+VERIFY-0003: Invalid tag name: {}

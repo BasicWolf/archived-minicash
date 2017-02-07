@@ -106,19 +106,19 @@ class RecordsAPITest(RESTTestCase):
 
         record = RecordFactory.build(owner=self.owner, asset_to=asset_to, mode=Record.TRANSFER)
         res = self.jpost(reverse('records-list'), RecordSerializer(record).data)
-        self.assert_status(res, 400)
+        self.assert_bad(res)
 
         record = RecordFactory.build(owner=self.owner, asset_to=asset_to, mode=Record.EXPENSE)
         res = self.jpost(reverse('records-list'), RecordSerializer(record).data)
-        self.assert_status(res, 400)
+        self.assert_bad(res)
 
         record = RecordFactory.build(owner=self.owner, asset_from=asset_from, mode=Record.TRANSFER)
         res = self.jpost(reverse('records-list'), RecordSerializer(record).data)
-        self.assert_status(res, 400)
+        self.assert_bad(res)
 
         record = RecordFactory.build(owner=self.owner, asset_from=asset_from, mode=Record.INCOME)
         res = self.jpost(reverse('records-list'), RecordSerializer(record).data)
-        self.assert_status(res, 400)
+        self.assert_bad(res)
 
     def _compare_records_data(self, data_in, data_out):
         # pk's are not equal (None vs. PK from database)
@@ -217,3 +217,8 @@ class TagsAPITest(RESTTestCase):
         data_internal = ser_internal.data
         data_internal.pop('pk')
         self.assertEqual(data_out, data_internal)
+
+    def test_create_invalid_name(self):
+        tag = TagFactory.build(owner=self.owner, name='abc,cde')
+        res = self.jpost(reverse('tags-list'), TagSerializer(tag).data)
+        self.assert_bad(res)

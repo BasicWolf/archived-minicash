@@ -118,6 +118,19 @@ class TagSerializer(ModelSerializer):
     )
 
 
+    def validate(self, data):
+        return self._validate_name(data)
+
+    def _validate_name(self, data):
+        name = data['name']
+
+        # check that name contains no commas
+        if ',' in name:
+            raise serializers.ValidationError(_('VERIFY-0003: Invalid tag name: {}'.format(name)))
+
+        return data
+
+
 class AssetSerializer(ModelSerializer):
     class Meta:
         model = Asset
