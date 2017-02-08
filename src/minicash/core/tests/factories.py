@@ -52,7 +52,7 @@ class RecordFactory(TagsMixin, DjangoModelFactory):
     class Meta:
         model = models.Record
 
-    created_date = factories.FuzzyDateTime(
+    dt_stamp = factories.FuzzyDateTime(
         datetime.datetime(1960, 1, 1, tzinfo=datetime.timezone.utc),
         datetime.datetime(2060, 1, 1, tzinfo=datetime.timezone.utc),
     )
@@ -85,14 +85,3 @@ class RecordFactory(TagsMixin, DjangoModelFactory):
             return models.Record.INCOME
         else:
             return None
-
-
-class SubRecordFactory(TagsMixin, DjangoModelFactory):
-    class Meta:
-        model = models.SubRecord
-
-    parent_record = SubFactory(RecordFactory, owner=SelfAttribute('..owner'))
-    owner = SubFactory(UserFactory)
-
-    delta = factories.FuzzyDecimal()
-    description = Faker('text')

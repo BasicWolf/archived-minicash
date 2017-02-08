@@ -1,5 +1,17 @@
-<tr data-spec="record-data-region">
-</tr>
-<tr class="hidden" data-spec="sub-record-row">
-  <td data-spec="sub-record-region" colspan="7"></td>
+<tr>
+  <td class="record-checkbox">
+    <input data-spec="select-record" type="checkbox" value="">
+    <br>
+  </td>
+
+  <td>{{dt_stamp}}</td>
+
+  <td class="delta">{{#decimal}}{{delta}}{{/decimal}}</td>
+  <td>{{#record_account asset_from asset_to}}{{/record_account}}</td>
+  <td>
+    {{#each tags}}
+      {{this}}{{#ifnot @last}},{{/ifnot}}
+    {{/each}}
+  </td>
+  <td>{{description}}</td>
 </tr>

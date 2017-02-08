@@ -15,33 +15,30 @@ class Record(models.Model):
         (TRANSFER, _('Transfer')),
     )
 
-    asset_from = models.ForeignKey('Asset',
-                                   null=True, blank=True,
-                                   related_name='from_asset_records',
-                                   on_delete=models.CASCADE)
-    asset_to = models.ForeignKey('Asset',
-                                 null=True, blank=True,
-                                 related_name='to_asset_records',
-                                 on_delete=models.CASCADE)
-    created_date = models.DateTimeField('Created')
+    asset_from = models.ForeignKey(
+        'Asset',
+        blank=True,
+        db_index=True,
+        null=True,
+        on_delete=models.CASCADE,
+        related_name='from_asset_records',
+    )
+
+    asset_to = models.ForeignKey(
+        'Asset',
+        blank=True,
+        db_index=True,
+        null=True,
+        on_delete=models.CASCADE,
+        related_name='to_asset_records',
+    )
+
+    dt_stamp = models.DateTimeField('Created', db_index=True)
     delta = models.DecimalField(max_digits=20, decimal_places=3)
     description = models.TextField(blank=True)
     extra = JSONField(default={})
     mode = models.PositiveIntegerField(choices=MODES)
     owner = models.ForeignKey(User, related_name='records')
-    tags = models.ManyToManyField('Tag', blank=True)
-
-
-class SubRecord(models.Model):
-    delta = models.DecimalField(max_digits=20, decimal_places=3)
-    description = models.TextField(blank=True)
-    owner = models.ForeignKey(User, related_name='sub_records')
-    parent_record = models.ForeignKey(
-        Record,
-        related_name='sub_records',
-        null=False,
-        blank=False,
-    )
     tags = models.ManyToManyField('Tag', blank=True)
 
 

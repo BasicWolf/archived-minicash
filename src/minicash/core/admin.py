@@ -1,14 +1,14 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import Asset, Tag, Record, SubRecord
+from .models import Asset, Tag, Record
 
 
 @admin.register(Record)
 class RecordAdmin(admin.ModelAdmin):
     list_display = (
         'owner',
-        'created_date',
+        'dt_stamp',
         'delta',
         # 'tags',
         'description',
@@ -19,6 +19,5 @@ class RecordAdmin(admin.ModelAdmin):
     )
 
 
-admin.site.register(SubRecord)
 admin.site.register(Asset)
 admin.site.register(Tag)

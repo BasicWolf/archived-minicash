@@ -2,17 +2,17 @@ import factory
 import random
 from decimal import Decimal
 
+from django.test import override_settings
 from rest_framework.reverse import reverse
 
-from minicash.core.models import Record, SubRecord, Tag
+from minicash.core.models import Record, Tag
 from minicash.core.serializers import (
     RecordSerializer,
-    SubRecordSerializer,
     TagSerializer,
 )
 from minicash.utils.testing import RESTTestCase
 
-from .factories import AssetFactory, RecordFactory, SubRecordFactory, TagFactory
+from .factories import AssetFactory, RecordFactory, TagFactory
 
 
 class RecordsAPITest(RESTTestCase):
@@ -27,7 +27,7 @@ class RecordsAPITest(RESTTestCase):
         RecordFactory.create_batch(10, owner=self.owner)
         res = self.jget(reverse('records-list'))
         self.assert_success(res)
-        self.assertEqual(10, len(res.data))
+        self.assertEqual(10, len(res.data[1]))
 
     def test_single_details(self):
         """Verify JSON representation of a single record"""
@@ -56,8 +56,8 @@ class RecordsAPITest(RESTTestCase):
 
         attributes = frozenset([
             'pk',
-            'asset_from', 'asset_to', 'created_date', 'delta',
-            'description', 'extra', 'mode', 'sub_records', 'tags',
+            'asset_from', 'asset_to', 'dt_stamp', 'delta',
+            'description', 'extra', 'mode', 'tags',
         ])
         res_attributes = frozenset(res.data.keys())
         self.assertEqual(attributes, res_attributes)
@@ -151,41 +151,6 @@ class AssetAPITest(RESTTestCase):
         self.assert_success(res)
         self.assertNotEqual(0, len(res.data))
         self.assertGreaterEqual(5, len(res.data))
-
-
-class SubRecordsAPITest(RESTTestCase):
-    def test_smoke(self):
-        pass
-
-    def test_list_smoke(self):
-        self.assert_success(self.jget(reverse('sub_records-list')))
-
-    def test_create(self):
-        rec = RecordFactory.create(owner=self.owner)
-        srec = SubRecordFactory.build(parent_record=rec, owner=self.owner, delta=rec.delta // 2)
-
-        serializer = SubRecordSerializer(srec)
-        data_in = serializer.data
-        res = self.jpost(reverse('sub_records-list'), data_in)
-        self.assert_created(res)
-        data_out = res.data
-
-        # pk's are not equal (None vs. PK from database)
-        data_in_pk, data_out_pk = data_in.pop('pk'), data_out.pop('pk')
-        self.assertNotEqual(data_in_pk, data_out_pk)
-
-        # the rest data is equal
-        self.assertEqual(data_in, data_out)
-
-        # ensure internal structure via ORM
-        srec_internal = SubRecord.objects.get(pk=data_out_pk)
-        self.assertIn(srec_internal, rec.sub_records.all())
-        self.assertEqual(1, rec.sub_records.count())
-
-        ser_internal = SubRecordSerializer(srec_internal)
-        data_internal = ser_internal.data
-        data_internal.pop('pk')
-        self.assertEqual(data_out, data_internal)
 
 
 class TagsAPITest(RESTTestCase):

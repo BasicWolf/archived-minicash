@@ -1,7 +1,5 @@
-from minicash.core.models import SubRecord
 from minicash.utils.testing import ModelTestCase
-from .factories import (AssetFactory, RecordFactory, SubRecordFactory,
-                        TagFactory)
+from .factories import (AssetFactory, RecordFactory, TagFactory)
 
 
 class AssetFactoryTest(ModelTestCase):
@@ -34,13 +32,3 @@ class RecordFactoryTest(ModelTestCase):
 
         record = RecordFactory(asset_to=None, asset_from=asset_from)
         self.assertEqual(record.EXPENSE, record.mode)
-
-
-class SubRecordFactoryTest(ModelTestCase):
-    def test_smoke(self):
-        SubRecordFactory()
-
-    def test_create(self):
-        pr = RecordFactory.create()
-        sr = SubRecord(delta=10, parent_record=pr, owner=self.owner)
-        sr.save()

@@ -9,34 +9,7 @@ from minicash.utils.serializers import (
     CreatableUserSlugRelatedField,
 )
 from minicash.auth.serializers import UserDateTimeField
-from .models import Record, Tag, Asset, SubRecord
-
-
-class SubRecordSerializer(ModelSerializer):
-    class Meta:
-        model = SubRecord
-        fields = ['pk', 'owner', 'parent_record',
-                  'delta', 'description', 'tags']
-
-    owner = serializers.PrimaryKeyRelatedField(
-        queryset=User.objects,
-        write_only=True,
-        default=serializers.CurrentUserDefault(),
-    )
-
-    parent_record = UserPrimaryKeyRelatedField(
-        user_field_name='owner',
-        queryset=Record.objects,
-        read_only=False,
-    )
-
-    tags = CreatableUserSlugRelatedField(
-        user_field_name='owner',
-        slug_field='name',
-        queryset=Tag.objects,
-        many=True,
-        allow_null=True,
-    )
+from .models import Record, Tag, Asset
 
 
 class RecordSerializer(ModelSerializer):
@@ -44,8 +17,8 @@ class RecordSerializer(ModelSerializer):
         model = Record
         fields = [
             'pk', 'owner',
-            'asset_from', 'asset_to', 'created_date', 'delta',
-            'description', 'extra', 'mode', 'sub_records', 'tags',
+            'asset_from', 'asset_to', 'dt_stamp', 'delta',
+            'description', 'extra', 'mode', 'tags',
         ]
 
     VALID_MODES_MAPPING = {
@@ -72,14 +45,9 @@ class RecordSerializer(ModelSerializer):
         allow_null=True,
     )
 
-    created_date = UserDateTimeField(
+    dt_stamp = UserDateTimeField(
         user_field_name='owner',
         read_only=False,
-    )
-
-    sub_records = SubRecordSerializer(
-        many=True,
-        read_only=True,
     )
 
     tags = CreatableUserSlugRelatedField(

@@ -6,5 +6,4 @@ class AuthConfig(AppConfig):
     label = 'minicash_auth'
 
     def ready(self):
-        # from . import signals
-        pass
+        from . import signals  # noqa

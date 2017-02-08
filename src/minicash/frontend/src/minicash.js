@@ -1,4 +1,6 @@
-import App from 'coffee/app';
+'use strict';
+
+import App from 'minicash/app';
 import './styles/login.scss_';
 import './styles/minicash.scss';
 

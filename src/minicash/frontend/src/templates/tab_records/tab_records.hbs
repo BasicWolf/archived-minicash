@@ -2,7 +2,24 @@
 
   <div class="panel-buttons" style="position:relative">
     <div data-spec="export-loading" class="loading loading-center"></div>
-    <button data-spec="new-record" type="button" class="btn btn-default">New record</button>
+
+    <button data-spec="new-record" type="button" class="btn btn-default">
+      <span aria-label="Edit" class="glyphicon glyphicon-plus"></span>
+    </button>
+
+    <div class="btn-group" role="group" aria-label="...">
+      <button data-spec="edit-record" type="button" class="btn btn-default" disabled>
+        <span aria-label="Edit" class="glyphicon glyphicon-pencil"></span>
+      </button>
+      <button data-spec="delete-record" type="button" class="btn btn-danger" disabled>
+        <span aria-label="Delete" class="glyphicon glyphicon-trash"></span>
+      </button>
+    </div>
+
+    <div data-spec="paginator-region" class="pull-right">
+
+    </div>
+
   </div> <!-- panel-buttons -->
 
   <div class="panel panel-default"><div class="panel-body">

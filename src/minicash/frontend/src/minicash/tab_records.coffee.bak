@@ -4,9 +4,10 @@ import Hb from 'handlebars/runtime'
 import Decimal from 'decimal.js'
 import Mn from 'backbone.marionette'
 
-import * as models from './models'
-import * as utils from './utils'
-import {TabPanelView, TabModel} from './tabbar'
+import * as models from 'models'
+import * as utils from 'utils'
+import {PaginatorView} from 'components/paginator'
+import {TabPanelView, TabModel} from 'tabbar'
 
 
 export RecordsTab = TabModel.extend
@@ -306,7 +307,6 @@ RecordsTableView = Mn.CollectionView.extend
         @$el.prepend($tableHead)
 
 
-
 RecordsTabPanelView = TabPanelView.extend
     template: require('templates/tab_records/tab_records.hbs')
 
@@ -315,12 +315,14 @@ RecordsTabPanelView = TabPanelView.extend
 
     regions:
         recordsTableRegion: {el: '[data-spec="records-table-region"]'}
+        paginatorRegion: {el: '[data-spec="paginator-region"]'}
 
     events:
         'click @ui.newRecordBtn': 'startNewRecord'
 
     onRender: ->
         @showChildView('recordsTableRegion', new RecordsTableView(collection: minicash.collections.records))
+        @showChildView('paginatorRegion', new PaginatorView(collection: minicash.collections.records))
 
     startNewRecord: ->
         minicash.tabbarManager.openTab('newRecord', source: @model)
@@ -330,6 +332,9 @@ RecordsTabPanelView = TabPanelView.extend
             source: @model
         }, options)
         minicash.tabbarManager.openTab('newRecord', options)
+
+    onChildviewPageChange: (pageNumber) ->
+        minicash.collections.records.getPage(pageNumber)
 
 
 # ------ Handlebar helpers ------ #

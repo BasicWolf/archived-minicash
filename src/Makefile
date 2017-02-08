@@ -1,6 +1,7 @@
 MANAGEPY_CMD = python manage.py
 MANAGEPY_LOCAL_SETTINGS = minicash.app.settings.local
 MANAGEPY_DEV_SETTINGS = minicash.app.settings.dev
+MANAGEPY_TEST_SETTINGS = $(MANAGEPY_DEV_SETTINGS)
 
 TESTS = minicash.utils minicash.core minicash.auth minicash.frontend
 
@@ -11,7 +12,7 @@ all:
 	@echo 'frontend'
 	@echo 'shell'
 	@echo 'test'
-	@echo 'check'
+	@echo 'static-checks'
 
 
 devserver:
@@ -33,15 +34,14 @@ shell:
 test:
 	$(MANAGEPY_CMD) test -v 2 $(TESTS) --settings $(MANAGEPY_DEV_SETTINGS) --noinput
 
-
 test-behave:
 	$(MANAGEPY_CMD) behave --settings $(MANAGEPY_DEV_SETTINGS)
 
 
-check: pycheck
+static-checks: pychecks
 
 
-pycheck: flake8 pylint
+pychecks: flake8 pylint
 
 
 checklicense:
