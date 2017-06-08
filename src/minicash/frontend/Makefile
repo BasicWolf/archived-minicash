@@ -4,7 +4,10 @@ STATIC_LIB_DIR = ./static/lib/
 all: lib build
 
 build:
-	$(MODULESDIR)/webpack --watch
+	$(MODULESDIR)/webpack --watch --config webpack.config.js
+
+build-release:
+	$(MODULESDIR)/webpack --config webpack.config.release.js
 
 lib: ${STATIC_LIB_DIR}
 	ln -sr -f ./node_modules/backbone/backbone.js ${STATIC_LIB_DIR}
