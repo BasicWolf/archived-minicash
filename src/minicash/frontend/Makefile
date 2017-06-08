@@ -1,15 +1,15 @@
 MODULESDIR = ./node_modules/.bin
 STATIC_LIB_DIR = ./static/lib/
 
-all: lib build
+all: build
 
-build:
+build: create-lib-symlinks
 	$(MODULESDIR)/webpack --watch --config webpack.config.js
 
-build-release:
+build-release: create-lib-symlinks
 	$(MODULESDIR)/webpack --config webpack.config.release.js
 
-lib: ${STATIC_LIB_DIR}
+create-lib-symlinks: ${STATIC_LIB_DIR}
 	ln -sr -f ./node_modules/backbone/backbone.js ${STATIC_LIB_DIR}
 	ln -sr -f ./node_modules/backbone.marionette/lib/backbone.marionette.js ${STATIC_LIB_DIR}
 	ln -sr -f ./node_modules/backbone.radio/build/backbone.radio.js ${STATIC_LIB_DIR}

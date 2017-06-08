@@ -1,5 +1,4 @@
 MANAGEPY_CMD = python manage.py
-MANAGEPY_LOCAL_SETTINGS = minicash.app.settings.local
 MANAGEPY_DEV_SETTINGS = minicash.app.settings.dev
 MANAGEPY_TEST_SETTINGS = $(MANAGEPY_DEV_SETTINGS)
 
@@ -8,7 +7,7 @@ TESTS = minicash.utils minicash.core minicash.auth minicash.frontend
 all:
 	@echo 'Available actions:'
 	@echo 'devserver'
-	@echo 'localserver'
+	@echo 'release'
 	@echo 'frontend'
 	@echo 'shell'
 	@echo 'test'
@@ -19,13 +18,8 @@ devserver:
 	$(MANAGEPY_CMD) runserver_plus 127.0.0.1:5001 --settings $(MANAGEPY_DEV_SETTINGS)
 
 
-localserver:
-	$(MANAGEPY_CMD) runserver 127.0.0.1:5001 --settings $(MANAGEPY_LOCAL_SETTINGS)
-
-
 frontend:
 	$(MAKE) -C ./minicash/frontend
-
 
 shell:
 	$(MANAGEPY_CMD) shell_plus
@@ -58,6 +52,17 @@ pylint:
 
 pylizard:
 	lizard . -l python
+
+
+# === Build and release === #
+# ========================= #
+build-release: django-collectstatic
+
+django-collectstatic: build-release-frontend
+	$(MANAGEPY_CMD) collectstatic
+
+build-release-frontend:
+	$(MAKE) -C ./minicash/frontend build-release
 
 
 .PHONY: clean

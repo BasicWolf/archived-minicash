@@ -2,6 +2,10 @@ django==1.11.*
 djangorestframework==3.6.*
 django-jsonfield
 django-settings-export
-psycopg2
+
+# Whitenoise bundle
+brotlipy==0.7.*
+whitenoise==3.3.*
+
 
 git+https://github.com/BasicWolf/django-js-utils.git

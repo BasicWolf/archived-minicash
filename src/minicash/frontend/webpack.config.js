@@ -36,17 +36,10 @@ module.exports = {
             { test: /\.hbs$/, loader: "handlebars-loader"},
 
             /* CSS and SCSS */
+            { test: /\.css$/, loaders: ["style-loader", "css-loader"] },
             {
-                test: /login.scss_$/,
-                use: extractLoginCSS.extract({
-                    use: ['css-loader', 'sass-loader'],
-                    fallback: ['style-loader']
-                })
-            },
-
-            {test: /\.css$/, loaders: ["style-loader", "css-loader"]},
-            {
-                test: /\.scss$/, loader: extractSASS.extract({
+                test: /\.scss$/,
+                loader: extractSASS.extract({
                     use: ['css-loader', 'sass-loader'],
                 })
             },

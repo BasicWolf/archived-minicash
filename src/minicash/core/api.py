@@ -11,7 +11,7 @@ from .serializers import (
 
 
 class RecordsPagination(pagination.PageNumberPagination):
-    # page_size = settings.MINICASH_DEFAULT_PAGINATOR_PAGE_SIZE
+    page_size = settings.MINICASH_DEFAULT_PAGINATOR_PAGE_SIZE
     page_size_query_param = 'page_size'
 
     def get_paginated_response(self, data):

@@ -4,15 +4,20 @@ from .base import *
 DEBUG = True
 
 
+MINICASH_DB_DIR = os.environ['MINICASH_DB_DIR']
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': os.path.join(MINICASH_DB_DIR, 'db.sqlite3'),
     }
 }
 
 
 INSTALLED_APPS += [
+    'whitenoise.runserver_nostatic',
+    'django.contrib.staticfiles',
+
     'behave_django',
     'django_extensions',
     'django_pdb',
@@ -49,4 +54,4 @@ LOGGING = {
 }
 
 
-SECRET_KEY = '4p@7r0o9ovpzzxli(_!x_-xy)$ug3f4wnjntauz@(de8z2!$)o'
+SECRET_KEY = os.environ['MINICASH_SECRET_KEY']

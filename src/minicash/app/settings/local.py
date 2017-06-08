@@ -21,7 +21,3 @@ DATABASES = {
 }
 
 
-DEBUG = True
-
-
-SECRET_KEY = os.environ['MINICASH_SECRET_KEY']

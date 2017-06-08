@@ -1,7 +1,7 @@
 'use strict';
 
 import App from 'minicash/app';
-import './styles/login.scss_';
+import './styles/login.scss';
 import './styles/minicash.scss';
 
 document.addEventListener('DOMContentLoaded', () => {
