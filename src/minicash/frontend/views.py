@@ -19,4 +19,4 @@ def index(request):
     logger.debug('JSON context: %s', minicash_json_context)
 
     context = {'minicash_context': minicash_json_context}
-    return render(request, 'frontend/index.html', context)
+    return render(request, 'frontend/index.djhtml', context)

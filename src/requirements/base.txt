@@ -1,7 +1,8 @@
 django==1.11.*
 djangorestframework==3.6.*
-django-jsonfield
+django-jsonfield==1.0.*
 django-settings-export
+dj-database-url==0.4.*
 
 # Whitenoise bundle
 brotlipy==0.7.*

@@ -4,10 +4,13 @@ MANAGEPY_TEST_SETTINGS = $(MANAGEPY_DEV_SETTINGS)
 
 TESTS = minicash.utils minicash.core minicash.auth minicash.frontend
 
+FRONTEND_DIR = ./minicash/frontend
+
+
 all:
 	@echo 'Available actions:'
 	@echo 'devserver'
-	@echo 'release'
+	@echo 'localserver'
 	@echo 'frontend'
 	@echo 'shell'
 	@echo 'test'
@@ -17,9 +20,11 @@ all:
 devserver:
 	$(MANAGEPY_CMD) runserver_plus 127.0.0.1:5001 --settings $(MANAGEPY_DEV_SETTINGS)
 
+localserver:
+	heroku local web
 
 frontend:
-	$(MAKE) -C ./minicash/frontend
+	$(MAKE) -C $(FRONTEND_DIR)
 
 shell:
 	$(MANAGEPY_CMD) shell_plus
@@ -58,11 +63,10 @@ pylizard:
 # ========================= #
 build-release: django-collectstatic
 
-django-collectstatic: build-release-frontend
-	$(MANAGEPY_CMD) collectstatic
+django-collectstatic: $(FRONTEND_DIR)/static/minicash.min.js
+	$(MANAGEPY_CMD) collectstatic --no-input
 
-build-release-frontend:
-	$(MAKE) -C ./minicash/frontend build-release
-
+$(FRONTEND_DIR)/static/minicash.min.js:
+	$(MAKE) -C $(FRONTEND_DIR) build-release
 
 .PHONY: clean

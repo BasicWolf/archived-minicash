@@ -1,15 +1,16 @@
 MODULESDIR = ./node_modules/.bin
+STATIC_DIR = ./static/
 STATIC_LIB_DIR = ./static/lib/
 
 all: build
 
-build: create-lib-symlinks
+build: create-build-symlinks
 	$(MODULESDIR)/webpack --watch --config webpack.config.js
 
-build-release: create-lib-symlinks
+build-release: create-build-symlinks
 	$(MODULESDIR)/webpack --config webpack.config.release.js
 
-create-lib-symlinks: ${STATIC_LIB_DIR}
+create-build-symlinks: ${STATIC_LIB_DIR}
 	ln -sr -f ./node_modules/backbone/backbone.js ${STATIC_LIB_DIR}
 	ln -sr -f ./node_modules/backbone.marionette/lib/backbone.marionette.js ${STATIC_LIB_DIR}
 	ln -sr -f ./node_modules/backbone.radio/build/backbone.radio.js ${STATIC_LIB_DIR}
@@ -19,6 +20,7 @@ create-lib-symlinks: ${STATIC_LIB_DIR}
 	ln -sr -f ./node_modules/bootstrap/dist/js/bootstrap.js ${STATIC_LIB_DIR}
 	ln -sr -f ./node_modules/bootstrap-notify/bootstrap-notify.js ${STATIC_LIB_DIR}
 	ln -sr -f ./node_modules/bootstrap/dist/css/bootstrap.min.css ${STATIC_LIB_DIR}
+	ln -sr -f ./node_modules/bootstrap/dist/fonts ${STATIC_DIR}
 	ln -sr -f ./node_modules/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js ${STATIC_LIB_DIR}
 	ln -sr -f ./node_modules/moment/min/moment-with-locales.js ${STATIC_LIB_DIR}
 	ln -sr -f ./node_modules/jquery-validation/dist/jquery.validate.js ${STATIC_LIB_DIR}
@@ -28,8 +30,7 @@ ${STATIC_LIB_DIR}:
 
 
 clean:
-	@rm -rf build
-	@rm -rf ${STATIC_LIB_DIR}
+	@rm -rf ${STATIC_DIR}
 
 
 .PHONY: build clean lib

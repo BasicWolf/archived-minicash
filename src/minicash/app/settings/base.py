@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 import os
 
+import dj_database_url
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
@@ -32,6 +34,11 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+
+DATABASES = {
+    'default': dj_database_url.config(),
+}
 
 DEBUG = False
 
@@ -75,9 +82,17 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'minicash.app.urls'
 
+
+SECRET_KEY = os.environ['MINICASH_SECRET_KEY']
+
+
 STATIC_ROOT = os.environ['MINICASH_STATIC_ROOT']
 STATIC_URL = '/static/'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Simplified static file serving.
+# https://warehouse.python.org/project/whitenoise/
+STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+
 
 TEMPLATES = [
     {

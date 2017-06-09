@@ -13,7 +13,7 @@ const nodeDir = __dirname + '/node_modules';
 
 module.exports = {
     entry: {
-        app: ['./src/minicash']
+        app: './src/minicash.js',
     },
 
     module: {
@@ -45,10 +45,10 @@ module.exports = {
             },
 
             /* Binary and related */
-            { test: /\.eot(\?v=\d+\.\d+\.\d+)?$/, loader: "file-loader" },
-            { test: /\.(woff|woff2)$/, loader: "url-loader?prefix=font/&limit=4096" },
-            { test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/, loader: "url-loader?limit=8096&mimetype=application/octet-stream" },
-            { test: /\.svg(\?v=\d+\.\d+\.\d+)?$/, loader: "url-loader?limit=8096&mimetype=image/svg+xml" }
+            { test: /\.eot(\?v=\d+\.\d+\.\d+)?$/, loader: "file-loader?name=[name].[ext]" },
+            { test: /\.(woff|woff2)$/, loader: "url-loader?name=[name].[ext]&prefix=font/&limit=4096" },
+            { test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/, loader: "url-loader?name=[name].[ext]&limit=8096&mimetype=application/octet-stream" },
+            { test: /\.svg(\?v=\d+\.\d+\.\d+)?$/, loader: "url-loader?name=[name].[ext]&limit=8096&mimetype=image/svg+xml" }
         ]
     },
 

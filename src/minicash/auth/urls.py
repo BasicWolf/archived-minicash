@@ -7,7 +7,7 @@ urlpatterns = [
     url(
         r'^login/$',
         auth_views.login,
-        {'template_name': 'frontend/login.html'},
+        {'template_name': 'frontend/login.djhtml'},
         name='login',
     ),
 

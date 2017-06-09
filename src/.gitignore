@@ -1,6 +1,6 @@
+.env
 pylint.out
 ghostdriver.log
-*.sqlite3
 
 # --------- Python ---------- #
 # Byte-compiled / optimized / DLL files

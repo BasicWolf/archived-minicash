@@ -7,6 +7,7 @@ django-extensions
 django-pdb
 factory_boy
 flake8
+gunicorn
 ipython
 lizard
 pudb
