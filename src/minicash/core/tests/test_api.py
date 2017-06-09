@@ -27,7 +27,8 @@ class RecordsAPITest(RESTTestCase):
         RecordFactory.create_batch(10, owner=self.owner)
         res = self.jget(reverse('records-list'))
         self.assert_success(res)
-        self.assertEqual(10, len(res.data))
+        pagination_details, records_data = res.data
+        self.assertEqual(10, records_data)
 
     def test_single_details(self):
         """Verify JSON representation of a single record"""
