@@ -1,0 +1,1 @@
+minicash/frontend/webpack.config.js
