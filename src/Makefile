@@ -67,4 +67,7 @@ django-collectstatic:
 	$(MAKE) -C $(FRONTEND_DIR) build-release
 	$(MANAGEPY_CMD) collectstatic --no-input
 
+clean:
+	rm -rf ./node_modules
+
 .PHONY: clean

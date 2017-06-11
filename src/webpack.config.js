@@ -1,15 +1,20 @@
 'use strict';
 
+/* global module,require,__dirname */
+
 const webpack = require('webpack');
 const path = require('path');
 const fs = require('fs');
+const process = require('process');
 
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const extractSASS = new ExtractTextPlugin('minicash.css');
 const extractLoginCSS = new ExtractTextPlugin('login.css');
+const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
-const srcDir = __dirname + '/minicash/frontend/src';
-const staticDir = path.join(srcDir, '/static');
+const srcDir = path.resolve(__dirname, 'minicash/frontend/src');
+const staticDir = path.resolve(srcDir, '../static');
 
 
 const nodeModulesDir = path.join(
@@ -22,7 +27,7 @@ if (!fs.existsSync(nodeModulesDir)) {
 }
 
 
-module.exports = {
+let config = {
     entry: {
         minicash: path.join(srcDir, 'minicash.js'),
         login: path.join(srcDir, 'login.js'),
@@ -72,7 +77,7 @@ module.exports = {
 
     output: {
         filename: '[name].js',
-        path: path.join(staticDir, './static/'),
+        path: staticDir,
         publicPath: '/static/'
     },
 
@@ -115,3 +120,22 @@ module.exports = {
         }
     },
 };
+
+if (process.env.NODE_ENV == 'production') {
+    config.plugins.push(new UglifyJSPlugin({
+        compress: true,
+        mangle: {
+            except: ['$', '_', 'Backbone', 'exports', 'jQuery', 'minicash', 'moment', 'Mn', 'tr', 'require']
+        }
+    }));
+
+    config.plugins.push(new OptimizeCssAssetsPlugin({
+        assetNameRegExp: /\.css$/g,
+        cssProcessor: require('cssnano'),
+        cssProcessorOptions: { discardComments: {removeAll: true } },
+        canPrint: true
+    }));
+
+}
+
+module.exports = config;
