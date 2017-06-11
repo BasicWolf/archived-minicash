@@ -2,9 +2,14 @@ MANAGEPY_CMD = python manage.py
 MANAGEPY_DEV_SETTINGS = minicash.app.settings.dev
 MANAGEPY_TEST_SETTINGS = $(MANAGEPY_DEV_SETTINGS)
 
+NODE_MODULES_DIR = ./node_modules
+FRONTEND_DIR = ./minicash/frontend
+FRONTEND_STATIC_DIR = $(FRONTEND_DIR)/static
+FRONTEND_STATIC_LIB_DIR = $(FRONTEND_STATIC_DIR)/lib
+
+
 TESTS = minicash.utils minicash.core minicash.auth minicash.frontend
 
-FRONTEND_DIR = ./minicash/frontend
 
 
 all:
@@ -22,9 +27,6 @@ devserver:
 
 localserver:
 	heroku local web
-
-frontend:
-	$(MAKE) -C $(FRONTEND_DIR)
 
 shell:
 	$(MANAGEPY_CMD) shell_plus
@@ -61,6 +63,30 @@ pylizard:
 
 # === Build and release === #
 # ========================= #
+frontend: $(NODE_MODULES_DIR) frontend-create-dev-symlinks
+	$(NODE_MODULES_DIR)/.bin/webpack --watch
+
+$(NODE_MODULES_DIR):
+	npm install .
+
+frontend-create-dev-symlinks: ${FRONTEND_STATIC_LIB_DIR}
+	ln -sr -f ./node_modules/backbone/backbone.js ${FRONTEND_STATIC_LIB_DIR}
+	ln -sr -f ./node_modules/backbone.marionette/lib/backbone.marionette.js ${FRONTEND_STATIC_LIB_DIR}
+	ln -sr -f ./node_modules/backbone.radio/build/backbone.radio.js ${FRONTEND_STATIC_LIB_DIR}
+	ln -sr -f ./node_modules/backbone.radio/build/backbone.radio.js.map ${FRONTEND_STATIC_LIB_DIR}
+	ln -sr -f ./node_modules/underscore/underscore.js ${FRONTEND_STATIC_LIB_DIR}
+	ln -sr -f ./node_modules/jquery/dist/jquery.js ${FRONTEND_STATIC_LIB_DIR}
+	ln -sr -f ./node_modules/bootstrap/dist/js/bootstrap.js ${FRONTEND_STATIC_LIB_DIR}
+	ln -sr -f ./node_modules/bootstrap-notify/bootstrap-notify.js ${FRONTEND_STATIC_LIB_DIR}
+	ln -sr -f ./node_modules/bootstrap/dist/css/bootstrap.min.css ${FRONTEND_STATIC_LIB_DIR}
+	ln -sr -f ./node_modules/bootstrap/dist/fonts ${FRONTEND_STATIC_DIR}
+	ln -sr -f ./node_modules/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js ${FRONTEND_STATIC_LIB_DIR}
+	ln -sr -f ./node_modules/moment/min/moment-with-locales.js ${FRONTEND_STATIC_LIB_DIR}
+	ln -sr -f ./node_modules/jquery-validation/dist/jquery.validate.js ${FRONTEND_STATIC_LIB_DIR}
+
+${FRONTEND_STATIC_LIB_DIR}:
+	mkdir -p ${FRONTEND_STATIC_LIB_DIR}
+
 build-release: django-collectstatic
 
 django-collectstatic:
@@ -68,6 +94,6 @@ django-collectstatic:
 	$(MANAGEPY_CMD) collectstatic --no-input
 
 clean:
-	rm -rf ./node_modules
+	rm -rf $(NODE_MODULES_DIR) ${FRONTEND_STATIC_DIR}
 
 .PHONY: clean
