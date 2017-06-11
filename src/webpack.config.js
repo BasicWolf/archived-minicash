@@ -8,19 +8,16 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const extractSASS = new ExtractTextPlugin('minicash.css');
 const extractLoginCSS = new ExtractTextPlugin('login.css');
 
-const srcDir = __dirname + '/src';
-const _localNodeModulesDir = path.join(srcDir, '/node_modules');
-const _relativeNodeModulesDir = path.join(
+const srcDir = __dirname + '/minicash/frontend/src';
+const staticDir = path.join(srcDir, '/static');
+
+
+const nodeModulesDir = path.join(
     require.resolve('webpack').split('node_modules')[0],
     'node_modules'
 );
 
-let nodeModulesDir = '';
-if (fs.existsSync(_localNodeModulesDir)) {
-    nodeModulesDir = _localNodeModulesDir;
-} else if (fs.existsSync(_relativeNodeModulesDir)) {
-    nodeModulesDir = _relativeNodeModulesDir;
-} else {
+if (!fs.existsSync(nodeModulesDir)) {
     throw 'Cannot find node_modules directory';
 }
 
@@ -75,7 +72,7 @@ module.exports = {
 
     output: {
         filename: '[name].js',
-        path: path.join(__dirname, './static/'),
+        path: path.join(staticDir, './static/'),
         publicPath: '/static/'
     },
 

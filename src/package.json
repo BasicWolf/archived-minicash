@@ -4,7 +4,8 @@
     "author": "Zaur Nasibov and respected contributors",
 
     "scripts": {
-        "postinstall": "node_modules/.bin/webpack --config webpack.config.release.js"
+        "postinstall": "node_modules/.bin/webpack --config webpack.config.release.js",
+        "webpack": "node_modules/webpack/bin/webpack.js --progress --colors"
     },
 
     "devDependencies": {
