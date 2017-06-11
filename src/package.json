@@ -4,7 +4,7 @@
     "author": "Zaur Nasibov and respected contributors",
 
     "scripts": {
-        "postinstall": "NODE_ENV=production node_modules/.bin/webpack --progress --profile --colors --display-error-details --debug"
+        "postinstall": "NODE_ENV=production node_modules/.bin/webpack --progress --profile --colors --display-error-details"
     },
 
     "devDependencies": {
