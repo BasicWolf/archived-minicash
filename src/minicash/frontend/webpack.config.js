@@ -10,8 +10,10 @@ const extractLoginCSS = new ExtractTextPlugin('login.css');
 
 const srcDir = __dirname + '/src';
 const _localNodeModulesDir = path.join(srcDir, '/node_modules');
-const _relativeNodeModulesDir = path.join(__dirname, '../../node_modules');
-
+const _relativeNodeModulesDir = path.join(
+    require.resolve('webpack').split('node_modules')[0],
+    'node_modules'
+);
 
 let nodeModulesDir = '';
 if (fs.existsSync(_localNodeModulesDir)) {
