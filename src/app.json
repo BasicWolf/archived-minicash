@@ -8,7 +8,10 @@
     "env": {
         "MINICASH_SECRET_KEY": {
             "description": "A secret key for Django",
-            "generator": "secret",
+            "generator": "secret"
+        },
+        "DISABLE_COLLECTSTATIC": {
+            "value": 1
         }
     },
 
