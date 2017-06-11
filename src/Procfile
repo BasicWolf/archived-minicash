@@ -1,1 +1,1 @@
-web: cd minicash/frontend; npm install; make build-release; cd ../../; ./manage.py collectstatic --noinput; gunicorn minicash.app.wsgi --log-file -
+web: cd minicash/frontend; npm install; make build-release; cd ../../; python manage.py collectstatic --noinput; gunicorn minicash.app.wsgi --log-file -
