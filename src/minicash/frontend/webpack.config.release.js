@@ -15,11 +15,6 @@ const nodeDir = __dirname + '/node_modules';
 
 const baseConfig = require('./webpack.config.js');
 
-baseConfig.output = {
-    filename: 'minicash.min.js',
-    path: path.join(__dirname, './static/'),
-    publicPath: '/static/'
-},
 
 baseConfig.plugins.push(new UglifyJSPlugin({
     compress: true,

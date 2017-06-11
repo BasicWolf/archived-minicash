@@ -13,6 +13,12 @@ import os
 
 import dj_database_url
 
+
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+APP_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
+BASE_DIR = os.path.abspath(os.path.join(APP_ROOT, '../../'))
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
@@ -90,13 +96,8 @@ SETTINGS_EXPORT = [
     'DEBUG',
 ]
 
-STATIC_ROOT = os.environ['MINICASH_STATIC_ROOT']
+STATIC_ROOT = os.path.join(APP_ROOT, 'staticfiles')
 STATIC_URL = '/static/'
-
-# Simplified static file serving.
-# https://warehouse.python.org/project/whitenoise/
-STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
-
 
 TEMPLATES = [
     {

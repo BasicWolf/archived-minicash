@@ -9,18 +9,16 @@
   {% include "frontend/context.inc.djhtml" %}
 
   {% if settings.DEBUG %}
-    <script defer src="{% static '/lib/jquery.js' %}"></script>
-    <script defer src="{% static '/lib/underscore.js' %}"></script>
-    <script defer src="{% static '/lib/backbone.js' %}"></script>
-    <script defer src="{% static '/lib/backbone.radio.js' %}"></script>
-    <script defer src="{% static '/lib/backbone.marionette.js' %}"></script>
-    <script defer src="{% static '/lib/moment-with-locales.js' %}"></script>
-    <script defer src="{% static '/lib/bootstrap.js' %}"></script>
-    <script defer src="{% static '/lib/bootstrap-datetimepicker.min.js' %}"></script>
-    <script defer src="{% static '/lib/bootstrap-notify.js' %}"></script>
-    <script defer src="{% static '/lib/jquery.validate.js' %}"></script>
-
-    <script defer src="{% static '/minicash.js' %}"></script>
+    <script defer src="{% static 'lib/jquery.js' %}"></script>
+    <script defer src="{% static 'lib/underscore.js' %}"></script>
+    <script defer src="{% static 'lib/backbone.js' %}"></script>
+    <script defer src="{% static 'lib/backbone.radio.js' %}"></script>
+    <script defer src="{% static 'lib/backbone.marionette.js' %}"></script>
+    <script defer src="{% static 'lib/moment-with-locales.js' %}"></script>
+    <script defer src="{% static 'lib/bootstrap.js' %}"></script>
+    <script defer src="{% static 'lib/bootstrap-datetimepicker.min.js' %}"></script>
+    <script defer src="{% static 'lib/bootstrap-notify.js' %}"></script>
+    <script defer src="{% static 'lib/jquery.validate.js' %}"></script>
   {% else %}
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"
             integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
@@ -35,11 +33,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-notify/0.2.0/js/bootstrap-notify.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.16.0/jquery.validate.min.js"></script>
 
-    <script defer src="{% static '/minicash.min.js' %}"></script>
   {% endif %}
 
   <script type="text/javascript" src="{% static 'django_js_utils.js' %}"></script>
   <script type="text/javascript" src="{% url 'jsurls' %}"></script>
+  <script defer src="{% static 'minicash.js' %}"></script>
 {% endblock %}
 
 {% block css %}

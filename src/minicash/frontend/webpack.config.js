@@ -1,20 +1,32 @@
 'use strict';
 
 const webpack = require('webpack');
-let ExtractTextPlugin = require('extract-text-webpack-plugin');
 const path = require('path');
+const fs = require('fs');
 
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const extractSASS = new ExtractTextPlugin('minicash.css');
 const extractLoginCSS = new ExtractTextPlugin('login.css');
 
-const nodeDir = __dirname + '/node_modules';
+const srcDir = __dirname + '/src';
+const _localNodeModulesDir = path.join(srcDir, '/node_modules');
+const _relativeNodeModulesDir = path.join(__dirname, '../../node_modules');
 
+
+let nodeModulesDir = '';
+if (fs.existsSync(_localNodeModulesDir)) {
+    nodeModulesDir = _localNodeModulesDir;
+} else if (fs.existsSync(_relativeNodeModulesDir)) {
+    nodeModulesDir = _relativeNodeModulesDir;
+} else {
+    throw 'Cannot find node_modules directory';
+}
 
 
 module.exports = {
     entry: {
-        minicash: './src/minicash.js',
-        login: './src/login.js',
+        minicash: path.join(srcDir, 'minicash.js'),
+        login: path.join(srcDir, 'login.js'),
     },
 
     module: {
@@ -86,15 +98,15 @@ module.exports = {
 
     resolve: {
         modules: [
-            path.join(__dirname, './src'),
-            path.join(__dirname, './src/minicash'),
+            srcDir,
+            path.join(srcDir, 'minicash'),
             'node_modules',
         ],
         extensions: ['.js'],
         alias: {
-            node_modules: path.join(__dirname, './node_modules'),
-            templates: path.join(__dirname, './src/templates'),
-            img: path.join(__dirname, './src/img'),
+            node_modules: nodeModulesDir,
+            templates: path.join(srcDir, 'templates'),
+            img:path.join(srcDir, 'img'),
 
             // import 'lib_name' aliases
             cocktail: 'backbone.cocktail/Cocktail.js',

@@ -5,17 +5,16 @@
 
 from .base import *
 
-DEBUG = True
+DEBUG = False
 
 
 # Allow all host headers
 ALLOWED_HOSTS = ['*']
 
 
-INSTALLED_APPS += [
-    'whitenoise.runserver_nostatic',
-    'django.contrib.staticfiles',
-]
+# Simplified static file serving.
+# https://warehouse.python.org/project/whitenoise/
+STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
 
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()

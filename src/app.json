@@ -6,9 +6,6 @@
     "keywords": ["expense tracker", "python", "django"],
 
     "env": {
-        "MINICASH_STATIC_ROOT" {
-            "value": "/app/static"
-        },
         "MINICASH_SECRET_KEY": {
             "description": "A secret key for Django",
             "generator": "secret"

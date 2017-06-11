@@ -5,7 +5,6 @@ DEBUG = True
 
 
 INSTALLED_APPS += [
-    'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
 
     'behave_django',
@@ -42,4 +41,3 @@ LOGGING = {
         },
     },
 }
-
