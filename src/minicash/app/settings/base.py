@@ -37,7 +37,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 DATABASES = {
-    'default': dj_database_url.config(),
+    'default': dj_database_url.config('MINICASH_DB_URL'),
 }
 
 DEBUG = False
@@ -86,6 +86,10 @@ ROOT_URLCONF = 'minicash.app.urls'
 SECRET_KEY = os.environ['MINICASH_SECRET_KEY']
 
 
+SETTINGS_EXPORT = [
+    'DEBUG',
+]
+
 STATIC_ROOT = os.environ['MINICASH_STATIC_ROOT']
 STATIC_URL = '/static/'
 
@@ -105,6 +109,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django_settings_export.settings_export',
             ],
         },
     },

@@ -13,7 +13,8 @@ const nodeDir = __dirname + '/node_modules';
 
 module.exports = {
     entry: {
-        app: './src/minicash.js',
+        minicash: './src/minicash.js',
+        login: './src/login.js',
     },
 
     module: {
@@ -36,6 +37,12 @@ module.exports = {
             { test: /\.hbs$/, loader: "handlebars-loader"},
 
             /* CSS and SCSS */
+            {
+                test: /login.scss.standalone$/,
+                use: extractLoginCSS.extract({
+                    use: ['css-loader', 'sass-loader'],
+                })
+            },
             { test: /\.css$/, loaders: ["style-loader", "css-loader"] },
             {
                 test: /\.scss$/,
@@ -53,7 +60,7 @@ module.exports = {
     },
 
     output: {
-        filename: 'minicash.js',
+        filename: '[name].js',
         path: path.join(__dirname, './static/'),
         publicPath: '/static/'
     },

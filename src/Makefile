@@ -63,10 +63,8 @@ pylizard:
 # ========================= #
 build-release: django-collectstatic
 
-django-collectstatic: $(FRONTEND_DIR)/static/minicash.min.js
-	$(MANAGEPY_CMD) collectstatic --no-input
-
-$(FRONTEND_DIR)/static/minicash.min.js:
+django-collectstatic:
 	$(MAKE) -C $(FRONTEND_DIR) build-release
+	$(MANAGEPY_CMD) collectstatic --no-input
 
 .PHONY: clean

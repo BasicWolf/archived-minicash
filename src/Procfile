@@ -1,1 +1,1 @@
-web: gunicorn minicash.app.wsgi --log-file -
+web: cd minicash/frontend; npm install; make build-release; cd ../../; gunicorn minicash.app.wsgi --log-file -
