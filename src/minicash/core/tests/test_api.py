@@ -28,7 +28,7 @@ class RecordsAPITest(RESTTestCase):
         res = self.jget(reverse('records-list'))
         self.assert_success(res)
         pagination_details, records_data = res.data
-        self.assertEqual(10, records_data)
+        self.assertEqual(10, len(records_data))
 
     def test_single_details(self):
         """Verify JSON representation of a single record"""
