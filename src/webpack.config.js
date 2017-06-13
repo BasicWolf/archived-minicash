@@ -50,7 +50,15 @@ let config = {
             },
 
             /* Handlebars */
-            { test: /\.hbs$/, loader: "handlebars-loader"},
+            {
+                test: /\.hbs$/,
+                loader: "handlebars-template-loader",
+
+                query: {
+                    root: srcDir,
+                    parseDynamicRoutes: true
+                }
+            },
 
             /* CSS and SCSS */
             {

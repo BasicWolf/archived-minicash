@@ -34,7 +34,7 @@ export default Mn.Application.extend({
         this.tabbarManager = new TabbarManager;
 
         this.tabbarManager.render();
-        this.tabbarManager.openTab(this.tabbarManager.TABS.RECORDS);
+        this.tabbarManager.openTab(this.tabbarManager.TABS.HOME);
     },
 
     bootstrapData: function() {
