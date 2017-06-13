@@ -17,9 +17,12 @@ export let TabModel = Bb.Model.extend({
     defaults: function() {
         return {
             name: utils.generateId(),
-            source: null,
             title: 'New tab',
+            permanent: false,        // false - allow closing the tab
+            singleInstance: true,    // true - only one instance of this tab in tabbar
             viewClass: null,
+
+            source: null,            // the source tab which open the current tab
         };
     }
 });
@@ -42,7 +45,12 @@ let TabNavView = Mn.View.extend({
     template: require('templates/tabbar/nav.hbs'),
 
     ui: {
-        'a': 'a',
+        a: 'a',
+        closeTabButton: 'button[data-spec="close-tab"]',
+    },
+
+    events: {
+        'click @ui.closeTabButton': 'onCloseTabButtonClick',
     },
 
     modelEvents: {
@@ -62,6 +70,10 @@ let TabNavView = Mn.View.extend({
 
     onTabChosen: function() {
         this.getUI('a').tab('show');
+    },
+
+    onCloseTabButtonClick: function() {
+        this.model.destroy();
     },
 });
 
@@ -134,9 +146,26 @@ export let TabView = Mn.View.extend({
     add: function(tabModel, options) {
         options = _.extend({'show': false}, options);
 
-        this.collection.add(tabModel);
+        let showTabModel = tabModel;
+        let shouldAdd = true;
+
+        if (tabModel.get('singleInstance')) {
+            let existingTabModel = this.collection.find(
+                (tm) => tm.get('name') === tabModel.get('name')
+            );
+
+            if (existingTabModel) {
+                showTabModel = existingTabModel;
+                shouldAdd = false;
+            }
+        }
+
+        if (shouldAdd) {
+            this.collection.add(tabModel);
+        }
+
         if (options.show) {
-            this.collection.choose(tabModel);
+            this.collection.choose(showTabModel);
         }
     },
 
@@ -146,7 +175,7 @@ export let TabView = Mn.View.extend({
         }
     },
 
-    onChildviewTabShown: function(model) {
-        this.collection.choose(model);
+    onChildviewChildviewTabShown: function(model) {
+        this.collection.choose(model, {silent: true});
     },
 });

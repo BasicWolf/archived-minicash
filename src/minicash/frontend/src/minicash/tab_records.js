@@ -10,11 +10,14 @@ import {TabPanelView, TabModel} from 'tabbar';
 
 export let RecordsTab = TabModel.extend({
     defaults: function() {
-        return {
+        let parentDefaults = TabModel.prototype.defaults.apply(this, arguments);
+
+        return _.extend(parentDefaults, {
             title: 'Records',
             name: 'records',
+            singleInstance: true,
             viewClass: RecordsTabPanelView,
-        };
+        });
     },
 });
 
@@ -23,7 +26,7 @@ let RecordsTabPanelView = TabPanelView.extend({
     template: require('templates/tab_records/tab_records.hbs'),
 
     ui: {
-        newRecordBtn: 'button[data-spec="new-record"]',
+        newRecordBtn: 'button[data-spec="start-new-record"]',
         editRecordBtn: 'button[data-spec="edit-record"]',
         deleteRecordBtn: 'button[data-spec="delete-record"]',
     },

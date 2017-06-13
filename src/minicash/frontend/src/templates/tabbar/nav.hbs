@@ -1,4 +1,8 @@
 <a href="#tab_{{name}}" aria-controls="tab_{{name}}" role="tab" data-toggle="tab">
+  {{#ifnot permanent}}
+    <button data-spec="close-tab" class="close closeTab" type="button" >×</button>
+  {{/ifnot}}
+
   {{title}}
 </a>
 

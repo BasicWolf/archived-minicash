@@ -128,8 +128,6 @@ table[data-spec="records-table"] {
     td.delta {
         text-align: right;
     }
-
-
 }
 
 
@@ -138,4 +136,25 @@ table[data-spec="records-table"] {
 
 .bootstrap-tagsinput {
     width:100%;
+}
+
+
+/* ------ Tabs ----------- */
+.nav-tabs {
+
+    > li .close {
+	    margin: 0 0 0 5px;
+    }
+}
+
+/* -------- Home tab ----- */
+button.home-tab-btn {
+    width: 160px;
+    white-space: initial;
+
+    font-size: 1em;
+
+    img {
+        margin-bottom: 5px;
+    }
 }

@@ -4,6 +4,22 @@
 
 import {TabPanelView, TabModel} from 'tabbar';
 
+
+export let HomeTab = TabModel.extend({
+    defaults: function() {
+        let parentDefaults = TabModel.prototype.defaults.apply(this, arguments);
+
+        return _.extend(parentDefaults, {
+            title: 'Home',
+            name: 'home',
+            singleInstance: true,
+            permanent: true,
+            viewClass: HomeTabPanelView,
+        });
+    }
+});
+
+
 export let HomeTabPanelView = TabPanelView.extend({
     validator: null,
 
@@ -11,26 +27,19 @@ export let HomeTabPanelView = TabPanelView.extend({
 
     ui: {
         allRecordsBtn: 'button[data-spec="all-records"]',
+        newRecordBtn: 'button[data-spec="start-new-record"]',
     },
 
     events: {
         'click @ui.allRecordsBtn': 'openAllRecords',
+        'click @ui.newRecordBtn': 'startNewRecord',
     },
 
     openAllRecords: function() {
         this.openTab(minicash.tabbarManager.TABS.RECORDS);
     },
 
-}); // HomeTabPanelView
-
-
-
-export let HomeTab = TabModel.extend({
-    defaults: function() {
-        return {
-            title: 'Home',
-            name: 'home',
-            viewClass: HomeTabPanelView,
-        };
+    startNewRecord: function() {
+        this.openTab(minicash.tabbarManager.TABS.NEW_RECORD);
     }
-});
+}); // HomeTabPanelView

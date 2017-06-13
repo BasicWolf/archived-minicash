@@ -9,6 +9,20 @@ import {TabPanelView, TabModel} from 'tabbar';
 import * as utils from 'utils';
 
 
+export let RecordTab = TabModel.extend({
+    defaults: function() {
+        let parentDefaults = TabModel.prototype.defaults.apply(this, arguments);
+
+        return _.extend(parentDefaults, {
+            title: 'New record',
+            name: 'new_record_' + utils.generateId(),
+            viewClass: RecordTabPanelView,
+            record: null,
+        });
+    }
+});
+
+
 export let RecordTabPanelView = TabPanelView.extend({
     validator: null,
 
@@ -220,14 +234,3 @@ export let RecordTabPanelView = TabPanelView.extend({
 }); // RecordTabPanelView
 
 
-
-export let RecordTab = TabModel.extend({
-    defaults: function() {
-        return {
-            title: 'New record',
-            name: 'new_record_' + utils.generateId(),
-            viewClass: RecordTabPanelView,
-            record: null,
-        };
-    }
-});
