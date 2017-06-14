@@ -28,11 +28,13 @@ export let HomeTabPanelView = TabPanelView.extend({
     ui: {
         allRecordsBtn: 'button[data-spec="all-records"]',
         newRecordBtn: 'button[data-spec="start-new-record"]',
+        assetsBtn: 'button[data-spec="assets"]',
     },
 
     events: {
         'click @ui.allRecordsBtn': 'openAllRecords',
         'click @ui.newRecordBtn': 'startNewRecord',
+        'click @ui.assetsBtn': 'openAssets',
     },
 
     openAllRecords: function() {
@@ -41,5 +43,10 @@ export let HomeTabPanelView = TabPanelView.extend({
 
     startNewRecord: function() {
         this.openTab(minicash.tabbarManager.TABS.NEW_RECORD);
-    }
+    },
+
+    openAssets: function() {
+        this.openTab(minicash.tabbarManager.TABS.ASSETS);
+    },
+
 }); // HomeTabPanelView

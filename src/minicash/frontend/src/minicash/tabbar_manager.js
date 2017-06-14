@@ -4,9 +4,11 @@
 
 import Mn from 'backbone.marionette';
 import * as tabbar from './tabbar';
-import {HomeTab} from './tab_home';
-import {RecordsTab} from './tab_records';
-import {RecordTab} from './tab_record';
+import {HomeTab} from './tabs/tab_home';
+import {RecordsTab} from './tabs/tab_records';
+import {RecordTab} from './tabs/tab_record';
+import {AssetsTab} from './tabs/tab_assets';
+
 
 export let TabbarManager = Mn.Object.extend({
     TABS: {},
@@ -16,6 +18,7 @@ export let TabbarManager = Mn.Object.extend({
             HOME: HomeTab,
             NEW_RECORD: RecordTab,
             RECORDS: RecordsTab,
+            ASSETS: AssetsTab,
         });
 
         console.debug('Initializing TabbarManager');

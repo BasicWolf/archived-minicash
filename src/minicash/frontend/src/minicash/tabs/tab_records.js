@@ -43,7 +43,6 @@ let RecordsTabPanelView = TabPanelView.extend({
 
     childViewEvents: {
         'selected:records:change': 'onSelectedRecordsChange',
-        // 'open:tab': 'onOpenTab',
     },
 
     onRender: function() {
@@ -67,13 +66,6 @@ let RecordsTabPanelView = TabPanelView.extend({
             });
         }
     },
-
-    // onOpentab: function(tabtype, options) {
-    //     options = _.extend({
-    //         source: this.model
-    //     }, options);
-    //     minicash.tabbarManager.openTab('newRecord', options);
-    // },
 
     onChildviewPageChange: function(pageNumber) {
         minicash.collections.records.getPage(pageNumber);
