@@ -7,7 +7,7 @@ import * as tabbar from './tabbar';
 import {HomeTab} from './tabs/tab_home';
 import {RecordsTab} from './tabs/tab_records';
 import {RecordTab} from './tabs/tab_record';
-import {AssetsTab} from './tabs/tab_assets';
+import {AssetsTab} from './tabs/tab_asset';
 
 
 export let TabbarManager = Mn.Object.extend({
