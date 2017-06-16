@@ -5,8 +5,9 @@ from decimal import Decimal
 from django.test import override_settings
 from rest_framework.reverse import reverse
 
-from minicash.core.models import Record, Tag
+from minicash.core.models import Asset, Record, Tag
 from minicash.core.serializers import (
+    AssetSerializer,
     RecordSerializer,
     TagSerializer,
 )
@@ -153,6 +154,34 @@ class AssetAPITest(RESTTestCase):
         self.assertNotEqual(0, len(res.data))
         self.assertGreaterEqual(5, len(res.data))
 
+    def test_create(self):
+        asset = AssetFactory.build(owner=self.owner)
+        serializer = AssetSerializer(asset)
+        data_in = serializer.data
+        res = self.jpost(reverse('assets-list'), data_in)
+        self.assert_created(res)
+        data_out = res.data
+
+        # pk's are not equal (None vs. PK from database)
+        data_in_pk, data_out_pk = data_in.pop('pk'), data_out.pop('pk')
+        self.assertNotEqual(data_in_pk, data_out_pk)
+
+        # the rest data is equal
+        self.assertEqual(data_in, data_out)
+
+        # ensure internal structure via ORM
+        asset_internal = Asset.objects.get(pk=data_out_pk)
+        ser_internal = AssetSerializer(asset_internal)
+        data_internal = ser_internal.data
+        data_internal.pop('pk')
+        self.assertEqual(data_out, data_internal)
+
+    def test_update(self):
+        asset = AssetFactory.create(owner=self.owner)
+        serializer = AssetSerializer(asset)
+        data_in = serializer.data
+        res = self.jpatch(reverse('assets-detail', args=[asset.pk]), data_in)
+        import pudb; pu.db
 
 class TagsAPITest(RESTTestCase):
     def test_smoke(self):

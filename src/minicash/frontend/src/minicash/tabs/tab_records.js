@@ -51,7 +51,7 @@ let RecordsTabPanelView = TabPanelView.extend({
     },
 
     startNewRecord: function() {
-        this.openTab(minicash.tabbarManager.TABS.NEW_RECORD);
+        this.openTab(minicash.tabbarManager.TABS.EDIT_RECORD);
     },
 
     editRecord: function() {
@@ -61,7 +61,7 @@ let RecordsTabPanelView = TabPanelView.extend({
         if (selectedRecords.length === 1) {
             let selectedRecord = selectedRecords[0];
 
-             this.openTab(minicash.tabbarManager.TABS.NEW_RECORD, {
+             this.openTab(minicash.tabbarManager.TABS.EDIT_RECORD, {
                 record: selectedRecord
             });
         }

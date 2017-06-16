@@ -1,0 +1,95 @@
+<div id="tab_{{name}}" role="tabpanel" class="tab-pane" >
+
+  <div class="panel-buttons" style="position:relative">
+    <div data-spec="export-loading" class="loading loading-center"></div>
+    <button data-spec="save" type="button" class="btn btn-default">Save</button>
+    <button data-spec="cancel" type="button" class="btn btn-default">Cancel</button>
+
+  </div> <!-- panel-buttons -->
+
+  <div class="panel panel-default"><div class="panel-body">
+    <form autocomplete="off" class="form-horizontal">
+
+      <div class="form-group">
+        <label class="col-sm-2 control-label">Type</label>
+        <div class="col-sm-10">
+          <select name="mode"
+                  class="form-control"
+                  {{#ifdef record.pk}}disabled{{/ifdef}}>
+            {{#each (context 'RECORD_MODES') }}
+              <option value="{{this.value}}"
+                      {{#ifeq ../record.mode this.value}}selected{{/ifeq}}
+              >{{this.label}}</option>
+            {{/each}}
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-2 control-label">Date/Time</label>
+        <div class="col-sm-10">
+          <div class='input-group date'>
+            <input name="dt_stamp" type="text" class="form-control"
+                   placeholder="Date and time", value="{{record.dt_stamp}}">
+            <span class="input-group-addon">
+              <span class="glyphicon glyphicon-calendar"></span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-2 control-label">Expense</label>
+        <div class="col-sm-10">
+          <input name="delta" type="text" class="form-control"
+                 placeholder="Expense paid or received"
+                 value="{{record.delta}}"
+                 autofocus>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-2 control-label">Tags</label>
+        <div class="col-sm-10">
+          <input name="tags" type="text" class="form-control"
+                 placeholder="Tags like 'groceries', 'utilities', 'school', etc."
+                 value="{{record.tags}}">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-2 control-label">Withdrawn from</label>
+        <div class="col-sm-10">
+          <select name="asset_from" class="form-control">
+            <option value="" {{#ifnot record.asset_from}}selected{{/ifnot}}>Select account...</option>
+            {{#each assets}}
+              <option value="{{id}}" {{#ifeq ../record.asset_from id}}selected{{/ifeq}}>{{name}}</option>
+            {{/each}}
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-2 control-label">Deposited to</label>
+        <div class="col-sm-10">
+          <select name="asset_to" class="form-control">
+            <option value="" {{#ifnot record.asset_to}}selected{{/ifnot}}>Select account...</option>
+            {{#each assets}}
+              <option value="{{id}}" {{#ifeq ../record.asset_to id}}selected{{/ifeq}}>{{name}}</option>
+            {{/each}}
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-2 control-label">Description</label>
+        <div class="col-sm-10">
+          <textarea name="description" class="form-control" rows="5" style="resize: none;">{{record.description}}</textarea>
+        </div>
+      </div>
+
+    </form>
+  </div>
+
+  </div>
+</div>

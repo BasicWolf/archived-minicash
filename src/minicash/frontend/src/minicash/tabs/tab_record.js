@@ -26,7 +26,7 @@ export let RecordTab = TabModel.extend({
 export let RecordTabPanelView = TabPanelView.extend({
     validator: null,
 
-    template: require('templates/tab_record.hbs'),
+    template: require('templates/tab_records/tab_record.hbs'),
 
     ui: {
         saveBtn: 'button[data-spec="save"]',

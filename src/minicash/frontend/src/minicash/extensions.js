@@ -1,6 +1,6 @@
 'use strict';
 
-/* global _,jQuery,$ */
+/* global _,$,jQuery,tr */
 
 import Bb from 'backbone';
 import Decimal from 'decimal.js';
@@ -9,13 +9,16 @@ import Hb from 'handlebars/runtime';
 // Temporal stub for translation function
 window.tr = function(s) {return  s;};
 
-
 /*--------- Handlebars -----------*/
 /*================================*/
+Hb.registerHelper('tr', function(v) {
+    /* Translation wrapper */
+    return tr(this);
+});
+
 Hb.registerHelper('ifnot', function(v, options) {
     return v? options.inverse(this) : options.fn(this);
 });
-
 
 Hb.registerHelper('ifdef', function(v, options) {
     return v != null ? options.fn(this) : options.inverse(this);
