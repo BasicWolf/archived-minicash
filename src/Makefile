@@ -1,6 +1,6 @@
 MANAGEPY_CMD = python manage.py
 MANAGEPY_DEV_SETTINGS = minicash.app.settings.dev
-MANAGEPY_TEST_SETTINGS = $(MANAGEPY_DEV_SETTINGS)
+MANAGEPY_TEST_SETTINGS = minicash.app.settings.test
 
 NODE_MODULES_DIR = ./node_modules
 FRONTEND_DIR = ./minicash/frontend
@@ -33,10 +33,10 @@ shell:
 
 
 test:
-	$(MANAGEPY_CMD) test -v 2 $(TESTS) --settings $(MANAGEPY_DEV_SETTINGS) --noinput
+	$(MANAGEPY_CMD) test -v 2 $(TESTS) --settings $(MANAGEPY_TEST_SETTINGS) --noinput
 
 test-behave:
-	$(MANAGEPY_CMD) behave --settings $(MANAGEPY_DEV_SETTINGS)
+	$(MANAGEPY_CMD) behave --settings $(MANAGEPY_TEST_SETTINGS)
 
 
 static-checks: pychecks
