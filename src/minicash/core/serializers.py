@@ -58,19 +58,19 @@ class RecordSerializer(ModelSerializer):
         allow_null=True,
     )
 
-    def validate(self, data):
-        return self._validate_assets(data)
+    def validate(self, attrs):
+        return self._validate_assets(attrs)
 
-    def _validate_assets(self, data):
-        to_from_mode = (bool(data['asset_to']), bool(data['asset_from']))
+    def _validate_assets(self, attrs):
+        to_from_mode = (bool(attrs['asset_to']), bool(attrs['asset_from']))
 
         try:
-            if data['mode'] != self.VALID_MODES_MAPPING[to_from_mode]:
+            if attrs['mode'] != self.VALID_MODES_MAPPING[to_from_mode]:
                 raise serializers.ValidationError(_('VERIFY-0002: Invalid mode or assets data'))
         except KeyError as e:
             raise serializers.ValidationError(_('VERIFY-0001: Either of the assets and mode must be defined in a record')) from e
 
-        return data
+        return attrs
 
 
 class TagSerializer(ModelSerializer):
@@ -84,17 +84,17 @@ class TagSerializer(ModelSerializer):
         default=serializers.CurrentUserDefault(),
     )
 
-    def validate(self, data):
-        return self._validate_name(data)
+    def validate(self, attrs):
+        return self._validate_name(attrs)
 
-    def _validate_name(self, data):
-        name = data['name']
+    def _validate_name(self, attrs):
+        name = attrs['name']
 
         # check that name contains no commas
         if ',' in name:
             raise serializers.ValidationError(_('VERIFY-0003: Invalid tag name: {}'.format(name)))
 
-        return data
+        return attrs
 
 
 class AssetSerializer(ModelSerializer):

@@ -7,6 +7,7 @@ from .models import DT_FORMATS
 
 
 class UserDateTimeField(serializers.DateTimeField, UserRelatedFieldBase):
+    # pylint: disable=redefined-builtin
     def __init__(self, *args, user_field_name, format=None, input_formats=None, **kwargs):
         assert format is None, '`format` should now be supplied explicitly in {}'.format(self.__class__.__name__)
         assert input_formats is None, '`input_formats` should now be supplied explicitly in {}'.format(self.__class__.__name__)

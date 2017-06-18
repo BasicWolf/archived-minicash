@@ -1,8 +1,6 @@
-import factory
 import random
 from decimal import Decimal
-
-from django.test import override_settings
+import factory
 from rest_framework import status
 from rest_framework.reverse import reverse
 
@@ -13,7 +11,6 @@ from minicash.core.serializers import (
     TagSerializer,
 )
 from minicash.utils.testing import RESTTestCase
-
 from .factories import AssetFactory, RecordFactory, TagFactory
 
 
@@ -31,6 +28,7 @@ class RecordsAPITest(RESTTestCase):
         self.assert_success(res)
         pagination_details, records_data = res.data
         self.assertEqual(10, len(records_data))
+        self.assertEqual(10, pagination_details['count'])
 
     def test_single_details(self):
         """Verify JSON representation of a single record"""
@@ -188,7 +186,6 @@ class AssetAPITest(RESTTestCase):
         self.assertNotIn('saldo', data_out)
         self.assertEqual(data_in['saldo'], Asset.objects.get(pk=data_in['pk']).saldo)
 
-
     def test_delete_empty(self):
         asset = AssetFactory.create(owner=self.owner)
         self.jdelete(reverse('assets-detail', args=[asset.pk]))
@@ -196,9 +193,9 @@ class AssetAPITest(RESTTestCase):
 
     def test_delete_with_records(self):
         asset = AssetFactory.create(owner=self.owner)
-        record = RecordFactory.create(owner=self.owner, asset_from=asset, mode=Record.INCOME)
-        res = self.jdelete(reverse('assets-detail', args=[asset.pk]))
+        RecordFactory.create(owner=self.owner, asset_from=asset, mode=Record.INCOME)
 
+        res = self.jdelete(reverse('assets-detail', args=[asset.pk]))
         self.assertEqual(status.HTTP_403_FORBIDDEN, res.status_code)
         self.assertTrue(Asset.objects.filter(pk=asset.pk).exists())
 

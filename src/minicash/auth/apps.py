@@ -6,4 +6,4 @@ class AuthConfig(AppConfig):
     label = 'minicash_auth'
 
     def ready(self):
-        from . import signals  # noqa
+        from . import signals  # noqa: F401; pylint: disable=unused-variable

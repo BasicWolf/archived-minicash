@@ -6,4 +6,4 @@ class CoreConfig(AppConfig):
     label = 'minicash_core'
 
     def ready(self):
-        import minicash.core.checks
+        import minicash.core.checks  # noqa: F401; pylint: disable=unused-variable

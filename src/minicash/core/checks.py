@@ -1,8 +1,9 @@
 from itertools import chain
-from django.core.checks import register, Tags, Warning, Error
+from django.core.checks import (register, Tags, Warning as CheckWarning,
+                                Error as CheckError)
 from django.conf import settings
 
-from minicash.utils.checks import requires_settings, is_defined
+from minicash.utils.checks import requires_settings
 
 
 @register(Tags.compatibility)
@@ -21,10 +22,10 @@ def check_paginator_settings():
     sval = getattr(settings, sname)
 
     if not isinstance(sval, int):
-        yield Error(f'{sname} value ({sval}) must be an integer', id='MINICASH-CHECK-E0002')
+        yield CheckError(f'{sname} value ({sval}) must be an integer', id='MINICASH-CHECK-E0002')
 
     if sval < 20 or sval > 500:
-        yield Warning(
+        yield CheckWarning(
             f'{sname} value ({sval}) is sub-optimal.',
             'Consider a value in range [20..500].',
             id='MINICASH-CHECK-W0001'

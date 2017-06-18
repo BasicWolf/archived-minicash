@@ -35,4 +35,3 @@ class requires_settings:
                     f"Setting {setting_name} is not found in settings.",
                     id='MINICASH-CHECK-E0001'
                 )
-

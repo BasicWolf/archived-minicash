@@ -17,7 +17,7 @@ class UserFactory(DjangoModelFactory):
         if not create:
             return
         password = extracted or FuzzyText(length=10).fuzz()
-        self.raw_password = password
+        self.raw_password = password  # pylint: disable=attribute-defined-outside-init
         self.set_password(self.raw_password)
         return self.password
 

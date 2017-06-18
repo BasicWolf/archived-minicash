@@ -45,7 +45,7 @@ class TagsMixin:
             tags = extracted
 
         for tag in tags:
-            self.tags.add(tag)
+            self.tags.add(tag)  # pylint: disable=no-member
 
 
 class RecordFactory(TagsMixin, DjangoModelFactory):
@@ -73,7 +73,7 @@ class RecordFactory(TagsMixin, DjangoModelFactory):
             tags = extracted
 
         for tag in tags:
-            self.tags.add(tag)
+            self.tags.add(tag)  # pylint: disable=no-member
 
     @lazy_attribute
     def mode(self):
