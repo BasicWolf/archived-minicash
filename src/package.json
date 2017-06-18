@@ -3,9 +3,8 @@
   "description": "Minicash is a libre personal finances management application.",
   "author": "Zaur Nasibov and respected contributors",
   "scripts": {
-      "postinstall": "NODE_ENV=production node_modules/.bin/webpack --progress --profile --colors --display-error-details"
+    "postinstall": "NODE_ENV=production node_modules/.bin/webpack --progress --profile --colors --display-error-details"
   },
-
   "dependencies": {
     "babel-core": "^6.24.1",
     "babel-loader": "^7.0.0",
@@ -47,5 +46,8 @@
     "sprintf-js": "^1.1.0",
     "typeahead.js": "^0.11.1",
     "underscore": "^1.8.3"
+  },
+  "devDependencies": {
+    "bootbox": "^4.4.0"
   }
 }

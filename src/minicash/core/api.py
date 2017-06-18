@@ -3,6 +3,7 @@ from rest_framework import viewsets, pagination, response
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
 
+from .permissions import IsAssetRemovable
 from .serializers import (
     RecordSerializer,
     AssetSerializer,
@@ -43,7 +44,7 @@ class RecordsView(viewsets.ModelViewSet):
 
 class AssetsView(viewsets.ModelViewSet):
     authentication_classes = (SessionAuthentication, BasicAuthentication)
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsAssetRemovable,)
     serializer_class = AssetSerializer
 
     def get_queryset(self):

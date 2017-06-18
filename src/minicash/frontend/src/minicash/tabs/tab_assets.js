@@ -3,6 +3,7 @@
 /* global _,$,minicash,require */
 import Hb from 'handlebars/runtime';
 import Mn from 'backbone.marionette';
+import * as bootbox from 'bootbox';
 
 import {TabPanelView, TabModel} from 'tabbar';
 
@@ -36,7 +37,8 @@ let AssetsTabPanelView = TabPanelView.extend({
 
     events: {
         'click @ui.newAssetBtn': 'startNewAsset',
-        'click @ui.editAssetBtn': 'editAsset'
+        'click @ui.editAssetBtn': 'editSelectedAsset',
+        'click @ui.deleteAssetBtn': 'deleteSelectedAssets',
     },
 
     childViewEvents: {
@@ -51,9 +53,8 @@ let AssetsTabPanelView = TabPanelView.extend({
         this.openTab(minicash.tabbarManager.TABS.EDIT_ASSET, {adding: true});
     },
 
-    editAsset: function() {
-        let assetsTableView = this.getChildView('assetsTableRegion');
-        let selectedAssets = assetsTableView.getSelectedAssets();
+    editSelectedAsset: function() {
+        let selectedAssets = this.getSelectedAssets();
 
         if (selectedAssets.length === 1) {
             let selectedAsset = selectedAssets[0];
@@ -64,6 +65,37 @@ let AssetsTabPanelView = TabPanelView.extend({
         }
     },
 
+    deleteSelectedAssets: function() {
+        let dfdDoDelete = $.Deferred();
+
+        bootbox.confirm({
+            message: tr('Are you sure you want to delete the selected assets?'),
+            buttons: {
+                confirm: {
+                    label: tr('Yes'),
+                    className: 'btn-danger'
+                },
+                cancel: {
+                    label: ('No'),
+                }
+            },
+            callback: function (result) {
+                if (result) {
+                    dfdDoDelete.resolve();
+                }
+            }
+        });
+
+        dfdDoDelete.then(() => {
+            let selectedAssets = this.getSelectedAssets();
+
+            for (let model of selectedAssets) {
+                model.destroy({wait: true});
+            }
+        });
+
+    },
+
     onChildviewPageChange: function(pageNumber) {
         minicash.collections.assets.getPage(pageNumber);
     },
@@ -71,7 +103,12 @@ let AssetsTabPanelView = TabPanelView.extend({
     onSelectedAssetsChange: function(selectedAssets) {
         this.uiEnable('editAssetBtn', selectedAssets.length === 1);
         this.uiEnable('deleteAssetBtn', !!selectedAssets.length);
-    }
+    },
+
+    getSelectedAssets: function() {
+        let assetsTableView = this.getChildView('assetsTableRegion');
+        return assetsTableView.getSelectedAssets();
+    },
 });
 
 

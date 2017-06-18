@@ -138,6 +138,10 @@ table[data-spec="records-table"] {
     width:100%;
 }
 
+body.modal-open .modal.in {
+  display: flex !important;
+  align-items: center;
+}
 
 /* ------ Tabs ----------- */
 .nav-tabs {

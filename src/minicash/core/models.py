@@ -20,7 +20,7 @@ class Record(models.Model):
         blank=True,
         db_index=True,
         null=True,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name='from_asset_records',
     )
 
@@ -29,7 +29,7 @@ class Record(models.Model):
         blank=True,
         db_index=True,
         null=True,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name='to_asset_records',
     )
 

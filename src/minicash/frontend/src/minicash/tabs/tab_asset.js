@@ -113,7 +113,7 @@ export let AssetTabPanelView = TabPanelView.extend({
         if (asset) {
             asset.save(saveData, saveOptions);
         } else {
-            minicash.collections.records.create(saveData, saveOptions);
+            minicash.collections.assets.create(saveData, saveOptions);
         }
     },
 

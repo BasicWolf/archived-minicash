@@ -177,14 +177,13 @@ export let RecordTabPanelView = TabPanelView.extend({
         }
 
         let dfd = $.Deferred(() => {
-            minicash.status.show();
+            self.lockControls();
         });
+
         dfd.then(() => {
             self.model.destroy();
         }).fail(() => {
             self.unlockControls();
-        }).always(() => {
-            minicash.status.hide();
         });
 
         let saveOptions = {

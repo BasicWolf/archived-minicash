@@ -1,6 +1,6 @@
 'use strict';
 
-/* global _,$,jQuery,tr */
+/* global _,$,jQuery,minicash,tr */
 
 import Bb from 'backbone';
 import Decimal from 'decimal.js';
@@ -140,6 +140,13 @@ $.ajaxSetup({
                 settings.url = url + '/';
             }
         }
+
+        /*====== UI ======*/
+        minicash.status.show();
+    },
+
+    complete: function(xhr, settings) {
+        minicash.status.hide();
     },
 });
 /*================================*/

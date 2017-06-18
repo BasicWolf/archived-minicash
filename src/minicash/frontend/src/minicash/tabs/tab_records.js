@@ -3,6 +3,7 @@
 /* global _,$,minicash,require */
 import Hb from 'handlebars/runtime';
 import Mn from 'backbone.marionette';
+import * as bootbox from 'bootbox';
 
 import {PaginatorView} from 'components/paginator';
 import {TabPanelView, TabModel} from 'tabbar';
@@ -38,7 +39,8 @@ let RecordsTabPanelView = TabPanelView.extend({
 
     events: {
         'click @ui.newRecordBtn': 'startNewRecord',
-        'click @ui.editRecordBtn': 'editRecord'
+        'click @ui.editRecordBtn': 'editSelectedRecord',
+        'click @ui.deleteRecordBtn': 'deleteSelectedRecords',
     },
 
     childViewEvents: {
@@ -54,9 +56,8 @@ let RecordsTabPanelView = TabPanelView.extend({
         this.openTab(minicash.tabbarManager.TABS.EDIT_RECORD);
     },
 
-    editRecord: function() {
-        let recordsTableView = this.getChildView('recordsTableRegion');
-        let selectedRecords = recordsTableView.getSelectedRecords();
+    editSelectedRecord: function() {
+        let selectedRecords = this.getSelectedRecords();
 
         if (selectedRecords.length === 1) {
             let selectedRecord = selectedRecords[0];
@@ -67,6 +68,38 @@ let RecordsTabPanelView = TabPanelView.extend({
         }
     },
 
+
+    deleteSelectedRecords: function() {
+        let dfdDoDelete = $.Deferred();
+
+        bootbox.confirm({
+            message: tr('Are you sure you want to delete the selected records?'),
+            buttons: {
+                confirm: {
+                    label: tr('Yes'),
+                    className: 'btn-danger'
+                },
+                cancel: {
+                    label: ('No'),
+                }
+            },
+            callback: function (result) {
+                if (result) {
+                    dfdDoDelete.resolve();
+                }
+            }
+        });
+
+        dfdDoDelete.then(() => {
+            let selectedRecords = this.getSelectedRecords();
+
+            for (let model of selectedRecords) {
+                model.destroy({wait: true});
+            }
+        });
+
+    },
+
     onChildviewPageChange: function(pageNumber) {
         minicash.collections.records.getPage(pageNumber);
     },
@@ -74,6 +107,11 @@ let RecordsTabPanelView = TabPanelView.extend({
     onSelectedRecordsChange: function(selectedRecords) {
         this.uiEnable('editRecordBtn', selectedRecords.length === 1);
         this.uiEnable('deleteRecordBtn', !!selectedRecords.length);
+    },
+
+    getSelectedRecords: function() {
+        let recordsTableView = this.getChildView('recordsTableRegion');
+        return recordsTableView.getSelectedRecords();
     }
 });
 
@@ -100,14 +138,11 @@ let RecordsTableView = Mn.CollectionView.extend({
         this.triggerMethod('selected:records:change', this.getSelectedRecords());
     },
 
+
     getSelectedRecords: function() {
-        let selectedRecords = [];
-        this.children.each((c) => {
-            if (c.isSelected()) {
-                selectedRecords.push(c.model);
-            }
-        });
-        return selectedRecords;
+        let selectedRecords = this.children.filter((c) => c.isSelected());
+        let selectedRecordModels = _.pluck(selectedRecords, 'model');
+        return selectedRecordModels;
     },
 });
 
