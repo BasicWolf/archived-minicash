@@ -180,8 +180,13 @@ class AssetAPITest(RESTTestCase):
         asset = AssetFactory.create(owner=self.owner)
         serializer = AssetSerializer(asset)
         data_in = serializer.data
+        self.assertIn('saldo', data_in)
+
         res = self.jpatch(reverse('assets-detail', args=[asset.pk]), data_in)
-        import pudb; pu.db
+        data_out = res.data
+        self.assertNotIn('saldo', data_out)
+        self.assertEqual(data_in['saldo'], Asset.objects.get(pk=data_in['pk']).saldo)
+
 
 class TagsAPITest(RESTTestCase):
     def test_smoke(self):

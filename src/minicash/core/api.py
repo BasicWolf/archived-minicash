@@ -6,6 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from .serializers import (
     RecordSerializer,
     AssetSerializer,
+    UpdateAssetSerializer,
     TagSerializer,
 )
 
@@ -48,6 +49,12 @@ class AssetsView(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         return user.assets.all()
+
+    def get_serializer_class(self):
+        if self.request.method in ['PUT', 'PATCH']:
+            return UpdateAssetSerializer
+        else:
+            return self.serializer_class
 
 
 class TagsView(viewsets.ModelViewSet):

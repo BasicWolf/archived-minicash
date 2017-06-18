@@ -102,10 +102,14 @@ class AssetSerializer(ModelSerializer):
         model = Asset
         fields = ['pk', 'description', 'name', 'owner', 'saldo']
 
-    read_only_fields = ['saldo']
-
     owner = serializers.PrimaryKeyRelatedField(
         queryset=User.objects,
         write_only=True,
         default=serializers.CurrentUserDefault(),
     )
+
+
+class UpdateAssetSerializer(AssetSerializer):
+    class Meta:
+        model = Asset
+        fields = ['pk', 'description', 'name', 'owner']
