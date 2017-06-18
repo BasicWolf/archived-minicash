@@ -46,6 +46,9 @@ class RESTTestCase(WithOwnerTestMixin, APITransactionTestCase):
         data = data or {}
         return self.client.patch(url, data=data, format='json', *args, **kwargs)
 
+    def jdelete(self, url, *args, **kwargs):
+        return self.client.delete(url, format='json', *args, **kwargs)
+
     def assert_success(self, response):
         return self.assert_status(response, status.HTTP_200_OK)
 

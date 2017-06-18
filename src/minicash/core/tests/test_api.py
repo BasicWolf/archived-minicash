@@ -3,6 +3,7 @@ import random
 from decimal import Decimal
 
 from django.test import override_settings
+from rest_framework import status
 from rest_framework.reverse import reverse
 
 from minicash.core.models import Asset, Record, Tag
@@ -186,6 +187,20 @@ class AssetAPITest(RESTTestCase):
         data_out = res.data
         self.assertNotIn('saldo', data_out)
         self.assertEqual(data_in['saldo'], Asset.objects.get(pk=data_in['pk']).saldo)
+
+
+    def test_delete_empty(self):
+        asset = AssetFactory.create(owner=self.owner)
+        self.jdelete(reverse('assets-detail', args=[asset.pk]))
+        self.assertFalse(Asset.objects.filter(pk=asset.pk).exists())
+
+    def test_delete_with_records(self):
+        asset = AssetFactory.create(owner=self.owner)
+        record = RecordFactory.create(owner=self.owner, asset_from=asset, mode=Record.INCOME)
+        res = self.jdelete(reverse('assets-detail', args=[asset.pk]))
+
+        self.assertEqual(status.HTTP_403_FORBIDDEN, res.status_code)
+        self.assertTrue(Asset.objects.filter(pk=asset.pk).exists())
 
 
 class TagsAPITest(RESTTestCase):
