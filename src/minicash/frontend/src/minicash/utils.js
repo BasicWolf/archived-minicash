@@ -25,9 +25,13 @@ export let notifier = (function() {
         }, {
             type: type,
             allow_dismiss: true,
+            offset: {
+		        x: 5,
+		        y: 55,
+	        },
             placement: {
 		        from: "top",
-		        align: "center"
+		        align: "right"
 	        },
         });
 

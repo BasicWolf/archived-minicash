@@ -138,10 +138,27 @@ table[data-spec="records-table"] {
     width:100%;
 }
 
-body.modal-open .modal.in {
-  display: flex !important;
-  align-items: center;
+/* Bootstrap modal vertically centered */
+.modal {
+    text-align: center;
+    padding: 0!important;
 }
+
+.modal:before {
+    content: '';
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+    margin-right: -4px;
+}
+
+.modal-dialog {
+    display: inline-block;
+    text-align: left;
+    vertical-align: middle;
+}
+/*-------------------------*/
+
 
 /* ------ Tabs ----------- */
 .nav-tabs {
