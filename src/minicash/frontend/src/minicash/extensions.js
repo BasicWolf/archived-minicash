@@ -145,8 +145,21 @@ $.ajaxSetup({
         minicash.status.show();
     },
 
-    complete: function(xhr, settings) {
+    complete: function(xhr, status) {
+        handleAjaxError(xhr, status);
         minicash.status.hide();
     },
 });
+
+let handleAjaxError = function(xhr, status) {
+    switch(status) {
+    case 'error':
+        console.error(`AJAX Error: ${xhr.responseText}`);
+        if (xhr.responseJSON && xhr.responseJSON.detail) {
+            minicash.notify.error(xhr.responseJSON.detail);
+        }
+        break;
+    }
+};
+
 /*================================*/

@@ -25,6 +25,10 @@ export let notifier = (function() {
         }, {
             type: type,
             allow_dismiss: true,
+            placement: {
+		        from: "top",
+		        align: "center"
+	        },
         });
 
     return {
