@@ -19,7 +19,7 @@ all:
 	@echo 'frontend'
 	@echo 'shell'
 	@echo 'test'
-	@echo 'static-checks'
+	@echo 'check'
 
 
 devserver:
@@ -39,10 +39,10 @@ test-behave:
 	$(MANAGEPY_CMD) behave --settings $(MANAGEPY_TEST_SETTINGS)
 
 
-static-checks: pychecks
+check: check-python
 
 
-pychecks: flake8 pylint
+check-python: flake8 pylint
 
 
 checklicense:

@@ -1,6 +1,6 @@
 'use strict';
 
-/* global $,_,moment,minicash,require,tr */
+/* global $,_,minicash,require,tr */
 
 import {TabPanelView, TabModel} from 'tabbar';
 

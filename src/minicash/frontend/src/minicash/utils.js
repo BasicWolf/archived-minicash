@@ -194,4 +194,12 @@ export function compareStringsAsDecimals(s1, s2) {
     return decimalToString(new Decimal(s1)) === decimalToString(new Decimal(s2));
 }
 
+export function compareMoments(momentA, momentB) {
+    if (momentA > momentB) {
+        return 1;
+    } else if (momentA < momentB) {
+        return -1;
+    }
+    return 0;
+}
 /* ==================================================================================================== */

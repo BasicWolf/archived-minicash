@@ -1,6 +1,6 @@
 'use strict';
 
-/* global minicash */
+/* global minicash,moment */
 
 import * as utils from './utils';
 
@@ -29,7 +29,13 @@ export let Record = utils.BaseModel.extend({
 export let Records = utils.BasePageableCollection.extend({
     model: Record,
 
-    url: function() { return minicash.url('records-list'); }
+    url: function() { return minicash.url('records-list'); },
+
+    comparator: function(itemA, itemB) {
+        let m1 = moment(itemA.get('dt_stamp'), minicash.CONTEXT.user.dtFormat);
+        let m2 = moment(itemB.get('dt_stamp'), minicash.CONTEXT.user.dtFormat);
+        return -utils.compareMoments(m1, m2);
+    }
 });
 
 
@@ -51,7 +57,9 @@ export let Asset = utils.BaseModel.extend({
 export let Assets = utils.BaseCollection.extend({
     model: Asset,
 
-    url: function() { return minicash.url('assets-list'); }
+    url: function() { return minicash.url('assets-list'); },
+
+    comparator: 'name'
 });
 
 
@@ -75,4 +83,6 @@ export let Tags = utils.BaseCollection.extend({
     initialize: function() {
         this.bloodhound = new utils.Bloodhound(this, 'name');
     },
+
+    comparator: 'name'
 });
