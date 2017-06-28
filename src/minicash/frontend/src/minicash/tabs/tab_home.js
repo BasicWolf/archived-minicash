@@ -42,7 +42,7 @@ export let HomeTabPanelView = TabPanelView.extend({
     },
 
     startNewRecord: function() {
-        this.openTab(minicash.tabbarManager.TABS.NEW_RECORD);
+        this.openTab(minicash.tabbarManager.TABS.EDIT_RECORD);
     },
 
     openAssets: function() {

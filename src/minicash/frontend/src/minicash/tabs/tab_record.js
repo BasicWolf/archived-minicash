@@ -3,7 +3,7 @@
 /* global $,_,moment,minicash,require,tr */
 
 import 'tagsinput';
-import 'typeahead';
+import 'corejs-typeahead';
 
 import {TabPanelView, TabModel} from 'tabbar';
 import * as utils from 'utils';
@@ -170,26 +170,28 @@ export let RecordTabPanelView = TabPanelView.extend({
     },
 
     saveForm: function() {
-        let self = this;
         let saveData = this._prepareSaveData();
         if (_.isEmpty(saveData)) {
             return;
         }
 
         let dfd = $.Deferred(() => {
-            self.lockControls();
+            this.lockControls();
         });
 
         dfd.then(() => {
-            self.model.destroy();
-        }).fail(() => {
-            self.unlockControls();
+            this.model.destroy();
+        }).fail((errors) => {
+            this.validator.showErrors(errors);
+            this.unlockControls();
         });
 
         let saveOptions = {
             wait: true,
             success: () => dfd.resolve(),
-            error: () => dfd.reject(),
+            error: (model, response, options) => {
+                dfd.reject(response.responseJSON);
+            },
         };
 
         let record = this.model.get('record');
@@ -231,5 +233,3 @@ export let RecordTabPanelView = TabPanelView.extend({
         return this.uiEnable(['saveBtn', 'cancelBtn']);
     },
 }); // RecordTabPanelView
-
-

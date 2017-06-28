@@ -44,7 +44,7 @@ class Record(models.Model):
 
 class Tag(models.Model):
     name = models.CharField(max_length=32)
-    description = models.TextField()
+    description = models.TextField(blank=True, default='')
     owner = models.ForeignKey(User, related_name='tags')
 
     class Meta:
@@ -56,7 +56,7 @@ class Tag(models.Model):
 
 class Asset(models.Model):
     name = models.CharField(max_length=32)
-    description = models.TextField(default='')
+    description = models.TextField(blank=True, default='')
     owner = models.ForeignKey(User, related_name='assets')
     saldo = models.IntegerField(default=0)
 

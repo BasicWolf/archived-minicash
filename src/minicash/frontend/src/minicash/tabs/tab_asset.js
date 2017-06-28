@@ -84,9 +84,7 @@ export let AssetTabPanelView = TabPanelView.extend({
         this.model.destroy();
     },
 
-
     saveForm: function() {
-        let self = this;
         let saveData = this._prepareSaveData();
         if (_.isEmpty(saveData)) {
             return;
@@ -96,9 +94,10 @@ export let AssetTabPanelView = TabPanelView.extend({
             minicash.status.show();
         });
         dfd.then(() => {
-            self.model.destroy();
-        }).fail(() => {
-            self.unlockControls();
+            this.model.destroy();
+        }).fail((errors) => {
+            this.validator.showErrors(errors);
+            this.unlockControls();
         }).always(() => {
             minicash.status.hide();
         });
@@ -106,7 +105,9 @@ export let AssetTabPanelView = TabPanelView.extend({
         let saveOptions = {
             wait: true,
             success: () => dfd.resolve(),
-            error: () => dfd.reject(),
+            error: (model, response, options) => {
+                dfd.reject(response.responseJSON);
+            },
         };
 
         let asset = this.model.get('asset');

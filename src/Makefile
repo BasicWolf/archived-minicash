@@ -93,6 +93,10 @@ django-collectstatic:
 	$(MAKE) -C $(FRONTEND_DIR) build-release
 	$(MANAGEPY_CMD) collectstatic --no-input
 
+
+heroku-deploy:
+	cd .. && git push heroku `git subtree split --prefix srs master`:master --force
+
 clean:
 	rm -rf $(NODE_MODULES_DIR) ${FRONTEND_STATIC_DIR}
 
