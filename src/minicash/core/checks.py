@@ -2,6 +2,7 @@ from itertools import chain
 from django.core.checks import (register, Tags, Warning as CheckWarning,
                                 Error as CheckError)
 from django.conf import settings
+from djmoney.settings import CURRENCY_CHOICES
 
 from minicash.utils.checks import requires_settings
 
@@ -18,15 +19,28 @@ def check_settings(app_configs, **kwargs):
     'MINICASH_DEFAULT_PAGINATOR_PAGE_SIZE',
 ])
 def check_paginator_settings():
-    sname = 'MINICASH_DEFAULT_PAGINATOR_PAGE_SIZE'
-    sval = getattr(settings, sname)
+    name = 'MINICASH_DEFAULT_PAGINATOR_PAGE_SIZE'
+    val = getattr(settings, name)
 
-    if not isinstance(sval, int):
-        yield CheckError(f'{sname} value ({sval}) must be an integer', id='MINICASH-CHECK-E0002')
+    if not isinstance(val, int):
+        yield CheckError(f'{name} value ({val}) must be an integer', id='MINICASH-CHECK-E0020')
 
-    if sval < 20 or sval > 500:
+    if val < 20 or val > 500:
         yield CheckWarning(
-            f'{sname} value ({sval}) is sub-optimal.',
+            f'{name} value ({val}) is sub-optimal.',
             'Consider a value in range [20..500].',
             id='MINICASH-CHECK-W0001'
         )
+
+
+@requires_settings([
+    'MINICASH_DEFAULT_CURRENCY',
+])
+def check_minicash_default_currency():
+    CURRENCY_CODES = (c['code'] for c in CURRENCY_CHOICES)
+
+    name = 'MINICASH_DEFAULT_CURRENCY'
+    val = getattr(settings, name)
+
+    if val in CURRENCY_CODES:
+        yield CheckError(f'{name} value ({val}) is an invalid currency value', id='MINICASH-CHECK-E0030')

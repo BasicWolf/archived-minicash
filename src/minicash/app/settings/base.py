@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
 
     'django_js_utils',
+    'djmoney',
     'rest_framework',
 
     'minicash.app.apps.AppConfig',
@@ -133,3 +134,5 @@ WSGI_APPLICATION = 'minicash.app.wsgi.application'
 MINICASH_AUTH_DEFAULT_BACKEND_DATETIME_FORMAT = '%d/%m/%Y %H:%M'
 
 MINICASH_DEFAULT_PAGINATOR_PAGE_SIZE = 20
+
+MINICASH_DEFAULT_CURRENCY = 'EUR'

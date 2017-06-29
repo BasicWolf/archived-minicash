@@ -1,7 +1,14 @@
+import moneyed
+from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.db import models
+from djmoney.models.fields import MoneyField
 from jsonfield import JSONField
+
+
+
+
 
 
 class Record(models.Model):
@@ -58,7 +65,7 @@ class Asset(models.Model):
     name = models.CharField(max_length=32)
     description = models.TextField(blank=True, default='')
     owner = models.ForeignKey(User, related_name='assets')
-    saldo = models.IntegerField(default=0)
+    saldo = MoneyField(max_digits=10, decimal_places=2, default_currency=settings.MINICASH_DEFAULT_CURRENCY)
 
     class Meta:
         unique_together = (('name', 'owner'))

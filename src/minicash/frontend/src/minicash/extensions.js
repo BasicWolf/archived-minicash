@@ -155,9 +155,13 @@ let handleAjaxError = function(xhr, status) {
     switch(status) {
     case 'error':
         console.error(`AJAX Error: ${xhr.responseText}`);
+
+        let errorMessage = tr('Unfortunately an application error has happened. <br>Please try again later.');
         if (xhr.responseJSON && xhr.responseJSON.detail) {
-            minicash.notify.error(xhr.responseJSON.detail);
+            errorMessage = xhr.responseJSON.detail;
         }
+
+        minicash.notify.error(errorMessage);
         break;
     }
 };

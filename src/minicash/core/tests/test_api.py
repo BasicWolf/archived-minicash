@@ -3,6 +3,7 @@ from decimal import Decimal
 import factory
 from rest_framework import status
 from rest_framework.reverse import reverse
+from moneyed import Money
 
 from minicash.core.models import Asset, Record, Tag
 from minicash.core.serializers import (
@@ -120,6 +121,20 @@ class RecordsAPITest(RESTTestCase):
         res = self.jpost(reverse('records-list'), RecordSerializer(record).data)
         self.assert_bad(res)
 
+    def test_record_created_asset_updated(self):
+        asset_from = AssetFactory.create(owner=self.owner)
+        old_asset_saldo = asset_from.saldo
+        record = RecordFactory.build(owner=self.owner, asset_from=asset_from, asset_to=None)
+        serializer = RecordSerializer(record)
+
+        res = self.jpost(reverse('records-list'), RecordSerializer(record).data)
+        self.assert_created(res)
+
+        asset_from.refresh_from_db()
+        new_asset_saldo = asset_from.saldo
+        self.assertEqual(new_asset_saldo,
+                         old_asset_saldo - Money(amount=record.delta, currency=old_asset_saldo.currency))
+
     def _compare_records_data(self, data_in, data_out):
         # pk's are not equal (None vs. PK from database)
         data_in_pk, data_out_pk = data_in.pop('pk'), data_out.pop('pk')
@@ -184,7 +199,7 @@ class AssetAPITest(RESTTestCase):
         res = self.jpatch(reverse('assets-detail', args=[asset.pk]), data_in)
         data_out = res.data
         self.assertNotIn('saldo', data_out)
-        self.assertEqual(data_in['saldo'], Asset.objects.get(pk=data_in['pk']).saldo)
+        self.assertEqual(data_in['saldo'], str(Asset.objects.get(pk=data_in['pk']).saldo.amount))
 
     def test_delete_empty(self):
         asset = AssetFactory.create(owner=self.owner)

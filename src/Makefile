@@ -8,7 +8,7 @@ FRONTEND_STATIC_DIR = $(FRONTEND_DIR)/static
 FRONTEND_STATIC_LIB_DIR = $(FRONTEND_STATIC_DIR)/lib
 
 
-TESTS = minicash.utils minicash.core minicash.auth minicash.frontend
+TESTS := minicash.utils minicash.core minicash.auth minicash.frontend
 
 
 
@@ -95,7 +95,7 @@ django-collectstatic:
 
 
 heroku-deploy:
-	cd .. && git push heroku `git subtree split --prefix srs master`:master --force
+	cd .. && git push heroku `git subtree split --prefix src master`:master --force
 
 clean:
 	rm -rf $(NODE_MODULES_DIR) ${FRONTEND_STATIC_DIR}

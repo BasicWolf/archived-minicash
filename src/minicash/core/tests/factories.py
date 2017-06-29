@@ -56,7 +56,7 @@ class RecordFactory(TagsMixin, DjangoModelFactory):
         datetime.datetime(1960, 1, 1, tzinfo=datetime.timezone.utc),
         datetime.datetime(2060, 1, 1, tzinfo=datetime.timezone.utc),
     )
-    delta = factories.FuzzyDecimal()
+    delta = fuzzy.FuzzyDecimal(0.01, 10000, 2)
     description = Faker('text')
     asset_from = SubFactory(AssetFactory, owner=SelfAttribute('..owner'))
     asset_to = SubFactory(AssetFactory, owner=SelfAttribute('..owner'))

@@ -1,8 +1,12 @@
 from django.conf import settings
-from rest_framework import viewsets, pagination, response
+from django.db import transaction
+from rest_framework import viewsets, pagination, response, status
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
+from . import services
+from .models import Record
 from .permissions import IsAssetRemovable
 from .serializers import (
     RecordSerializer,
@@ -40,6 +44,18 @@ class RecordsView(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         return user.records.all().order_by('-dt_stamp')
+
+    @transaction.atomic
+    def create(self, request, *args, **kwargs):
+        # Copied from DRF's CreateMixin
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+
+        services.update_asset(serializer.instance)
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
 class AssetsView(viewsets.ModelViewSet):
