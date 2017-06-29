@@ -7,6 +7,7 @@ import * as bootbox from 'bootbox';
 
 import {PaginatorView} from 'components/paginator';
 import {TabPanelView, TabModel} from 'tabbar';
+import {RecordTab} from './tab_record';
 
 
 export let RecordsTab = TabModel.extend({
@@ -28,7 +29,6 @@ let RecordsTabPanelView = TabPanelView.extend({
 
     ui: {
         newRecordBtn: 'button[data-spec="start-new-record"]',
-        editRecordBtn: 'button[data-spec="edit-record"]',
         deleteRecordBtn: 'button[data-spec="delete-record"]',
     },
 
@@ -39,7 +39,6 @@ let RecordsTabPanelView = TabPanelView.extend({
 
     events: {
         'click @ui.newRecordBtn': 'startNewRecord',
-        'click @ui.editRecordBtn': 'editSelectedRecord',
         'click @ui.deleteRecordBtn': 'deleteSelectedRecords',
     },
 
@@ -53,21 +52,8 @@ let RecordsTabPanelView = TabPanelView.extend({
     },
 
     startNewRecord: function() {
-        this.openTab(minicash.tabbarManager.TABS.EDIT_RECORD);
+        minicash.tabbar.openTab(RecordTab);
     },
-
-    editSelectedRecord: function() {
-        let selectedRecords = this.getSelectedRecords();
-
-        if (selectedRecords.length === 1) {
-            let selectedRecord = selectedRecords[0];
-
-             this.openTab(minicash.tabbarManager.TABS.EDIT_RECORD, {
-                record: selectedRecord
-            });
-        }
-    },
-
 
     deleteSelectedRecords: function() {
         let dfdDoDelete = $.Deferred();
@@ -105,7 +91,6 @@ let RecordsTabPanelView = TabPanelView.extend({
     },
 
     onSelectedRecordsChange: function(selectedRecords) {
-        this.uiEnable('editRecordBtn', selectedRecords.length === 1);
         this.uiEnable('deleteRecordBtn', !!selectedRecords.length);
     },
 
@@ -152,7 +137,12 @@ let RecordRowView = Mn.View.extend({
     template: require('templates/tab_records/record_row.hbs'),
 
     ui: {
+        activeRowArea: 'td[role="button"]',
         chkRecord: 'input[data-spec="select-record"]',
+    },
+
+    events: {
+        'click @ui.activeRowArea': 'editRecord',
     },
 
     modelEvents: {
@@ -172,7 +162,13 @@ let RecordRowView = Mn.View.extend({
 
     isSelected: function() {
         return this.getUI('chkRecord').is(':checked');
-    }
+    },
+
+    editRecord: function() {
+        minicash.tabbar.openTab(RecordTab, {
+            record: this.model
+        });
+    },
 });
 
 

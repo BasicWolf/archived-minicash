@@ -6,7 +6,7 @@ import Mn from 'backbone.marionette';
 import * as bootbox from 'bootbox';
 
 import {TabPanelView, TabModel} from 'tabbar';
-
+import {AssetTab} from './tab_asset';
 
 export let AssetsTab = TabModel.extend({
     defaults: function() {
@@ -27,7 +27,6 @@ let AssetsTabPanelView = TabPanelView.extend({
 
     ui: {
         newAssetBtn: 'button[data-spec="start-new-asset"]',
-        editAssetBtn: 'button[data-spec="edit-asset"]',
         deleteAssetBtn: 'button[data-spec="delete-asset"]',
     },
 
@@ -37,7 +36,6 @@ let AssetsTabPanelView = TabPanelView.extend({
 
     events: {
         'click @ui.newAssetBtn': 'startNewAsset',
-        'click @ui.editAssetBtn': 'editSelectedAsset',
         'click @ui.deleteAssetBtn': 'deleteSelectedAssets',
     },
 
@@ -50,19 +48,7 @@ let AssetsTabPanelView = TabPanelView.extend({
     },
 
     startNewAsset: function() {
-        this.openTab(minicash.tabbarManager.TABS.EDIT_ASSET, {adding: true});
-    },
-
-    editSelectedAsset: function() {
-        let selectedAssets = this.getSelectedAssets();
-
-        if (selectedAssets.length === 1) {
-            let selectedAsset = selectedAssets[0];
-
-             this.openTab(minicash.tabbarManager.TABS.EDIT_ASSET, {
-                asset: selectedAsset
-            });
-        }
+        minicash.tabbar.openTab(AssetTab, {adding: true});
     },
 
     deleteSelectedAssets: function() {
@@ -101,7 +87,6 @@ let AssetsTabPanelView = TabPanelView.extend({
     },
 
     onSelectedAssetsChange: function(selectedAssets) {
-        this.uiEnable('editAssetBtn', selectedAssets.length === 1);
         this.uiEnable('deleteAssetBtn', !!selectedAssets.length);
     },
 
@@ -147,7 +132,12 @@ let AssetRowView = Mn.View.extend({
     template: require('templates/tab_assets/asset_row.hbs'),
 
     ui: {
+        activeRowArea: 'td[role="button"]',
         chkAsset: 'input[data-spec="select-asset"]',
+    },
+
+    events: {
+        'click @ui.activeRowArea': 'editAsset',
     },
 
     modelEvents: {
@@ -167,5 +157,11 @@ let AssetRowView = Mn.View.extend({
 
     isSelected: function() {
         return this.getUI('chkAsset').is(':checked');
-    }
+    },
+
+    editAsset: function() {
+        minicash.tabbar.openTab(AssetTab, {
+            asset: this.model
+        });
+    },
 });

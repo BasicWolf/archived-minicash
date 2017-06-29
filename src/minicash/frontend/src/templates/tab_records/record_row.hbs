@@ -1,17 +1,17 @@
 <tr>
-  <td class="record-checkbox">
+  <td class="select-item-checkbox">
     <input data-spec="select-record" type="checkbox" value="">
     <br>
   </td>
 
-  <td>{{dt_stamp}}</td>
+  <td role="button">{{dt_stamp}}</td>
 
-  <td class="delta">{{#decimal}}{{delta}}{{/decimal}}</td>
-  <td>{{#record_account asset_from asset_to}}{{/record_account}}</td>
-  <td>
+  <td class="delta" role="button">{{#decimal}}{{delta}}{{/decimal}}</td>
+  <td role="button">{{#record_account asset_from asset_to}}{{/record_account}}</td>
+  <td role="button">
     {{#each tags}}
       {{this}}{{#ifnot @last}},{{/ifnot}}
     {{/each}}
   </td>
-  <td>{{description}}</td>
+  <td role="button">{{description}}</td>
 </tr>

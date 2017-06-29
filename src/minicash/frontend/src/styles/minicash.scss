@@ -77,6 +77,17 @@ table.table-fixed {
 }
 
 
+/* ----- Generic table ---- */
+
+td.select-item-checkbox {
+    text-align: center;
+}
+
+th.select-item-checkbox {
+    width: 12px;
+}
+
+
 /* ----- Records ----- */
 table[data-spec="records-table"] {
     td {
@@ -91,14 +102,6 @@ table[data-spec="records-table"] {
         text-overflow:ellipsis;
         overflow:hidden;
         white-space:nowrap;
-    }
-
-    td.record-checkbox {
-        text-align: center;
-    }
-
-    th.record-checkbox {
-        width: 12px;
     }
 
     th.dt-stamp {
@@ -129,6 +132,7 @@ table[data-spec="records-table"] {
         text-align: right;
     }
 }
+
 
 
 /* ====== Overrides ====== */
