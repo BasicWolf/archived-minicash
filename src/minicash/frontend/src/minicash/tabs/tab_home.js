@@ -3,6 +3,10 @@
 /* global $,_,minicash,require,tr */
 
 import {TabPanelView, TabModel} from 'tabbar';
+import {RecordsTab} from './tab_records';
+import {RecordTab} from './tab_record';
+import {AssetsTab} from './tab_assets';
+
 
 
 export let HomeTab = TabModel.extend({
@@ -38,15 +42,15 @@ export let HomeTabPanelView = TabPanelView.extend({
     },
 
     openAllRecords: function() {
-        this.openTab(minicash.tabbarManager.TABS.RECORDS);
+        minicash.tabbar.openTab(RecordsTab);
     },
 
     startNewRecord: function() {
-        this.openTab(minicash.tabbarManager.TABS.EDIT_RECORD);
+        minicash.tabbar.openTab(RecordTab);
     },
 
     openAssets: function() {
-        this.openTab(minicash.tabbarManager.TABS.ASSETS);
+        minicash.tabbar.openTab(AssetsTab);
     },
 
 }); // HomeTabPanelView

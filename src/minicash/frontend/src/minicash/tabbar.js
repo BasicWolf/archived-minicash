@@ -1,13 +1,15 @@
 'use strict';
 
-/* global _,Backbone,minicash,require, */
+/* global _,Backbone,require, */
 
 import Bb from 'backbone';
 import Mn from 'backbone.marionette';
+import Radio from 'backbone.radio';
 import 'backbone.choosy';
 
 import * as utils from 'utils';
 import * as views from 'views';
+
 
 export let TabModel = Bb.Model.extend({
     initialize: function() {
@@ -21,8 +23,6 @@ export let TabModel = Bb.Model.extend({
             permanent: false,        // false - allow closing the tab
             singleInstance: true,    // true - only one instance of this tab in tabbar
             viewClass: null,
-
-            source: null,            // the source tab which open the current tab
         };
     }
 });
@@ -101,13 +101,6 @@ export let TabPanelView = Mn.View.extend({
         this.$el.attr('id', `tab_${name}`);
         return this;
     },
-
-    openTab: function(tabType, options) {
-        options = _.extend({
-            source: this.model
-        }, options);
-        minicash.tabbarManager.openTab(tabType, options);
-    },
 });
 _.extend(TabPanelView.prototype, views.UIEnableDisableMixin);
 
@@ -122,7 +115,7 @@ let TabsPanelView = Mn.CollectionView.extend({
 });
 
 
-export let TabView = Mn.View.extend({
+export let TabbarView = Mn.View.extend({
     el: '#tabview_container',
     template: false,
     collection: new TabCollection(),
@@ -170,9 +163,7 @@ export let TabView = Mn.View.extend({
     },
 
     onModelDestroyed: function(model, collection, options) {
-        if (model.get('source')) {
-            this.collection.choose(model.get('source'));
-        }
+        this.collection.choose(this.collection.at(-1));
     },
 
     onChildviewChildviewTabShown: function(model) {
