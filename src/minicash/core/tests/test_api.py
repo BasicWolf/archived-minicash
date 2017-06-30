@@ -15,7 +15,7 @@ from minicash.utils.testing import RESTTestCase
 from .factories import AssetFactory, RecordFactory, TagFactory
 
 
-class RecordsAPITest(RESTTestCase):
+class RecordsAPICRUDTest(RESTTestCase):
     def test_smoke(self):
         pass
 
@@ -121,19 +121,6 @@ class RecordsAPITest(RESTTestCase):
         res = self.jpost(reverse('records-list'), RecordSerializer(record).data)
         self.assert_bad(res)
 
-    def test_record_created_asset_updated(self):
-        asset_from = AssetFactory.create(owner=self.owner)
-        old_asset_saldo = asset_from.saldo
-        record = RecordFactory.build(owner=self.owner, asset_from=asset_from, asset_to=None)
-        serializer = RecordSerializer(record)
-
-        res = self.jpost(reverse('records-list'), RecordSerializer(record).data)
-        self.assert_created(res)
-
-        asset_from.refresh_from_db()
-        new_asset_saldo = asset_from.saldo
-        self.assertEqual(new_asset_saldo,
-                         old_asset_saldo - Money(amount=record.delta, currency=old_asset_saldo.currency))
 
     def _compare_records_data(self, data_in, data_out):
         # pk's are not equal (None vs. PK from database)
@@ -150,6 +137,75 @@ class RecordsAPITest(RESTTestCase):
         data_internal = ser_internal.data
         data_internal.pop('pk')
         self.assertEqual(data_out, data_internal)
+
+
+class RecordAPIBusinessLogicTest(RESTTestCase):
+    def test_expnese_record_created_asset_updated(self):
+        asset_from = AssetFactory.create(owner=self.owner)
+        old_asset_saldo = asset_from.saldo
+        record = RecordFactory.build(owner=self.owner, asset_from=asset_from, asset_to=None)
+        serializer = RecordSerializer(record)
+
+        res = self.jpost(reverse('records-list'), RecordSerializer(record).data)
+
+        asset_from.refresh_from_db()
+        new_asset_saldo = asset_from.saldo
+        self.assertEqual(new_asset_saldo,
+                         old_asset_saldo - Money(record.delta, old_asset_saldo.currency))
+
+    def test_income_record_created_asset_updated(self):
+        asset_to = AssetFactory.create(owner=self.owner)
+        old_asset_saldo = asset_to.saldo
+        record = RecordFactory.build(owner=self.owner, asset_to=asset_to, asset_from=None)
+        serializer = RecordSerializer(record)
+
+        res = self.jpost(reverse('records-list'), RecordSerializer(record).data)
+
+        asset_to.refresh_from_db()
+        new_asset_saldo = asset_to.saldo
+        self.assertEqual(new_asset_saldo,
+                         old_asset_saldo + Money(record.delta, old_asset_saldo.currency))
+
+    def test_transfer_record_created_assets_updated(self):
+        asset_from = AssetFactory.create(owner=self.owner)
+        asset_to = AssetFactory.create(owner=self.owner)
+        old_asset_from_saldo = asset_from.saldo
+        old_asset_to_saldo = asset_to.saldo
+        record = RecordFactory.build(owner=self.owner, asset_from=asset_from, asset_to=asset_to)
+        serializer = RecordSerializer(record)
+
+        res = self.jpost(reverse('records-list'), RecordSerializer(record).data)
+
+        asset_to.refresh_from_db()
+        asset_from.refresh_from_db()
+        new_asset_from_saldo = asset_from.saldo
+        new_asset_to_saldo = asset_to.saldo
+
+        self.assertEqual(new_asset_from_saldo,
+                         old_asset_from_saldo - Money(record.delta, old_asset_from_saldo.currency))
+        self.assertEqual(new_asset_to_saldo,
+                         old_asset_to_saldo + Money(record.delta, old_asset_to_saldo.currency))
+
+
+    def test_expnese_record_updated_asset_updated(self):
+        asset_from = AssetFactory.create(owner=self.owner)
+        currency = asset_from.saldo.currency
+        old_asset_saldo = asset_from.saldo
+
+        record = RecordFactory.create(owner=self.owner, asset_from=asset_from, asset_to=None)
+        old_record_delta_money = Money(record.delta, currency)
+
+        new_record_delta = random.randint(0, 1000)
+        record.delta = new_record_delta
+        serializer = RecordSerializer(record)
+
+        res = self.jpatch(reverse('records-detail', args=[record.pk]), serializer.data)
+
+        asset_from.refresh_from_db()
+        new_asset_saldo = asset_from.saldo
+        new_record_delta_money = Money(record.delta, currency)
+
+        self.assertEqual(new_asset_saldo, old_asset_saldo + old_record_delta_money - new_record_delta_money)
 
 
 class AssetAPITest(RESTTestCase):

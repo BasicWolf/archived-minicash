@@ -46,16 +46,15 @@ class RecordsView(viewsets.ModelViewSet):
         return user.records.all().order_by('-dt_stamp')
 
     @transaction.atomic
-    def create(self, request, *args, **kwargs):
-        # Copied from DRF's CreateMixin
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
+    def perform_create(self, serializer):
+        serializer.save()
+        services.update_asset_from_new_record(serializer.instance)
 
-        services.update_asset(serializer.instance)
-
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    @transaction.atomic
+    def perform_update(self, serializer):
+        old_delta = serializer.instance.delta
+        serializer.save()
+        services.update_asset_from_changed_record(serializer.instance, old_delta)
 
 
 class AssetsView(viewsets.ModelViewSet):
