@@ -30,14 +30,14 @@ class Command(BaseCommand):
         Asset(
             name='Checking account',
             description='Main bank account',
-            saldo=500,
+            balance=500,
             owner=user,
         ).save()
 
         Asset(
             name='Wallet',
             description='My wallet',
-            saldo=30,
+            balance=30,
             owner=user
         ).save()
 

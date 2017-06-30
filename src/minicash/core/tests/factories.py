@@ -17,7 +17,7 @@ class AssetFactory(DjangoModelFactory):
         django_get_or_create = ('name', )
 
     name = fuzzy.FuzzyChoice(['Salary', 'Lottery', 'Gift', 'Interest'])
-    saldo = fuzzy.FuzzyDecimal(0.00, 10000, 2)
+    balance = fuzzy.FuzzyDecimal(0.00, 10000, 2)
     description = factories.FuzzyText()
     owner = SubFactory(UserFactory)
 

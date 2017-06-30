@@ -142,35 +142,35 @@ class RecordsAPICRUDTest(RESTTestCase):
 class RecordAPIBusinessLogicTest(RESTTestCase):
     def test_expnese_record_created_asset_updated(self):
         asset_from = AssetFactory.create(owner=self.owner)
-        old_asset_saldo = asset_from.saldo
+        old_asset_balance = asset_from.balance
         record = RecordFactory.build(owner=self.owner, asset_from=asset_from, asset_to=None)
         serializer = RecordSerializer(record)
 
         res = self.jpost(reverse('records-list'), RecordSerializer(record).data)
 
         asset_from.refresh_from_db()
-        new_asset_saldo = asset_from.saldo
-        self.assertEqual(new_asset_saldo,
-                         old_asset_saldo - Money(record.delta, old_asset_saldo.currency))
+        new_asset_balance = asset_from.balance
+        self.assertEqual(new_asset_balance,
+                         old_asset_balance - Money(record.delta, old_asset_balance.currency))
 
     def test_income_record_created_asset_updated(self):
         asset_to = AssetFactory.create(owner=self.owner)
-        old_asset_saldo = asset_to.saldo
+        old_asset_balance = asset_to.balance
         record = RecordFactory.build(owner=self.owner, asset_to=asset_to, asset_from=None)
         serializer = RecordSerializer(record)
 
         res = self.jpost(reverse('records-list'), RecordSerializer(record).data)
 
         asset_to.refresh_from_db()
-        new_asset_saldo = asset_to.saldo
-        self.assertEqual(new_asset_saldo,
-                         old_asset_saldo + Money(record.delta, old_asset_saldo.currency))
+        new_asset_balance = asset_to.balance
+        self.assertEqual(new_asset_balance,
+                         old_asset_balance + Money(record.delta, old_asset_balance.currency))
 
     def test_transfer_record_created_assets_updated(self):
         asset_from = AssetFactory.create(owner=self.owner)
         asset_to = AssetFactory.create(owner=self.owner)
-        old_asset_from_saldo = asset_from.saldo
-        old_asset_to_saldo = asset_to.saldo
+        old_asset_from_balance = asset_from.balance
+        old_asset_to_balance = asset_to.balance
         record = RecordFactory.build(owner=self.owner, asset_from=asset_from, asset_to=asset_to)
         serializer = RecordSerializer(record)
 
@@ -178,19 +178,19 @@ class RecordAPIBusinessLogicTest(RESTTestCase):
 
         asset_to.refresh_from_db()
         asset_from.refresh_from_db()
-        new_asset_from_saldo = asset_from.saldo
-        new_asset_to_saldo = asset_to.saldo
+        new_asset_from_balance = asset_from.balance
+        new_asset_to_balance = asset_to.balance
 
-        self.assertEqual(new_asset_from_saldo,
-                         old_asset_from_saldo - Money(record.delta, old_asset_from_saldo.currency))
-        self.assertEqual(new_asset_to_saldo,
-                         old_asset_to_saldo + Money(record.delta, old_asset_to_saldo.currency))
+        self.assertEqual(new_asset_from_balance,
+                         old_asset_from_balance - Money(record.delta, old_asset_from_balance.currency))
+        self.assertEqual(new_asset_to_balance,
+                         old_asset_to_balance + Money(record.delta, old_asset_to_balance.currency))
 
 
     def test_expnese_record_updated_asset_updated(self):
         asset_from = AssetFactory.create(owner=self.owner)
-        currency = asset_from.saldo.currency
-        old_asset_saldo = asset_from.saldo
+        currency = asset_from.balance.currency
+        old_asset_balance = asset_from.balance
 
         record = RecordFactory.create(owner=self.owner, asset_from=asset_from, asset_to=None)
         old_record_delta_money = Money(record.delta, currency)
@@ -202,10 +202,10 @@ class RecordAPIBusinessLogicTest(RESTTestCase):
         res = self.jpatch(reverse('records-detail', args=[record.pk]), serializer.data)
 
         asset_from.refresh_from_db()
-        new_asset_saldo = asset_from.saldo
+        new_asset_balance = asset_from.balance
         new_record_delta_money = Money(record.delta, currency)
 
-        self.assertEqual(new_asset_saldo, old_asset_saldo + old_record_delta_money - new_record_delta_money)
+        self.assertEqual(new_asset_balance, old_asset_balance + old_record_delta_money - new_record_delta_money)
 
 
 class AssetAPITest(RESTTestCase):
@@ -250,12 +250,12 @@ class AssetAPITest(RESTTestCase):
         asset = AssetFactory.create(owner=self.owner)
         serializer = AssetSerializer(asset)
         data_in = serializer.data
-        self.assertIn('saldo', data_in)
+        self.assertIn('balance', data_in)
 
         res = self.jpatch(reverse('assets-detail', args=[asset.pk]), data_in)
         data_out = res.data
-        self.assertNotIn('saldo', data_out)
-        self.assertEqual(data_in['saldo'], str(Asset.objects.get(pk=data_in['pk']).saldo.amount))
+        self.assertNotIn('balance', data_out)
+        self.assertEqual(data_in['balance'], str(Asset.objects.get(pk=data_in['pk']).balance.amount))
 
     def test_delete_empty(self):
         asset = AssetFactory.create(owner=self.owner)

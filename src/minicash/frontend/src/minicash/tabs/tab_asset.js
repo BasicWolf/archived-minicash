@@ -67,11 +67,11 @@ export let AssetTabPanelView = TabPanelView.extend({
         this.validator = this.getUI('form').validate({
             rules: {
                 name: {required: true},
-                saldo: {required: true},
+                balance: {required: true},
             },
             messages: {
                 name: tr("Please enter a valid name"),
-                saldo: tr("Please enter an initial saldo"),
+                balance: tr("Please enter an initial balance"),
             },
         });
     },

@@ -100,7 +100,7 @@ class TagSerializer(ModelSerializer):
 class AssetSerializer(ModelSerializer):
     class Meta:
         model = Asset
-        fields = ['pk', 'description', 'name', 'owner', 'saldo']
+        fields = ['pk', 'description', 'name', 'owner', 'balance']
 
     owner = serializers.PrimaryKeyRelatedField(
         queryset=User.objects,

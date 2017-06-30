@@ -49,7 +49,7 @@ export let Asset = utils.BaseModel.extend({
         'name',
         'description',
         'owner',
-        'saldo',
+        'balance',
     ],
 });
 

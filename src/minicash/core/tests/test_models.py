@@ -7,8 +7,8 @@ class AssetFactoryTest(ModelTestCase):
         AssetFactory()
 
     def test_invalid_value_validator(self):
-        asset = AssetFactory(saldo=-1)
-        self.assertEqual(-1, asset.saldo.amount)
+        asset = AssetFactory(balance=-1)
+        self.assertEqual(-1, asset.balance.amount)
 
 
 class TagFactoryTest(ModelTestCase):

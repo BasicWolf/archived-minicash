@@ -65,7 +65,7 @@ class Asset(models.Model):
     name = models.CharField(max_length=32)
     description = models.TextField(blank=True, default='')
     owner = models.ForeignKey(User, related_name='assets')
-    saldo = MoneyField(max_digits=10, decimal_places=2, default_currency=settings.MINICASH_DEFAULT_CURRENCY)
+    balance = MoneyField(max_digits=10, decimal_places=2, default_currency=settings.MINICASH_DEFAULT_CURRENCY)
 
     class Meta:
         unique_together = (('name', 'owner'))
