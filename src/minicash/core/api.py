@@ -47,14 +47,19 @@ class RecordsView(viewsets.ModelViewSet):
 
     @transaction.atomic
     def perform_create(self, serializer):
-        serializer.save()
+        super().perform_create(serializer)
         services.update_asset_from_new_record(serializer.instance)
 
     @transaction.atomic
     def perform_update(self, serializer):
         old_delta = serializer.instance.delta
-        serializer.save()
+        super().perform_update(serializer)
         services.update_asset_from_changed_record(serializer.instance, old_delta)
+
+    @transaction.atomic
+    def perform_destroy(self, instance):
+        services.update_asset_from_deleted_record(instance)
+        super().perform_destroy(instance)
 
 
 class AssetsView(viewsets.ModelViewSet):
