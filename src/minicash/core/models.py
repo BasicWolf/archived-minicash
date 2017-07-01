@@ -1,14 +1,9 @@
-import moneyed
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.db import models
 from djmoney.models.fields import MoneyField
 from jsonfield import JSONField
-
-
-
-
 
 
 class Record(models.Model):

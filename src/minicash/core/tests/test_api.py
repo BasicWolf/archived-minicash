@@ -121,7 +121,6 @@ class RecordsAPICRUDTest(RESTTestCase):
         res = self.jpost(reverse('records-list'), RecordSerializer(record).data)
         self.assert_bad(res)
 
-
     def _compare_records_data(self, data_in, data_out):
         # pk's are not equal (None vs. PK from database)
         data_in_pk, data_out_pk = data_in.pop('pk'), data_out.pop('pk')
@@ -146,7 +145,7 @@ class RecordAPIBusinessLogicTest(RESTTestCase):
         record = RecordFactory.build(owner=self.owner, asset_from=asset_from, asset_to=None)
         serializer = RecordSerializer(record)
 
-        res = self.jpost(reverse('records-list'), serializer.data)
+        self.jpost(reverse('records-list'), serializer.data)
 
         asset_from.refresh_from_db()
         new_asset_balance = asset_from.balance
@@ -159,7 +158,7 @@ class RecordAPIBusinessLogicTest(RESTTestCase):
         record = RecordFactory.build(owner=self.owner, asset_to=asset_to, asset_from=None)
 
         serializer = RecordSerializer(record)
-        res = self.jpost(reverse('records-list'), serializer.data)
+        self.jpost(reverse('records-list'), serializer.data)
 
         asset_to.refresh_from_db()
         new_asset_balance = asset_to.balance
@@ -174,7 +173,7 @@ class RecordAPIBusinessLogicTest(RESTTestCase):
         record = RecordFactory.build(owner=self.owner, asset_from=asset_from, asset_to=asset_to)
         serializer = RecordSerializer(record)
 
-        res = self.jpost(reverse('records-list'), serializer.data)
+        self.jpost(reverse('records-list'), serializer.data)
 
         asset_to.refresh_from_db()
         asset_from.refresh_from_db()
@@ -198,7 +197,7 @@ class RecordAPIBusinessLogicTest(RESTTestCase):
         record.delta = new_record_delta
         serializer = RecordSerializer(record)
 
-        res = self.jpatch(reverse('records-detail', args=[record.pk]), serializer.data)
+        self.jpatch(reverse('records-detail', args=[record.pk]), serializer.data)
 
         asset_from.refresh_from_db()
         new_asset_balance = asset_from.balance
@@ -219,7 +218,7 @@ class RecordAPIBusinessLogicTest(RESTTestCase):
         record.delta = new_record_delta
         serializer = RecordSerializer(record)
 
-        res = self.jpatch(reverse('records-detail', args=[record.pk]), serializer.data)
+        self.jpatch(reverse('records-detail', args=[record.pk]), serializer.data)
 
         asset_to.refresh_from_db()
         new_asset_balance = asset_to.balance
@@ -242,7 +241,7 @@ class RecordAPIBusinessLogicTest(RESTTestCase):
         record.delta = new_record_delta
         serializer = RecordSerializer(record)
 
-        res = self.jpatch(reverse('records-detail', args=[record.pk]), serializer.data)
+        self.jpatch(reverse('records-detail', args=[record.pk]), serializer.data)
 
         asset_to.refresh_from_db()
         asset_from.refresh_from_db()
@@ -250,8 +249,6 @@ class RecordAPIBusinessLogicTest(RESTTestCase):
         new_asset_to_balance = asset_to.balance
         new_record_delta_money = Money(record.delta, currency)
 
-        if (new_asset_from_balance != old_asset_from_balance + old_record_delta_money - new_record_delta_money):
-            import pudb; pu.db
         self.assertEqual(new_asset_from_balance,
                          old_asset_from_balance + old_record_delta_money - new_record_delta_money)
         self.assertEqual(new_asset_to_balance,
@@ -265,7 +262,7 @@ class RecordAPIBusinessLogicTest(RESTTestCase):
         record = RecordFactory.create(owner=self.owner, asset_from=asset_from, asset_to=None)
         old_record_delta_money = Money(record.delta, currency)
 
-        res = self.jdelete(reverse('records-detail', args=[record.pk]))
+        self.jdelete(reverse('records-detail', args=[record.pk]))
 
         asset_from.refresh_from_db()
         new_asset_balance = asset_from.balance
@@ -280,7 +277,7 @@ class RecordAPIBusinessLogicTest(RESTTestCase):
         record = RecordFactory.create(owner=self.owner, asset_to=asset_to, asset_from=None)
         old_record_delta_money = Money(record.delta, currency)
 
-        res = self.jdelete(reverse('records-detail', args=[record.pk]))
+        self.jdelete(reverse('records-detail', args=[record.pk]))
         asset_to.refresh_from_db()
         new_asset_balance = asset_to.balance
 
@@ -295,7 +292,7 @@ class RecordAPIBusinessLogicTest(RESTTestCase):
         old_asset_to_balance = asset_to.balance
         record = RecordFactory.create(owner=self.owner, asset_from=asset_from, asset_to=asset_to)
 
-        res = self.jdelete(reverse('records-detail', args=[record.pk]))
+        self.jdelete(reverse('records-detail', args=[record.pk]))
 
         asset_to.refresh_from_db()
         asset_from.refresh_from_db()

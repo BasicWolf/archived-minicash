@@ -1,6 +1,6 @@
 from moneyed import Money
 
-from .models import Record, Asset
+from .models import Record
 
 
 def update_asset_from_new_record(record):
@@ -56,5 +56,3 @@ def update_asset_from_deleted_record(record):
         delta_money = Money(amount=record.delta, currency=asset_to.balance.currency)
         asset_to.balance -= delta_money
         asset_to.save()
-
-

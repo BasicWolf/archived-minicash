@@ -1,3 +1,4 @@
+from moneyed import Money
 from minicash.utils.testing import ModelTestCase
 from .factories import (AssetFactory, RecordFactory, TagFactory)
 
@@ -8,7 +9,7 @@ class AssetFactoryTest(ModelTestCase):
 
     def test_invalid_value_validator(self):
         asset = AssetFactory(balance=-1)
-        self.assertEqual(-1, asset.balance.amount)
+        self.assertEqual(Money(-1, asset.balance.currency), asset.balance)
 
 
 class TagFactoryTest(ModelTestCase):

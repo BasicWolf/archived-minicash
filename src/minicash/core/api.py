@@ -1,12 +1,10 @@
 from django.conf import settings
 from django.db import transaction
-from rest_framework import viewsets, pagination, response, status
+from rest_framework import viewsets, pagination, response
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
 
 from . import services
-from .models import Record
 from .permissions import IsAssetRemovable
 from .serializers import (
     RecordSerializer,
