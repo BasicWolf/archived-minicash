@@ -78,7 +78,7 @@ let TabNavView = Mn.View.extend({
 });
 
 
-let TabsNavsView = Mn.CollectionView.extend({
+let TabsNavsView = Mn.NextCollectionView.extend({
     childView: TabNavView,
     tagName: 'ul',
     className: 'nav nav-tabs',
@@ -105,7 +105,7 @@ export let TabPanelView = Mn.View.extend({
 _.extend(TabPanelView.prototype, views.UIEnableDisableMixin);
 
 
-let TabsPanelView = Mn.CollectionView.extend({
+let TabsPanelView = Mn.NextCollectionView.extend({
     className: 'tab-content',
 
     childView: function(item) {

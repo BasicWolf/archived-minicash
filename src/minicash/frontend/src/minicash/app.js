@@ -37,7 +37,11 @@ export default Mn.Application.extend({
     bootstrapData: function() {
         this.collections.assets.reset(this.CONTEXT.bootstrap.assets);
         this.collections.tags.reset(this.CONTEXT.bootstrap.tags);
-        this.collections.records.fetch();
+        this.collections.records.fetch().done(() => {
+            this.collections.records.on('sync', () => {
+                this.collections.assets.fetch();
+            });
+        });
     },
 
     url: function(name, args={}) {

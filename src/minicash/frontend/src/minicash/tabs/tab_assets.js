@@ -97,7 +97,7 @@ let AssetsTabPanelView = TabPanelView.extend({
 });
 
 
-let AssetsTableView = Mn.CollectionView.extend({
+let AssetsTableView = Mn.NextCollectionView.extend({
     tagName: 'table',
     className: 'table table-striped',
 
@@ -141,7 +141,7 @@ let AssetRowView = Mn.View.extend({
     },
 
     modelEvents: {
-        'sync': 'render',
+        'change': 'render',
     },
 
     triggers: {

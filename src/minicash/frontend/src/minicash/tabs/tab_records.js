@@ -101,7 +101,7 @@ let RecordsTabPanelView = TabPanelView.extend({
 });
 
 
-let RecordsTableView = Mn.CollectionView.extend({
+let RecordsTableView = Mn.NextCollectionView.extend({
     tagName: 'table',
     className: 'table table-striped',
 
@@ -146,7 +146,7 @@ let RecordRowView = Mn.View.extend({
     },
 
     modelEvents: {
-        'sync': 'render',
+        'change': 'render',
     },
 
     triggers: {
