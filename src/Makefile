@@ -96,6 +96,9 @@ django-collectstatic:
 heroku-deploy:
 	cd .. && git push heroku `git subtree split --prefix src master`:master --force
 
+heroku-migrate:
+	heroku run manage.py migrate
+
 clean:
 	rm -rf $(NODE_MODULES_DIR) ${FRONTEND_STATIC_DIR}
 
