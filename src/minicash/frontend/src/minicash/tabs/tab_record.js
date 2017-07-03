@@ -5,13 +5,14 @@
 import 'tagsinput';
 import 'corejs-typeahead';
 
-import {TabPanelView, TabModel} from 'tabbar';
+import * as tabbar from 'tabbar';
+import * as models from 'models';
 import * as utils from 'utils';
 
 
-export let RecordTab = TabModel.extend({
+export let RecordTab = tabbar.TabModel.extend({
     defaults: function() {
-        let parentDefaults = TabModel.prototype.defaults.apply(this, arguments);
+        let parentDefaults = tabbar.TabModel.prototype.defaults.apply(this, arguments);
 
         return _.extend(parentDefaults, {
             title: 'New record',
@@ -23,13 +24,16 @@ export let RecordTab = TabModel.extend({
 });
 
 
-export let RecordTabPanelView = TabPanelView.extend({
+export let RecordTabPanelView = tabbar.TabPanelView.extend({
+    uiInitialized: false,
     validator: null,
 
     template: require('templates/tab_records/tab_record.hbs'),
 
     ui: {
         saveBtn: 'button[data-spec="save"]',
+        saveAddSimilarBtn: 'a[data-spec="save-add-similar"]',
+        saveAddAnotherBtn: 'a[data-spec="save-add-another"]',
         cancelBtn: 'button[data-spec="cancel"]',
         modeSelect: 'select[name="mode"]',
         dtStampInput: 'input[name="dt_stamp"]',
@@ -42,26 +46,37 @@ export let RecordTabPanelView = TabPanelView.extend({
 
     events: {
         'click @ui.saveBtn': 'onSaveBtnClick',
+        'click @ui.saveAddSimilarBtn': 'onSaveAddSimilarBtnClick',
+        'click @ui.saveAddAnotherBtn': 'onSaveAddAnotherBtnClick',
         'click @ui.cancelBtn': 'onCancelBtnClick',
         'change @ui.modeSelect': 'onModeChange',
         'keydown @ui.deltaInput': 'onDeltaInputKeyDown',
     },
 
     serializeModel: function() {
-        let renderData = TabPanelView.prototype.serializeModel.apply(this, arguments);
-        renderData.record = (renderData.record && renderData.record.serialize() || {});
+        let renderData = tabbar.TabPanelView.prototype.serializeModel.apply(this, arguments);
+        renderData.record = renderData.record ?
+            renderData.record.serialize() :
+            this._buildNewRecordRenderData();
         renderData.assets = minicash.collections.assets.serialize();
         return renderData;
     },
 
-    onRender: function() {
-        this.initializeDateTimePicker();
-        this.initializeValidator();
-        this.renderModeSelectState();
-        this.renderTags();
+    _buildNewRecordRenderData: function() {
+        let nowStr = moment().format(minicash.CONTEXT.user.dtFormat);
+        return {
+            'dt_stamp': nowStr
+        };
     },
 
-    initializeDateTimePicker: function() {
+    onRender: function() {
+        this.initializeValidator();
+        this.renderDateTimePicker();
+        this.renderTagsInput();
+        this.renderModeSelectState();
+    },
+
+    renderDateTimePicker: function() {
         let options = {
             showTodayButton: true,
             allowInputToggle: true,
@@ -71,11 +86,17 @@ export let RecordTabPanelView = TabPanelView.extend({
         let $dtInput = this.getUI('dtStampInput');
         let dtStampInputWrapper = $dtInput.parent();
         dtStampInputWrapper.datetimepicker(options);
-        // set initial value in textbox
-        if ($dtInput.val() === '') {
-            let nowStr = moment().format(options.format);
-            this.getUI('dtStampInput').val(nowStr);
-        }
+    },
+
+    renderTagsInput: function() {
+        this.getUI('tagsInput').tagsinput({
+            tagClass: 'label label-primary',
+            typeaheadjs: {
+                displayKey: 'name',
+                valueKey: 'name',
+                source: minicash.collections.tags.bloodhound.adapter(),
+            },
+        });
     },
 
     initializeValidator: function() {
@@ -111,14 +132,6 @@ export let RecordTabPanelView = TabPanelView.extend({
             this.getUI('deltaInput').val(this.previousDeltaTxt);
             this.previousDeltaTxt = null;
         }
-    },
-
-    onSaveBtnClick: function() {
-        this.saveForm();
-    },
-
-    onCancelBtnClick: function() {
-        this.model.destroy();
     },
 
     onModeChange: function(e) {
@@ -158,30 +171,55 @@ export let RecordTabPanelView = TabPanelView.extend({
         this.getUI('toAssetSelect').parentsUntil('form', '.form-group').toggle(showTo);
     },
 
-    renderTags: function() {
-        this.getUI('tagsInput').tagsinput({
-            tagClass: 'label label-primary',
-            typeaheadjs: {
-                displayKey: 'name',
-                valueKey: 'name',
-                source: minicash.collections.tags.bloodhound.adapter(),
-            },
+
+    onSaveBtnClick: function() {
+        this.saveForm().then(() => {
+            this.model.destroy();
         });
+    },
+
+    onSaveAddSimilarBtnClick: function() {
+        this.saveForm().done(() => {
+            this._renderNewRecordSimilarToOld();
+        });
+    },
+
+    _renderNewRecordSimilarToOld: function() {
+        let currentRecord = this.model.get('record');
+        let newRecordData = _.clone(currentRecord.attributes);
+        delete newRecordData[currentRecord.idAttribute];
+        delete newRecordData['delta'];
+
+        let newRecord = new models.Record(newRecordData);
+
+        this.model.set('record', newRecord);
+        this.render();
+    },
+
+    onSaveAddAnotherBtnClick: function() {
+        this.saveForm().done(() => {
+            this.model.unset('record');
+            this.render();
+        });
+    },
+
+    onCancelBtnClick: function() {
+        this.model.destroy();
     },
 
     saveForm: function() {
         let saveData = this._prepareSaveData();
         if (_.isEmpty(saveData)) {
-            return;
+            let emptyDfd = $.Deferred();
+            emptyDfd.reject();
+            return emptyDfd.promise();
         }
 
         let dfd = $.Deferred(() => {
             this.lockControls();
         });
 
-        dfd.then(() => {
-            this.model.destroy();
-        }).fail((errors) => {
+        dfd.fail((errors) => {
             this.validator.showErrors(errors);
             this.unlockControls();
         });
@@ -195,11 +233,14 @@ export let RecordTabPanelView = TabPanelView.extend({
         };
 
         let record = this.model.get('record');
-        if (record) {
+        if (record && record.id != null) {
             record.save(saveData, saveOptions);
         } else {
-            minicash.collections.records.create(saveData, saveOptions);
+            let newRecord = minicash.collections.records.create(saveData, saveOptions);
+            this.model.set('record', newRecord);
         }
+
+        return dfd.promise();
     },
 
     _prepareSaveData: function() {
