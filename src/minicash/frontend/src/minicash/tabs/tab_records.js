@@ -58,7 +58,7 @@ let RecordsTabPanelView = TabPanelView.extend({
     deleteSelectedRecords: function() {
         let dfdDoDelete = $.Deferred();
 
-        bootbox.confirm({
+        let box = bootbox.confirm({
             message: tr('Are you sure you want to delete the selected records?'),
             buttons: {
                 confirm: {
@@ -74,6 +74,11 @@ let RecordsTabPanelView = TabPanelView.extend({
                     dfdDoDelete.resolve();
                 }
             }
+        });
+
+        box.on('shown.bs.modal',function(){
+            let $confirmButton = box.find('button[data-bb-handler="confirm"]');
+            $confirmButton.focus();
         });
 
         dfdDoDelete.then(() => {
