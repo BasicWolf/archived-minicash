@@ -4,13 +4,14 @@ from rest_framework import viewsets, pagination, response
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
 
-from . import services
+from .models import Asset
 from .permissions import IsAssetRemovable
 from .serializers import (
-    RecordSerializer,
     AssetSerializer,
-    UpdateAssetSerializer,
+    CreateAssetSerializer,
+    RecordSerializer,
     TagSerializer,
+    UpdateAssetSerializer,
 )
 
 
@@ -46,34 +47,35 @@ class RecordsView(viewsets.ModelViewSet):
     @transaction.atomic
     def perform_create(self, serializer):
         super().perform_create(serializer)
-        services.update_asset_from_new_record(serializer.instance)
+        serializer.instance.update_assets_after_create()
 
     @transaction.atomic
     def perform_update(self, serializer):
         old_delta = serializer.instance.delta
         super().perform_update(serializer)
-        services.update_asset_from_changed_record(serializer.instance, old_delta)
+        serializer.instance.update_assets_after_update(old_delta)
 
     @transaction.atomic
     def perform_destroy(self, instance):
-        services.update_asset_from_deleted_record(instance)
+        instance.update_assets_before_destroy()
         super().perform_destroy(instance)
 
 
 class AssetsView(viewsets.ModelViewSet):
     authentication_classes = (SessionAuthentication, BasicAuthentication)
     permission_classes = (IsAuthenticated, IsAssetRemovable,)
-    serializer_class = AssetSerializer
 
     def get_queryset(self):
         user = self.request.user
         return user.assets.all()
 
     def get_serializer_class(self):
-        if self.request.method in ['PUT', 'PATCH']:
+        if self.request.method == 'POST':
+            return CreateAssetSerializer
+        elif self.request.method in ['PUT', 'PATCH']:
             return UpdateAssetSerializer
         else:
-            return self.serializer_class
+            return AssetSerializer
 
 
 class TagsView(viewsets.ModelViewSet):

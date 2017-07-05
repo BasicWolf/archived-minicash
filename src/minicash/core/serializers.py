@@ -27,9 +27,7 @@ class RecordSerializer(ModelSerializer):
         (False, True): Record.EXPENSE
     }
 
-    owner = serializers.PrimaryKeyRelatedField(
-        queryset=User.objects,
-        write_only=True,
+    owner = serializers.HiddenField(
         default=serializers.CurrentUserDefault(),
     )
 
@@ -78,9 +76,7 @@ class TagSerializer(ModelSerializer):
         model = Tag
         fields = ['pk', 'description', 'name', 'owner']
 
-    owner = serializers.PrimaryKeyRelatedField(
-        queryset=User.objects,
-        write_only=True,
+    owner = serializers.HiddenField(
         default=serializers.CurrentUserDefault(),
     )
 
@@ -100,11 +96,9 @@ class TagSerializer(ModelSerializer):
 class AssetSerializer(ModelSerializer):
     class Meta:
         model = Asset
-        fields = ['pk', 'description', 'name', 'owner', 'balance']
+        fields = ['pk', 'balance', 'description', 'name', 'owner']
 
-    owner = serializers.PrimaryKeyRelatedField(
-        queryset=User.objects,
-        write_only=True,
+    owner = serializers.HiddenField(
         default=serializers.CurrentUserDefault(),
     )
 
@@ -113,3 +107,9 @@ class UpdateAssetSerializer(AssetSerializer):
     class Meta:
         model = Asset
         fields = ['pk', 'description', 'name', 'owner']
+
+
+class CreateAssetSerializer(AssetSerializer):
+    class Meta:
+        model = Asset
+        fields = ['pk', 'balance', 'description', 'name', 'owner']

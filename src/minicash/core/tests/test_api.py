@@ -1,9 +1,12 @@
 import random
 from decimal import Decimal
+
 import factory
+from moneyed import Money
+
+from django.test import RequestFactory
 from rest_framework import status
 from rest_framework.reverse import reverse
-from moneyed import Money
 
 from minicash.core.models import Asset, Record, Tag
 from minicash.core.serializers import (
@@ -96,9 +99,11 @@ class RecordsAPICRUDTest(RESTTestCase):
         res = self.jpatch(reverse('records-detail', args=[record.pk]), serializer.data)
         self.assert_updated(res)
 
-    def test_create_invalid_assets(self):
-        record_data = factory.build(dict, FACTORY_CLASS=RecordFactory)
-        serializer = RecordSerializer(data=record_data)
+    def test_create_empty_data_with_context(self):
+        req = RequestFactory()
+        req.user = self.owner
+        record_data = {}
+        serializer = RecordSerializer(data=record_data, context={'request': req})
         self.assertFalse(serializer.is_valid())
 
     def test_create_invalid_mode(self):
@@ -343,6 +348,9 @@ class AssetAPITest(RESTTestCase):
         data_internal = ser_internal.data
         data_internal.pop('pk')
         self.assertEqual(data_out, data_internal)
+
+        # ensure initial balance value
+        self.assertEqual(asset_internal.balance, asset_internal.initial_balance)
 
     def test_update(self):
         asset = AssetFactory.create(owner=self.owner)

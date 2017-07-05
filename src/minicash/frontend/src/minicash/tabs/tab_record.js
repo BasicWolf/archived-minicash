@@ -4,6 +4,7 @@
 
 import 'tagsinput';
 import 'corejs-typeahead';
+import Decimal from 'decimal.js';
 
 import * as tabbar from 'tabbar';
 import * as models from 'models';
@@ -105,7 +106,7 @@ export let RecordTabPanelView = tabbar.TabPanelView.extend({
         this.validator = this.getUI('form').validate({
             rules: {
                 dtStamp: {required: true},
-                delta: {required: true},
+                delta: {number: true, required: true},
             },
             messages: {
                 dtStamp: tr("Please enter a valid date/time"),
@@ -123,14 +124,29 @@ export let RecordTabPanelView = tabbar.TabPanelView.extend({
 
     calculateDelta: function() {
         let deltaTxt = this.getUI('deltaInput').val();
-        this.previousDeltaTxt = deltaTxt;
-        this.getUI('deltaInput').val(eval(deltaTxt));
+        let newDeltaTxt = deltaTxt;
+
+        try {
+            newDeltaTxt = eval(deltaTxt);
+        } catch (err) {
+
+        }
+
+        if (!isNaN(newDeltaTxt)) {
+            // if result is number format it to 3-point decimal
+            this.previousDeltaTxt = deltaTxt;
+            let formattedDeltaTxt = Decimal(newDeltaTxt).toFixed(3).toString();
+            newDeltaTxt = formattedDeltaTxt;
+        }
+
+        this.getUI('deltaInput').val(newDeltaTxt);
     },
 
     restoreCalculatedDelta: function() {
-        if (this.previousDeltaTxt == null) {
+        if (this.previousDeltaTxt != null) {
+            let currentDeltaTxt = this.getUI('deltaInput').val();
             this.getUI('deltaInput').val(this.previousDeltaTxt);
-            this.previousDeltaTxt = null;
+            this.previousDeltaTxt = currentDeltaTxt;
         }
     },
 

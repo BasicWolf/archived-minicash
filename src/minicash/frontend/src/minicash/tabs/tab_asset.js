@@ -67,7 +67,7 @@ export let AssetTabPanelView = TabPanelView.extend({
         this.validator = this.getUI('form').validate({
             rules: {
                 name: {required: true},
-                balance: {required: true},
+                balance: {number: true, required: true},
             },
             messages: {
                 name: tr("Please enter a valid name"),
