@@ -152,16 +152,21 @@ $.ajaxSetup({
 });
 
 let handleAjaxError = function(xhr, status) {
+    const HTTP_500_INTERNAL_SERVER_ERROR = 500;
+
     switch(status) {
     case 'error':
-        console.error(`AJAX Error: ${xhr.responseText}`);
+        console.debug(`AJAX Error: ${xhr.responseText}`);
 
-        let errorMessage = tr('Unfortunately an application error has happened. <br>Please try again later.');
-        if (xhr.responseJSON && xhr.responseJSON.detail) {
-            errorMessage = xhr.responseJSON.detail;
+        if (xhr.status == HTTP_500_INTERNAL_SERVER_ERROR) {
+            let errorMessage = tr('Unfortunately an application error has happened. <br>Please try again later.');
+            if (xhr.responseJSON && xhr.responseJSON.detail) {
+                errorMessage = xhr.responseJSON.detail;
+            }
+
+            minicash.notify.error(errorMessage);
         }
 
-        minicash.notify.error(errorMessage);
         break;
     }
 };

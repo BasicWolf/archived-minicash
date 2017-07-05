@@ -1,5 +1,5 @@
+from decimal import Decimal
 from moneyed import Money
-
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
@@ -107,8 +107,18 @@ class Asset(models.Model):
     name = models.CharField(max_length=32)
     description = models.TextField(blank=True, default='')
     owner = models.ForeignKey(User, related_name='assets')
-    balance = MoneyField(max_digits=10, decimal_places=2, default_currency=settings.MINICASH_DEFAULT_CURRENCY)
-    initial_balance = MoneyField(max_digits=10, decimal_places=2, default_currency=settings.MINICASH_DEFAULT_CURRENCY)
+    balance = MoneyField(
+        max_digits=10,
+        decimal_places=2,
+        default=Decimal('0.0'),
+        default_currency=settings.MINICASH_DEFAULT_CURRENCY
+    )
+    initial_balance = MoneyField(
+        max_digits=10,
+        decimal_places=2,
+        default=Decimal('0.0'),
+        default_currency=settings.MINICASH_DEFAULT_CURRENCY,
+    )
 
     class Meta:
         unique_together = (('name', 'owner'))
