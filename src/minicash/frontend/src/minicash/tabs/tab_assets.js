@@ -5,7 +5,7 @@ import Hb from 'handlebars/runtime';
 import Mn from 'backbone.marionette';
 import * as bootbox from 'bootbox';
 
-import {TabPanelView, TabModel} from 'tabbar';
+import {TabPanelView, TabModel} from 'components/tabbar';
 import {AssetTab} from './tab_asset';
 
 export let AssetsTab = TabModel.extend({

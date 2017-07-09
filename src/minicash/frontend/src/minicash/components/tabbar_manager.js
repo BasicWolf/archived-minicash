@@ -4,14 +4,13 @@
 
 import Mn from 'backbone.marionette';
 import * as tabbar from './tabbar';
-import {HomeTab} from './tabs/tab_home';
 
 
 export let TabbarManager = Mn.Object.extend({
     initialize: function(options) {
         this.tabbarView = new tabbar.TabbarView();
         this.tabbarView.render();
-        this.openTab(HomeTab);
+        this.openTab(options.firstTab);
     },
 
     openTab: function(tabtype, options) {

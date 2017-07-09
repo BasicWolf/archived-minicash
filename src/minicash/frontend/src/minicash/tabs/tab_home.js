@@ -2,7 +2,7 @@
 
 /* global $,_,minicash,require,tr */
 
-import {TabPanelView, TabModel} from 'tabbar';
+import {TabPanelView, TabModel} from 'components/tabbar';
 import {RecordsTab} from './tab_records';
 import {RecordTab} from './tab_record';
 import {AssetsTab} from './tab_assets';

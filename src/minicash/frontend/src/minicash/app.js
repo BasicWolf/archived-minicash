@@ -7,7 +7,8 @@ import './extensions';
 import {sprintf} from 'sprintf-js';
 import Mn from 'backbone.marionette';
 
-import {TabbarManager} from './tabbar_manager';
+import {HomeTab} from './tabs/tab_home';
+import {TabbarManager} from './components/tabbar_manager';
 import * as models from './models';
 import * as utils from './utils';
 
@@ -31,7 +32,7 @@ export default Mn.Application.extend({
 
     onStart: function() {
         this.bootstrapData();
-        this.tabbar = new TabbarManager;
+        this.tabbar = new TabbarManager({firstTab: HomeTab});
     },
 
     bootstrapData: function() {

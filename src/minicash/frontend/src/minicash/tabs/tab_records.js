@@ -6,7 +6,7 @@ import Mn from 'backbone.marionette';
 import * as bootbox from 'bootbox';
 
 import {PaginatorView} from 'components/paginator';
-import {TabPanelView, TabModel} from 'tabbar';
+import {TabPanelView, TabModel} from 'components/tabbar';
 import {RecordTab} from './tab_record';
 
 

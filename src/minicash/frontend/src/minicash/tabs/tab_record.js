@@ -6,7 +6,7 @@ import 'tagsinput';
 import 'corejs-typeahead';
 import Decimal from 'decimal.js';
 
-import * as tabbar from 'tabbar';
+import * as tabbar from 'components/tabbar';
 import * as models from 'models';
 import * as utils from 'utils';
 

@@ -2,7 +2,7 @@
 
 /* global $,_,minicash,require,tr */
 
-import {TabPanelView, TabModel} from 'tabbar';
+import {TabPanelView, TabModel} from 'components/tabbar';
 import * as utils from 'utils';
 
 
