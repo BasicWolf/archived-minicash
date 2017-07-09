@@ -1,0 +1,78 @@
+<div id="tab_{{name}}" role="tabpanel" class="tab-pane">
+
+  <div class="panel-buttons" style="position:relative">
+    <div data-spec="export-loading" class="loading loading-center"></div>
+
+    <button data-spec="refresh" type="button" class="btn btn-primary">
+      <span aria-label="refresh" class="glyphicon glyphicon-refresh"></span>
+    </button>
+
+    <button class="btn btn-default" type="button"
+            data-toggle="collapse" data-target="#filter_report_{{name}}"
+            aria-expanded="false" aria-controls="collapseExample">
+      <span aria-label="refresh" class="glyphicon glyphicon-filter"></span>
+    </button>
+
+    <br>
+
+    <div class="collapse" id="filter_report_{{name}}">
+      <div class="well">
+
+        <form autocomplete="off" class="form-horizontal">
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label">From</label>
+            <div class="col-sm-10">
+              <div class='input-group date'>
+                <input name="dt_from" type="text" class="form-control"
+                       placeholder="Date and time",
+                       value="">
+                <span class="input-group-addon">
+                  <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label">To</label>
+            <div class="col-sm-10">
+              <div class='input-group date'>
+                <input name="dt_to" type="text" class="form-control"
+                       placeholder="Date and time",
+                       value="">
+                <span class="input-group-addon">
+                  <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Tags</label>
+            <div class="col-sm-10">
+              <input name="tags" type="text" class="form-control"
+                     value="">
+            </div>
+          </div>
+
+        </form>
+      </div>
+    </div>
+
+
+  </div> <!-- panel-buttons -->
+
+  <div class="panel panel-default"><div class="panel-body">
+
+    <div data-spec="report_views_region">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-8" data-spec="tags_pie_region"></div>
+        </div>
+      </div>
+    </div>
+
+  </div></div>
+</div>

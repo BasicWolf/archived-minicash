@@ -6,7 +6,7 @@ import {TabPanelView, TabModel} from 'components/tabbar';
 import {RecordsTab} from './tab_records';
 import {RecordTab} from './tab_record';
 import {AssetsTab} from './tab_assets';
-
+import {ReportTab} from './tab_report';
 
 
 export let HomeTab = TabModel.extend({
@@ -33,12 +33,14 @@ export let HomeTabPanelView = TabPanelView.extend({
         allRecordsBtn: 'button[data-spec="all-records"]',
         newRecordBtn: 'button[data-spec="start-new-record"]',
         assetsBtn: 'button[data-spec="assets"]',
+        reportsBtn: 'button[data-spec="reports"]',
     },
 
     events: {
         'click @ui.allRecordsBtn': 'openAllRecords',
         'click @ui.newRecordBtn': 'startNewRecord',
         'click @ui.assetsBtn': 'openAssets',
+        'click @ui.reportsBtn': 'openReports',
     },
 
     openAllRecords: function() {
@@ -51,6 +53,10 @@ export let HomeTabPanelView = TabPanelView.extend({
 
     openAssets: function() {
         minicash.tabbar.openTab(AssetsTab);
+    },
+
+    openReports: function() {
+        minicash.tabbar.openTab(ReportTab);
     },
 
 }); // HomeTabPanelView

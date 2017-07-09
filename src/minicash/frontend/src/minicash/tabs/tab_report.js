@@ -6,25 +6,32 @@ import Mn from 'backbone.marionette';
 import * as bootbox from 'bootbox';
 
 
-
 import {TabPanelView, TabModel} from 'components/tabbar';
+import {TagsPieReportView} from 'report/tags_pie';
 
 
-export let RecordsTab = TabModel.extend({
+export let ReportTab = TabModel.extend({
     defaults: function() {
         let parentDefaults = TabModel.prototype.defaults.apply(this, arguments);
 
         return _.extend(parentDefaults, {
-            title: 'Records',
-            name: 'records',
+            title: 'Report',
+            name: 'report',
             singleInstance: true,
-            viewClass: RecordsTabPanelView,
+            viewClass: ReportTabPanelView,
         });
     },
  });
 
 
-let RecordsTabPanelView = TabPanelView.extend({
-    template: require('templates/tab_records/tab_records.hbs'),
+let ReportTabPanelView = TabPanelView.extend({
+    template: require('templates/tab_report/tab_report.hbs'),
 
+    regions: {
+        tagsPieRegion: {el: '[data-spec="tags_pie_region"]'},
+    },
+
+    onRender: function() {
+        this.showChildView('tagsPieRegion', new TagsPieReportView());
+    }
 });
