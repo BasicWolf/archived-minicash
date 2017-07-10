@@ -15,8 +15,7 @@ export let TagsPieReportView = Mn.View.extend({
 
     template: _.noop,
 
-    onRender: function() {
-        debugger;
+    onBeforeAttach: function() {
         let data = {
             datasets: [{
                 data: [10, 20, 30]

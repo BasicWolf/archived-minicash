@@ -26,7 +26,7 @@ export let Record = utils.BaseModel.extend({
 });
 
 
-export let Records = utils.BasePageableCollection.extend({
+export let RecordsBase = {
     model: Record,
 
     url: function() { return minicash.url('records-list'); },
@@ -36,7 +36,10 @@ export let Records = utils.BasePageableCollection.extend({
         let m2 = moment(itemB.get('dt_stamp'), minicash.CONTEXT.user.dtFormat);
         return -utils.compareMoments(m1, m2);
     }
-});
+};
+
+export let PageableRecords = utils.BasePageableCollection.extend(RecordsBase);
+//_.extend(PageableRecords.prototype, RecordsBase);
 
 
 export let Asset = utils.BaseModel.extend({

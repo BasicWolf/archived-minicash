@@ -6,11 +6,16 @@ import './extensions';
 
 import {sprintf} from 'sprintf-js';
 import Mn from 'backbone.marionette';
+import Radio from 'backbone.radio';
 
-import {ReportTab} from './tabs/tab_report';
-import {TabbarManager} from './components/tabbar_manager';
 import * as models from './models';
 import * as utils from './utils';
+import {ReportTab} from './tabs/tab_report';
+import {HomeTab} from './tabs/tab_home';
+import {TabbarManager} from './components/tabbar_manager';
+
+
+let recordsChannel = Radio.channel('records');
 
 
 export default Mn.Application.extend({
@@ -25,24 +30,22 @@ export default Mn.Application.extend({
     initCollections: function() {
         this.collections = {
             assets: new models.Assets,
-            records: new models.Records,
             tags: new models.Tags,
         };
+
+        recordsChannel.on('model:save', () => {
+            this.collections.assets.fetch();
+        });
     },
 
     onStart: function() {
         this.bootstrapData();
-        this.tabbar = new TabbarManager({firstTab: ReportTab});
+        this.tabbar = new TabbarManager({firstTab: HomeTab});
     },
 
     bootstrapData: function() {
         this.collections.assets.reset(this.CONTEXT.bootstrap.assets);
         this.collections.tags.reset(this.CONTEXT.bootstrap.tags);
-        this.collections.records.fetch().done(() => {
-            this.collections.records.on('sync', () => {
-                this.collections.assets.fetch();
-            });
-        });
     },
 
     url: function(name, args={}) {

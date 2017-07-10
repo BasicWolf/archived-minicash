@@ -5,10 +5,14 @@
 import 'tagsinput';
 import 'corejs-typeahead';
 import Decimal from 'decimal.js';
+import Radio from 'backbone.radio';
 
 import * as tabbar from 'components/tabbar';
 import * as models from 'models';
 import * as utils from 'utils';
+
+
+let recordsChannel = Radio.channel('records');
 
 
 export let RecordTab = tabbar.TabModel.extend({
@@ -242,7 +246,10 @@ export let RecordTabPanelView = tabbar.TabPanelView.extend({
 
         let saveOptions = {
             wait: true,
-            success: () => dfd.resolve(),
+            success: (model) => {
+                recordsChannel.trigger('model:save', model);
+                dfd.resolve();
+            },
             error: (model, response, options) => {
                 dfd.reject(response.responseJSON);
             },
@@ -252,7 +259,8 @@ export let RecordTabPanelView = tabbar.TabPanelView.extend({
         if (record && record.id != null) {
             record.save(saveData, saveOptions);
         } else {
-            let newRecord = minicash.collections.records.create(saveData, saveOptions);
+            let newRecord = new models.Record();
+            newRecord.save(saveData, saveOptions);
             this.model.set('record', newRecord);
         }
 

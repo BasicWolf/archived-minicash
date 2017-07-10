@@ -1,13 +1,18 @@
 'use strict';
 
 /* global _,$,minicash,require */
+import * as bootbox from 'bootbox';
 import Hb from 'handlebars/runtime';
 import Mn from 'backbone.marionette';
-import * as bootbox from 'bootbox';
+import Radio from 'backbone.radio';
 
-import {PaginatorView} from 'components/paginator';
-import {TabPanelView, TabModel} from 'components/tabbar';
+import * as models from 'minicash/models';
+import {PaginatorView} from 'minicash/components/paginator';
+import {RecordsFilter} from 'minicash/components/records_filter';
+import {TabPanelView, TabModel} from 'minicash/components/tabbar';
 import {RecordTab} from './tab_record';
+
+let recordsChannel = Radio.channel('records');
 
 
 export let RecordsTab = TabModel.extend({
@@ -25,7 +30,19 @@ export let RecordsTab = TabModel.extend({
 
 
 let RecordsTabPanelView = TabPanelView.extend({
+    records: null,
+
+    behaviors: [RecordsFilter, ],
+
     template: require('templates/tab_records/tab_records.hbs'),
+
+    initialize: function() {
+        this.records = new models.PageableRecords();
+        this.records.fetch();
+        recordsChannel.on('model:save', (model) => {
+            this.records.add(model);
+        });
+    },
 
     ui: {
         newRecordBtn: 'button[data-spec="start-new-record"]',
@@ -47,8 +64,8 @@ let RecordsTabPanelView = TabPanelView.extend({
     },
 
     onRender: function() {
-        this.showChildView('recordsTableRegion', new RecordsTableView({collection: minicash.collections.records})) ;
-        this.showChildView('paginatorRegion', new PaginatorView({collection: minicash.collections.records}));
+        this.showChildView('recordsTableRegion', new RecordsTableView({collection: this.records})) ;
+        this.showChildView('paginatorRegion', new PaginatorView({collection: this.records}));
     },
 
     startNewRecord: function() {

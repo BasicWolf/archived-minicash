@@ -1,16 +1,21 @@
+from collections import namedtuple
 from django.db import models
 from django.contrib.auth.models import User
 
 
+DateTimeFormat = namedtuple('DateTimeFormat', ['frontend_format', 'backend_format'])
+
+# NOTE, it is expected that DATE comes first
+# and DATE TIME are split by space,
 DT_FORMATS = [
     # ('frontend format', 'backend format')
-    ('DD/MM/YYYY HH:mm', '%d/%m/%Y %H:%M'),
+    DateTimeFormat('DD/MM/YYYY HH:mm', '%d/%m/%Y %H:%M'),
 ]
 
 
 class UserProfile(models.Model):
     DT_FORMAT_CHOICES = tuple(
-        (i, dtf[0])
+        (i, dtf.frontend_format)
         for i, dtf in enumerate(DT_FORMATS)
     )
 
@@ -26,3 +31,13 @@ class UserProfile(models.Model):
         default=0,
         verbose_name='Date / time format',
     )
+
+    @property
+    def date_format(self):
+        backend_format = DT_FORMATS[self.dt_format].backend_format
+        return backend_format.split(' ')[0]
+
+    @property
+    def time_format(self):
+        backend_format = DT_FORMATS[self.dt_format].backend_format
+        return backend_format.split(' ')[1]

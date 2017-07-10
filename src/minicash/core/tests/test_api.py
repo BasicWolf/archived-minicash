@@ -1,5 +1,7 @@
+import datetime
 import random
 from decimal import Decimal
+from urllib.parse import urlencode
 
 import factory
 from moneyed import Money
@@ -141,6 +143,44 @@ class RecordsAPICRUDTest(RESTTestCase):
         data_internal = ser_internal.data
         data_internal.pop('pk')
         self.assertEqual(data_out, data_internal)
+
+
+class RecordsFilterTest(RESTTestCase):
+    def setUp(self):
+        super().setUp()
+
+        self.now = datetime.datetime.now(datetime.timezone.utc)
+        self.before_yesterday = (self.now - datetime.timedelta(days=2))
+        self.yesterday = self.now - datetime.timedelta(days=1)
+        self.tomorrow = self.now + datetime.timedelta(days=1)
+        self.after_tomorrow = self.now + datetime.timedelta(days=2)
+
+        RecordFactory.create_batch(5, dt_stamp=self.now, owner=self.owner)
+        RecordFactory.create_batch(4, dt_stamp=self.yesterday, owner=self.owner)
+        RecordFactory.create_batch(3, dt_stamp=self.tomorrow, owner=self.owner)
+
+    def tearDown(self):
+        super().tearDown()
+        Record.objects.all().delete()
+
+    def jget(self, url, q, *args, **kwargs):
+        qargs = urlencode(q)
+        qurl = f'{url}?{qargs}'
+        return super().jget(qurl, *args, **kwargs)
+
+    def test_filter_dt_stamp(self):
+        minute_ago = self.now - datetime.timedelta(minutes=1)
+        minute_later = self.now + datetime.timedelta(minutes=1)
+
+        q_today = {
+            'recorded_at_0': minute_ago.strftime('%Y-%m-%d %H:%M'),
+            'recorded_at_1': minute_later.strftime('%Y-%m-%d %H:%M'),
+        }
+
+        res = self.jget(reverse('records-list'), q_today)
+        _, records_data = res.data
+        self.assertEqual(5, len(records_data))
+
 
 
 class RecordAPIBusinessLogicTest(RESTTestCase):

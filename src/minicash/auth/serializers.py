@@ -28,7 +28,7 @@ class UserDateTimeField(serializers.DateTimeField, UserRelatedFieldBase):
     def __get_format(self):
         user = self.get_user()
         if user is not None:
-            _, backend_format = DT_FORMATS[user.profile.dt_format]
+            backend_format = DT_FORMATS[user.profile.dt_format].backend_format
         else:
             backend_format = settings.MINICASH_AUTH_DEFAULT_BACKEND_DATETIME_FORMAT
 
