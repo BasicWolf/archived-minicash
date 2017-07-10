@@ -9,7 +9,6 @@ import * as bootbox from 'bootbox';
 import {TabPanelView, TabModel} from 'components/tabbar';
 import {TagsPieReportView} from 'report/tags_pie';
 
-
 export let ReportTab = TabModel.extend({
     defaults: function() {
         let parentDefaults = TabModel.prototype.defaults.apply(this, arguments);
@@ -32,6 +31,6 @@ let ReportTabPanelView = TabPanelView.extend({
     },
 
     onRender: function() {
-        this.showChildView('tagsPieRegion', new TagsPieReportView());
+        this.showChildView('tagsPieRegion', new TagsPieReportView({'a': 10}));
     }
 });

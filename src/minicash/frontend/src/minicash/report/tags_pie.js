@@ -4,17 +4,19 @@ import Chart from 'chart.js';
 import Hb from 'handlebars/runtime';
 import Mn from 'backbone.marionette';
 
+import * as models from 'minicash/models';
+
 
 
 export let TagsPieReportView = Mn.View.extend({
+    model: models.ReportWidget,
+
     tagName: 'canvas',
-    attributes: {
-        width: '300',
-        height: '300',
-    },
+
     template: _.noop,
 
     onRender: function() {
+        debugger;
         let data = {
             datasets: [{
                 data: [10, 20, 30]

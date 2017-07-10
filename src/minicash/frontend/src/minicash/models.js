@@ -86,3 +86,7 @@ export let Tags = utils.BaseCollection.extend({
 
     comparator: 'name'
 });
+
+export let ReportWidget = utils.BaseModel.extend({
+
+});
