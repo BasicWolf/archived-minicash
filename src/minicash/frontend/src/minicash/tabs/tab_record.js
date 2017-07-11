@@ -228,7 +228,7 @@ export let RecordTabPanelView = tabbar.TabPanelView.extend({
     },
 
     saveForm: function() {
-        let saveData = this._prepareSaveData();
+        let saveData = this._collectFormData();
         if (_.isEmpty(saveData)) {
             let emptyDfd = $.Deferred();
             emptyDfd.reject();
@@ -267,7 +267,7 @@ export let RecordTabPanelView = tabbar.TabPanelView.extend({
         return dfd.promise();
     },
 
-    _prepareSaveData: function() {
+    _collectFormData: function() {
         let NO_DATA = {};
         let RECORD_MODES = minicash.CONTEXT.RECORD_MODES;
 

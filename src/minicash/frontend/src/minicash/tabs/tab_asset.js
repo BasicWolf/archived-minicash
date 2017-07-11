@@ -85,7 +85,7 @@ export let AssetTabPanelView = TabPanelView.extend({
     },
 
     saveForm: function() {
-        let saveData = this._prepareSaveData();
+        let saveData = this._collectFormData();
         if (_.isEmpty(saveData)) {
             return;
         }
@@ -118,7 +118,7 @@ export let AssetTabPanelView = TabPanelView.extend({
         }
     },
 
-    _prepareSaveData: function() {
+    _collectFormData: function() {
         let NO_DATA = {};
 
         if (!this.validator.form()) {

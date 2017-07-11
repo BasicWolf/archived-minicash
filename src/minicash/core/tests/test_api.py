@@ -150,9 +150,9 @@ class RecordsFilterTest(RESTTestCase):
         super().setUp()
 
         self.now = datetime.datetime.now(datetime.timezone.utc)
+        self.tomorrow = self.now + datetime.timedelta(days=1)
         self.before_yesterday = (self.now - datetime.timedelta(days=2))
         self.yesterday = self.now - datetime.timedelta(days=1)
-        self.tomorrow = self.now + datetime.timedelta(days=1)
         self.after_tomorrow = self.now + datetime.timedelta(days=2)
 
         RecordFactory.create_batch(5, dt_stamp=self.now, owner=self.owner)
@@ -168,7 +168,7 @@ class RecordsFilterTest(RESTTestCase):
         qurl = f'{url}?{qargs}'
         return super().jget(qurl, *args, **kwargs)
 
-    def test_filter_dt_stamp_full_range(self):
+    def test_filter_dt_stamp_between_minutes(self):
         minute_ago = self.now - datetime.timedelta(minutes=1)
         minute_later = self.now + datetime.timedelta(minutes=1)
 
@@ -194,6 +194,17 @@ class RecordsFilterTest(RESTTestCase):
         pagination_details, records_data = res.data
         self.assertEqual(9, len(records_data))
         self.assertEqual(9, pagination_details['count'])
+
+    def test_filter_dt_stamp_to_bound(self):
+        q_today = {
+            'dt_from': self.now.strftime('%Y-%m-%d %H:%M'),
+            'dt_to': self.after_tomorrow.strftime('%Y-%m-%d %H:%M'),
+        }
+
+        res = self.jget(reverse('records-list'), q_today)
+        pagination_details, records_data = res.data
+        self.assertEqual(8, len(records_data))
+        self.assertEqual(8, pagination_details['count'])
 
 
 

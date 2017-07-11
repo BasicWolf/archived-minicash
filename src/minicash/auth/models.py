@@ -41,3 +41,13 @@ class UserProfile(models.Model):
     def time_format(self):
         backend_format = DT_FORMATS[self.dt_format].backend_format
         return backend_format.split(' ')[1]
+
+    @property
+    def date_format_frontend(self):
+        frontend_format = self.get_dt_format_display()
+        return frontend_format.split(' ')[0]
+
+    @property
+    def time_format_frontend(self):
+        frontend_format = self.get_dt_format_display()
+        return frontend_format.split(' ')[1]

@@ -1,6 +1,6 @@
 'use strict';
 
-/* global _,$,jQuery,minicash,tr */
+/* global _,$,jQuery,minicash,tr,require */
 
 import Bb from 'backbone';
 import Decimal from 'decimal.js';
@@ -11,6 +11,14 @@ window.tr = function(s) {return  s;};
 
 /*--------- Handlebars -----------*/
 /*================================*/
+
+/* ---------- Partials ----------- */
+
+let _partial = require('templates/components/records_filter.hbs');
+Hb.registerPartial('components/records_filter', _partial);
+
+/* ---------- Helpers ------------ */
+
 Hb.registerHelper('tr', function(v) {
     /* Translation wrapper */
     return tr(this);

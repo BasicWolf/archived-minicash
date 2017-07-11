@@ -132,9 +132,25 @@ let SerializableCollectionMixin = {
     }
 };
 
+let SearcheableCollectionMixin = {
+    search: function(searchArgs, options) {
+        let defaults = {
+            data: searchArgs,
+            processData: true
+        };
+
+        let attrs = _.extend({}, defaults, options);
+        return this.fetch(attrs);
+    }
+};
+
+let collectionMixins = [
+    SerializableCollectionMixin,
+    SearcheableCollectionMixin,
+];
 
 export let BaseCollection = Bb.Collection.extend({});
-_.extend(BaseCollection.prototype, SerializableCollectionMixin);
+_.extend(BaseCollection.prototype, ...collectionMixins);
 
 
 export let BasePageableCollection = Bb.PageableCollection.extend({
@@ -163,7 +179,7 @@ export let BasePageableCollection = Bb.PageableCollection.extend({
         return newState;
     },
 });
-_.extend(BasePageableCollection.prototype, SerializableCollectionMixin);
+_.extend(BasePageableCollection.prototype, ...collectionMixins);
 
 /* ==================================================================================================== */
 

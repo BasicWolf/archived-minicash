@@ -3,71 +3,34 @@
   <div class="panel-buttons" style="position:relative">
     <div data-spec="export-loading" class="loading loading-center"></div>
 
-    <button data-spec="start-new-record" type="button" class="btn btn-default">
-      <span aria-label="New" class="glyphicon glyphicon-plus"></span>
-    </button>
+    <div class="pull-left">
+      <button data-spec="start-new-record" type="button" class="btn btn-default">
+        <span aria-label="New" class="glyphicon glyphicon-plus"></span>
+      </button>
 
-    <div class="btn-group" role="group" aria-label="...">
-      <button data-spec="delete-record" type="button" class="btn btn-danger" disabled>
-        <span aria-label="Delete" class="glyphicon glyphicon-trash"></span>
+      <div class="btn-group" role="group">
+        <button data-spec="delete-record" type="button" class="btn btn-danger" disabled>
+          <span aria-label="Delete" class="glyphicon glyphicon-trash"></span>
+        </button>
+      </div>
+
+      <button class="btn btn-default" type="button"
+              data-toggle="collapse" data-target="#filter_records_{{name}}"
+              aria-expanded="false" aria-controls="collapseExample">
+        <span aria-label="refresh" class="glyphicon glyphicon-filter"></span>
       </button>
     </div>
 
     <div data-spec="paginator-region" class="pull-right"></div>
 
-
-    <button class="btn btn-default" type="button"
-            data-toggle="collapse" data-target="#filter_records_{{name}}"
-            aria-expanded="false" aria-controls="collapseExample">
-      <span aria-label="refresh" class="glyphicon glyphicon-filter"></span>
-    </button>
-
-    <div class="collapse" id="filter_records_{{name}}">
-      <div class="well">
-
-        <form autocomplete="off" class="form-horizontal">
-
-          <div class="form-group">
-            <label class="col-sm-2 control-label">From</label>
-            <div class="col-sm-10">
-              <div class='input-group date'>
-                <input name="filter_dt_from" type="text" class="form-control" value="">
-                <span class="input-group-addon">
-                  <span class="glyphicon glyphicon-calendar"></span>
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="col-sm-2 control-label">To</label>
-            <div class="col-sm-10">
-              <div class='input-group date'>
-                <input name="dt_to" type="text" class="form-control" value="">
-                <span class="input-group-addon">
-                  <span class="glyphicon glyphicon-calendar"></span>
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="col-sm-2 control-label">Tags</label>
-            <div class="col-sm-10">
-              <input name="filter_tags" type="text" class="form-control"
-                     value="">
-            </div>
-          </div>
-
-        </form>
-      </div>
-    </div>
-
   </div> <!-- panel-buttons -->
 
+  <br><br>
+
+  {{> components/records_filter }}
+
   <div class="panel panel-default"><div class="panel-body">
-
     <div data-spec="records-table-region"></div>
-
   </div></div>
+
 </div>

@@ -27,11 +27,12 @@ def build_context(**kwargs):
 
 def build_settings(**kwargs):
     ctx_settings = {
-        'STATIC_URL': settings.STATIC_URL
+        'DATETIME_FORMAT': 'YYYY-MM-DD hh:mm',
+        'STATIC_URL': settings.STATIC_URL,
     }
 
     return {
-        'settings': ctx_settings
+        'settings': ctx_settings,
     }
 
 
@@ -81,8 +82,11 @@ def build_jsurls(**kwargs):
 
 def build_user(**kwargs):
     user = kwargs['user']
+
     user_context = {
-        'dtFormat': user.profile.get_dt_format_display()
+        'dtFormat': user.profile.get_dt_format_display(),
+        'dateFormat': user.profile.date_format_frontend,
+        'timeFormat': user.profile.time_format_frontend,
     }
 
     return {'user': user_context}
