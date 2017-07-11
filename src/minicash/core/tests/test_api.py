@@ -168,18 +168,32 @@ class RecordsFilterTest(RESTTestCase):
         qurl = f'{url}?{qargs}'
         return super().jget(qurl, *args, **kwargs)
 
-    def test_filter_dt_stamp(self):
+    def test_filter_dt_stamp_full_range(self):
         minute_ago = self.now - datetime.timedelta(minutes=1)
         minute_later = self.now + datetime.timedelta(minutes=1)
 
         q_today = {
-            'recorded_at_0': minute_ago.strftime('%Y-%m-%d %H:%M'),
-            'recorded_at_1': minute_later.strftime('%Y-%m-%d %H:%M'),
+            'dt_from': minute_ago.strftime('%Y-%m-%d %H:%M'),
+            'dt_to': minute_later.strftime('%Y-%m-%d %H:%M'),
         }
 
         res = self.jget(reverse('records-list'), q_today)
-        _, records_data = res.data
+        pagination_details, records_data = res.data
         self.assertEqual(5, len(records_data))
+        self.assertEqual(5, pagination_details['count'])
+
+    def test_filter_dt_stamp_from_bound(self):
+        minute_later = self.now + datetime.timedelta(minutes=1)
+
+        q_today = {
+            'dt_from': self.before_yesterday.strftime('%Y-%m-%d %H:%M'),
+            'dt_to': minute_later.strftime('%Y-%m-%d %H:%M'),
+        }
+
+        res = self.jget(reverse('records-list'), q_today)
+        pagination_details, records_data = res.data
+        self.assertEqual(9, len(records_data))
+        self.assertEqual(9, pagination_details['count'])
 
 
 
