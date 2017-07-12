@@ -6,12 +6,12 @@
 
   <td role="button">{{dt_stamp}}</td>
 
-  <td class="delta" role="button">{{#decimal}}{{delta}}{{/decimal}}</td>
-  <td role="button">{{#record_account asset_from asset_to}}{{/record_account}}</td>
-  <td role="button">
-    {{#each tags}}
-      {{this}}{{#ifnot @last}},{{/ifnot}}
-    {{/each}}
-  </td>
+  <td class="delta" role="button">{{#record_mode_sign mode}}{{/record_mode_sign}}{{#decimal}}{{delta}}{{/decimal}}</td>
+    <td role="button">{{#record_account asset_from asset_to}}{{/record_account}}</td>
+    <td role="button">
+      {{#each tags}}
+        {{this}}{{#ifnot @last}},{{/ifnot}}
+      {{/each}}
+    </td>
   <td role="button">{{description}}</td>
 </tr>

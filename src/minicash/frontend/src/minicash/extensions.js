@@ -68,6 +68,17 @@ Hb.registerHelper('times', function(n, start=null, options) {
     return out;
 });
 
+Hb.registerHelper('record_mode_sign', function (mode, options) {
+    let sign = '';
+    switch (mode) {
+    case minicash.CONTEXT.RECORD_MODES.EXPENSE.value: sign = '−'; break;
+    case minicash.CONTEXT.RECORD_MODES.INCOME.value: sign = '+'; break;
+    case minicash.CONTEXT.RECORD_MODES.TRANSFER.value: sign = '';
+    default: sign = 'ERROR';
+    }
+    return sign;
+});
+
 /* Minicash helpers */
 /*------------------*/
 Hb.registerHelper('context', function (keys, options) {
