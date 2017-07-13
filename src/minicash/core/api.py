@@ -5,7 +5,7 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from rest_framework.permissions import IsAuthenticated
 
 from .filters import RecordFilter
-from .models import Asset
+from .models import Asset, Record
 from .permissions import IsAssetRemovable
 from .serializers import (
     AssetSerializer,
@@ -54,8 +54,12 @@ class RecordsView(viewsets.ModelViewSet):
     @transaction.atomic
     def perform_update(self, serializer):
         old_delta = serializer.instance.delta
+        old_asset_to = serializer.instance.asset_to
+        old_asset_from = serializer.instance.asset_from
+
         super().perform_update(serializer)
-        serializer.instance.update_assets_after_update(old_delta)
+        serializer.instance.update_assets_after_update(
+            old_delta, old_asset_to, old_asset_from)
 
     @transaction.atomic
     def perform_destroy(self, instance):

@@ -46,13 +46,16 @@ class Record(models.Model):
     def update_assets_after_create(self):
         self._update_assets_on_change(old_delta=0)
 
-    def update_assets_after_update(self, old_delta):
-        self._update_assets_on_change(old_delta=old_delta)
+    def update_assets_after_update(self, old_delta, old_asset_to, old_asset_from):
+        self._update_assets_on_change(old_delta=old_delta,
+                                      old_asset_to=old_asset_to,
+                                      old_asset_from=old_asset_from)
 
     def update_assets_before_destroy(self):
         self._update_assets_on_change(delete=True)
 
-    def _update_assets_on_change(self, old_delta=0, delete=False):
+    def _update_assets_on_change(self, *, delete=False, old_delta=0,
+                                 old_asset_to=None, old_asset_from=None):
         if delete:
             assert old_delta == 0, 'old_delta should be 0 when delete is True'
         if self.mode == Record.TRANSFER:
@@ -62,18 +65,24 @@ class Record(models.Model):
         delta = sign * self.delta
 
         if self.mode in (Record.EXPENSE, Record.TRANSFER):
+            old_asf = old_asset_from or self.asset_from
             asf = self.asset_from
+            # TODO
+            assert old_asf.balance.currency == asf.balance.currency
             delta_money = Money(amount=delta, currency=asf.balance.currency)
             old_delta_money = Money(amount=old_delta, currency=asf.balance.currency)
-            asf.balance += old_delta_money
+            old_asf.balance += old_delta_money
             asf.balance -= delta_money
             asf.save()
 
         if self.mode in (Record.INCOME, Record.TRANSFER):
+            old_ast = old_asset_to or self.asset_to
             ast = self.asset_to
+            # TODO
+            assert old_ast.balance.currency == ast.balance.currency
             delta_money = Money(amount=delta, currency=ast.balance.currency)
             old_delta_money = Money(amount=old_delta, currency=ast.balance.currency)
-            ast.balance -= old_delta_money
+            old_ast.balance -= old_delta_money
             ast.balance += delta_money
             ast.save()
 

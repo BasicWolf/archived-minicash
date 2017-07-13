@@ -273,6 +273,7 @@ class RecordAPIBusinessLogicTest(RESTTestCase):
         new_asset_balance = asset_from.balance
         new_record_delta_money = Money(record.delta, currency)
 
+        import pudb; pu.db
         self.assertEqual(new_asset_balance,
                          old_asset_balance + old_record_delta_money - new_record_delta_money)
 
