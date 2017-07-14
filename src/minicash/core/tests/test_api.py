@@ -64,7 +64,7 @@ class RecordsAPICRUDTest(RESTTestCase):
 
         attributes = frozenset([
             'pk',
-            'asset_from', 'asset_to', 'dt_stamp', 'delta',
+            'asset_from', 'asset_to', 'created_dt', 'delta',
             'description', 'extra', 'mode', 'tags',
         ])
         res_attributes = frozenset(res.data.keys())
@@ -156,9 +156,9 @@ class RecordsFilterTest(RESTTestCase):
         self.yesterday = self.now - datetime.timedelta(days=1)
         self.after_tomorrow = self.now + datetime.timedelta(days=2)
 
-        RecordFactory.create_batch(5, dt_stamp=self.now, owner=self.owner)
-        RecordFactory.create_batch(4, dt_stamp=self.yesterday, owner=self.owner)
-        RecordFactory.create_batch(3, dt_stamp=self.tomorrow, owner=self.owner)
+        RecordFactory.create_batch(5, created_dt=self.now, owner=self.owner)
+        RecordFactory.create_batch(4, created_dt=self.yesterday, owner=self.owner)
+        RecordFactory.create_batch(3, created_dt=self.tomorrow, owner=self.owner)
 
     def tearDown(self):
         super().tearDown()
@@ -169,7 +169,7 @@ class RecordsFilterTest(RESTTestCase):
         qurl = f'{url}?{qargs}'
         return super().jget(qurl, *args, **kwargs)
 
-    def test_filter_dt_stamp_between_minutes(self):
+    def test_filter_created_dt_between_minutes(self):
         minute_ago = self.now - datetime.timedelta(minutes=1)
         minute_later = self.now + datetime.timedelta(minutes=1)
 
@@ -183,7 +183,7 @@ class RecordsFilterTest(RESTTestCase):
         self.assertEqual(5, len(records_data))
         self.assertEqual(5, pagination_details['count'])
 
-    def test_filter_dt_stamp_from_bound(self):
+    def test_filter_created_dt_from_bound(self):
         minute_later = self.now + datetime.timedelta(minutes=1)
 
         q_today = {
@@ -196,7 +196,7 @@ class RecordsFilterTest(RESTTestCase):
         self.assertEqual(9, len(records_data))
         self.assertEqual(9, pagination_details['count'])
 
-    def test_filter_dt_stamp_to_bound(self):
+    def test_filter_created_dt_to_bound(self):
         q_today = {
             'dt_from': self.now.strftime('%Y-%m-%d %H:%M'),
             'dt_to': self.after_tomorrow.strftime('%Y-%m-%d %H:%M'),
@@ -206,7 +206,6 @@ class RecordsFilterTest(RESTTestCase):
         pagination_details, records_data = res.data
         self.assertEqual(8, len(records_data))
         self.assertEqual(8, pagination_details['count'])
-
 
 
 class RecordAPIAssetDataIntegrityTest(RESTTestCase):

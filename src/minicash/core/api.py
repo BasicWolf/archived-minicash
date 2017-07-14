@@ -44,7 +44,7 @@ class RecordsView(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        return user.records.all().order_by('-dt_stamp')
+        return user.records.all().order_by('-created_dt')
 
     @transaction.atomic
     def perform_create(self, serializer):

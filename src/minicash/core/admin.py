@@ -8,7 +8,7 @@ from .models import Asset, Tag, Record
 class RecordAdmin(admin.ModelAdmin):
     list_display = (
         'owner',
-        'dt_stamp',
+        'created_dt',
         'delta',
         # 'tags',
         'description',

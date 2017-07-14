@@ -15,7 +15,7 @@ export let Record = utils.BaseModel.extend({
         'pk',
         'asset_from',
         'asset_to',
-        'dt_stamp',
+        'created_dt',
         'delta',
         'description',
         'extra',
@@ -32,8 +32,8 @@ export let RecordsBase = {
     url: function() { return minicash.url('records-list'); },
 
     comparator: function(itemA, itemB) {
-        let m1 = moment(itemA.get('dt_stamp'), minicash.CONTEXT.user.dtFormat);
-        let m2 = moment(itemB.get('dt_stamp'), minicash.CONTEXT.user.dtFormat);
+        let m1 = moment(itemA.get('created_dt'), minicash.CONTEXT.user.dtFormat);
+        let m2 = moment(itemB.get('created_dt'), minicash.CONTEXT.user.dtFormat);
         return -utils.compareMoments(m1, m2);
     }
 };

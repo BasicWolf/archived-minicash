@@ -17,7 +17,7 @@ class RecordSerializer(ModelSerializer):
         model = Record
         fields = [
             'pk', 'owner',
-            'asset_from', 'asset_to', 'dt_stamp', 'delta',
+            'asset_from', 'asset_to', 'created_dt', 'delta',
             'description', 'extra', 'mode', 'tags',
         ]
 
@@ -43,7 +43,7 @@ class RecordSerializer(ModelSerializer):
         allow_null=True,
     )
 
-    dt_stamp = UserDateTimeField(
+    created_dt = UserDateTimeField(
         user_field_name='owner',
         read_only=False,
     )

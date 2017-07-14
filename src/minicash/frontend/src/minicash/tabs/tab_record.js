@@ -41,7 +41,7 @@ export let RecordTabPanelView = tabbar.TabPanelView.extend({
         saveAddAnotherBtn: 'a[data-spec="save-add-another"]',
         cancelBtn: 'button[data-spec="cancel"]',
         modeSelect: 'select[name="mode"]',
-        dtStampInput: 'input[name="dt_stamp"]',
+        dtStampInput: 'input[name="created_dt"]',
         deltaInput: 'input[name="delta"]',
         tagsInput: 'input[name="tags"]',
         toAssetSelect: 'select[name="asset_to"]',
@@ -70,7 +70,7 @@ export let RecordTabPanelView = tabbar.TabPanelView.extend({
     _buildNewRecordRenderData: function() {
         let nowStr = moment().format(minicash.CONTEXT.user.dtFormat);
         return {
-            'dt_stamp': nowStr
+            'created_dt': nowStr
         };
     },
 

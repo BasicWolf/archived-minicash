@@ -8,7 +8,14 @@ from djmoney.models.fields import MoneyField
 from jsonfield import JSONField
 
 
+class MinicashModelManager(models.Manager):
+    def for_owner(self, owner):
+        return self.filter(owner=owner)
+
+
 class Record(models.Model):
+    objects = MinicashModelManager()
+
     INCOME = 10
     EXPENSE = 20
     TRANSFER = 30
@@ -35,7 +42,7 @@ class Record(models.Model):
         on_delete=models.PROTECT,
         related_name='to_asset_records',
     )
-    dt_stamp = models.DateTimeField('Created', db_index=True)
+    created_dt = models.DateTimeField('Created', db_index=True)
     delta = MoneyField(
         max_digits=10,
         decimal_places=3,
@@ -111,6 +118,8 @@ class Record(models.Model):
 
 
 class Tag(models.Model):
+    objects = MinicashModelManager()
+
     name = models.CharField(max_length=32)
     description = models.TextField(blank=True, default='')
     owner = models.ForeignKey(User, related_name='tags')
@@ -122,7 +131,7 @@ class Tag(models.Model):
         return self.name
 
 
-class AssetManager(models.Manager):
+class AssetManager(MinicashModelManager):
     def create(self, **kwargs):
         # ensure Asset.initial_balance == balance on creation
         if 'initial_balance' not in kwargs:
