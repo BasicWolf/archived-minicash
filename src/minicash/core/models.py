@@ -36,7 +36,12 @@ class Record(models.Model):
         related_name='to_asset_records',
     )
     dt_stamp = models.DateTimeField('Created', db_index=True)
-    delta = models.DecimalField(max_digits=20, decimal_places=3)
+    delta = MoneyField(
+        max_digits=10,
+        decimal_places=3,
+        default=Decimal('0.0'),
+        default_currency=settings.MINICASH_DEFAULT_CURRENCY
+    )
     description = models.TextField(blank=True)
     extra = JSONField(default={})
     mode = models.PositiveIntegerField(choices=MODES)
@@ -61,30 +66,48 @@ class Record(models.Model):
         if self.mode == Record.TRANSFER:
             assert self.asset_to.balance.currency == self.asset_from.balance.currency, 'Different currencies'
 
+        asset_from = self.asset_from
+        asset_to = self.asset_to
+        old_asset_from = old_asset_from or self.asset_from
+        old_asset_to = old_asset_to or self.asset_to
+
+        delta_changed = self.delta != old_delta
+        asset_to_changed = asset_to != old_asset_to
+        asset_from_changed = asset_from != old_asset_from
+        any_changes = delta_changed or asset_to_changed or asset_from_changed
+
+        # RETURN if no changes detected
+        if not delete and not any_changes:
+            return
+
         sign = delete and -1 or 1
         delta = sign * self.delta
 
         if self.mode in (Record.EXPENSE, Record.TRANSFER):
-            old_asf = old_asset_from or self.asset_from
-            asf = self.asset_from
-            # TODO
-            assert old_asf.balance.currency == asf.balance.currency
-            delta_money = Money(amount=delta, currency=asf.balance.currency)
-            old_delta_money = Money(amount=old_delta, currency=asf.balance.currency)
-            old_asf.balance += old_delta_money
-            asf.balance -= delta_money
-            asf.save()
+            assert delta.currency == old_asset_from.balance.currency == asset_from.balance.currency
+            # check, whether asset_from has been changed and act accordingly
+            if asset_from_changed:
+                old_asset_from.balance += old_delta
+                asset_from.balance -= delta
+                old_asset_from.save()
+                asset_from.save()
+            else:
+                asset_from.balance += old_delta
+                asset_from.balance -= delta
+                asset_from.save()
 
         if self.mode in (Record.INCOME, Record.TRANSFER):
-            old_ast = old_asset_to or self.asset_to
-            ast = self.asset_to
-            # TODO
-            assert old_ast.balance.currency == ast.balance.currency
-            delta_money = Money(amount=delta, currency=ast.balance.currency)
-            old_delta_money = Money(amount=old_delta, currency=ast.balance.currency)
-            old_ast.balance -= old_delta_money
-            ast.balance += delta_money
-            ast.save()
+            assert delta.currency == old_asset_to.balance.currency == asset_to.balance.currency
+            # check, whether asset_to has been changed and act accordingly
+            if asset_to_changed:
+                old_asset_to.balance -= old_delta
+                asset_to.balance += delta
+                old_asset_to.save()
+                asset_to.save()
+            else:
+                asset_to.balance -= old_delta
+                asset_to.balance += delta
+                asset_to.save()
 
 
 class Tag(models.Model):

@@ -40,12 +40,13 @@ class RecordsAPICRUDTest(RESTTestCase):
         """Verify JSON representation of a single record"""
         record = RecordFactory.create(owner=self.owner)
         res = self.jget(reverse('records-detail', args=[record.pk]))
+        currency = record.delta.currency
 
         self.assert_success(res)
 
         data = res.data
         self.assertEqual(record.pk, data['pk'])
-        self.assertAlmostEqual(record.delta, Decimal(data['delta']), places=2)
+        self.assertAlmostEqual(record.delta, Money(data['delta'], currency), places=2)
         self.assertEqual(record.mode, data['mode'])
         self.assertEqual(record.description, data['description'])
         self.assertEqual(list(record.tags.all().values_list('name', flat=True)),
@@ -208,7 +209,7 @@ class RecordsFilterTest(RESTTestCase):
 
 
 
-class RecordAPIBusinessLogicTest(RESTTestCase):
+class RecordAPIAssetDataIntegrityTest(RESTTestCase):
     def test_expnese_record_created_asset_updated(self):
         asset_from = AssetFactory.create(owner=self.owner)
         old_asset_balance = asset_from.balance
@@ -220,7 +221,7 @@ class RecordAPIBusinessLogicTest(RESTTestCase):
         asset_from.refresh_from_db()
         new_asset_balance = asset_from.balance
         self.assertEqual(new_asset_balance,
-                         old_asset_balance - Money(record.delta, old_asset_balance.currency))
+                         old_asset_balance - record.delta)
 
     def test_income_record_created_asset_updated(self):
         asset_to = AssetFactory.create(owner=self.owner)
@@ -233,7 +234,7 @@ class RecordAPIBusinessLogicTest(RESTTestCase):
         asset_to.refresh_from_db()
         new_asset_balance = asset_to.balance
         self.assertEqual(new_asset_balance,
-                         old_asset_balance + Money(record.delta, old_asset_balance.currency))
+                         old_asset_balance + record.delta)
 
     def test_transfer_record_created_assets_updated(self):
         asset_from = AssetFactory.create(owner=self.owner, name='ASS1')
@@ -251,17 +252,16 @@ class RecordAPIBusinessLogicTest(RESTTestCase):
         new_asset_to_balance = asset_to.balance
 
         self.assertEqual(new_asset_from_balance,
-                         old_asset_from_balance - Money(record.delta, old_asset_from_balance.currency))
+                         old_asset_from_balance - record.delta)
         self.assertEqual(new_asset_to_balance,
-                         old_asset_to_balance + Money(record.delta, old_asset_to_balance.currency))
+                         old_asset_to_balance + record.delta)
 
-    def test_expense_record_updated_asset_updated(self):
+    def test_expense_record_balance_updated_asset_updated(self):
         asset_from = AssetFactory.create(owner=self.owner)
-        currency = asset_from.balance.currency
         old_asset_balance = asset_from.balance
 
         record = RecordFactory.create(owner=self.owner, asset_from=asset_from, asset_to=None)
-        old_record_delta_money = Money(record.delta, currency)
+        old_record_delta = record.delta
 
         new_record_delta = random.randint(0, 1000)
         record.delta = new_record_delta
@@ -271,19 +271,35 @@ class RecordAPIBusinessLogicTest(RESTTestCase):
 
         asset_from.refresh_from_db()
         new_asset_balance = asset_from.balance
-        new_record_delta_money = Money(record.delta, currency)
+        new_record_delta = record.delta
 
-        import pudb; pu.db
         self.assertEqual(new_asset_balance,
-                         old_asset_balance + old_record_delta_money - new_record_delta_money)
+                         old_asset_balance + old_record_delta - new_record_delta)
+
+    def test_expense_record_assets_updated_asset_balance_updated(self):
+        asset_from = AssetFactory.create(owner=self.owner)
+        asset_from_other = AssetFactory.create(owner=self.owner)
+        old_asset_balance = asset_from.balance
+        old_asset_other_balance = asset_from_other.balance
+
+        record = RecordFactory.create(owner=self.owner, asset_from=asset_from, asset_to=None)
+        record.asset_from = asset_from_other;
+        serializer = RecordSerializer(record)
+
+        self.jpatch(reverse('records-detail', args=[record.pk]), serializer.data)
+
+        asset_from.refresh_from_db()
+        asset_from_other.refresh_from_db()
+
+        self.assertEqual(asset_from.balance, old_asset_balance + record.delta)
+        self.assertEqual(asset_from_other.balance, old_asset_other_balance - record.delta)
 
     def test_income_record_updated_asset_updated(self):
         asset_to = AssetFactory.create(owner=self.owner)
-        currency = asset_to.balance.currency
         old_asset_balance = asset_to.balance
 
         record = RecordFactory.create(owner=self.owner, asset_to=asset_to, asset_from=None)
-        old_record_delta_money = Money(record.delta, currency)
+        old_record_delta = record.delta
 
         new_record_delta = random.randint(0, 1000)
         record.delta = new_record_delta
@@ -293,20 +309,36 @@ class RecordAPIBusinessLogicTest(RESTTestCase):
 
         asset_to.refresh_from_db()
         new_asset_balance = asset_to.balance
-        new_record_delta_money = Money(record.delta, currency)
+        new_record_delta = record.delta
 
         self.assertEqual(new_asset_balance,
-                         old_asset_balance - old_record_delta_money + new_record_delta_money)
+                         old_asset_balance - old_record_delta + new_record_delta)
+
+    def test_income_record_assets_updated_asset_balance_updated(self):
+        asset_to = AssetFactory.create(owner=self.owner)
+        asset_to_other = AssetFactory.create(owner=self.owner)
+        old_asset_balance = asset_to.balance
+        old_asset_other_balance = asset_to_other.balance
+
+        record = RecordFactory.create(owner=self.owner, asset_to=asset_to, asset_from=None)
+        record.asset_to = asset_to_other;
+        serializer = RecordSerializer(record)
+
+        self.jpatch(reverse('records-detail', args=[record.pk]), serializer.data)
+
+        asset_to.refresh_from_db()
+        asset_to_other.refresh_from_db()
+        self.assertEqual(asset_to.balance, old_asset_balance - record.delta)
+        self.assertEqual(asset_to_other.balance, old_asset_other_balance + record.delta)
 
     def test_transfer_record_updated_assets_updated(self):
         asset_from = AssetFactory.create(owner=self.owner, name='ASS1')
         asset_to = AssetFactory.create(owner=self.owner, name='ASS2')
-        currency = asset_to.balance.currency
 
         old_asset_from_balance = asset_from.balance
         old_asset_to_balance = asset_to.balance
         record = RecordFactory.create(owner=self.owner, asset_from=asset_from, asset_to=asset_to)
-        old_record_delta_money = Money(record.delta, currency)
+        old_record_delta = record.delta
 
         new_record_delta = random.randint(0, 1000)
         record.delta = new_record_delta
@@ -318,46 +350,77 @@ class RecordAPIBusinessLogicTest(RESTTestCase):
         asset_from.refresh_from_db()
         new_asset_from_balance = asset_from.balance
         new_asset_to_balance = asset_to.balance
-        new_record_delta_money = Money(record.delta, currency)
+        new_record_delta = record.delta
 
         self.assertEqual(new_asset_from_balance,
-                         old_asset_from_balance + old_record_delta_money - new_record_delta_money)
+                         old_asset_from_balance + old_record_delta - new_record_delta)
         self.assertEqual(new_asset_to_balance,
-                         old_asset_to_balance - old_record_delta_money + new_record_delta_money)
+                         old_asset_to_balance - old_record_delta + new_record_delta)
+
+    def test_transfer_record_updated_assets_balance_updated(self):
+        asset_from = AssetFactory.create(owner=self.owner, name='ASS1')
+        asset_to = AssetFactory.create(owner=self.owner, name='ASS2')
+        asset_from_other = AssetFactory.create(owner=self.owner, name='ASS1-O')
+        asset_to_other = AssetFactory.create(owner=self.owner, name='ASS2-O')
+
+        old_asset_from_balance = asset_from.balance
+        old_asset_to_balance = asset_to.balance
+        old_asset_from_other_balance = asset_from_other.balance
+        old_asset_to_other_balance = asset_to_other.balance
+
+        record = RecordFactory.create(owner=self.owner,
+                                      asset_from=asset_from,
+                                      asset_to=asset_to)
+        record.asset_to = asset_to_other
+        record.asset_from = asset_from_other
+        serializer = RecordSerializer(record)
+
+        self.jpatch(reverse('records-detail', args=[record.pk]), serializer.data)
+
+        asset_to.refresh_from_db()
+        asset_from.refresh_from_db()
+        asset_to_other.refresh_from_db()
+        asset_from_other.refresh_from_db()
+
+        self.assertEqual(asset_from.balance,
+                         old_asset_from_balance + record.delta)
+        self.assertEqual(asset_from_other.balance,
+                         old_asset_from_other_balance - record.delta)
+        self.assertEqual(asset_to.balance,
+                         old_asset_to_balance - record.delta)
+        self.assertEqual(asset_to_other.balance,
+                         old_asset_to_other_balance + record.delta)
 
     def test_expense_record_deleted_asset_updated(self):
         asset_from = AssetFactory.create(owner=self.owner)
-        currency = asset_from.balance.currency
         old_asset_balance = asset_from.balance
 
         record = RecordFactory.create(owner=self.owner, asset_from=asset_from, asset_to=None)
-        old_record_delta_money = Money(record.delta, currency)
+        old_record_delta = record.delta
 
         self.jdelete(reverse('records-detail', args=[record.pk]))
 
         asset_from.refresh_from_db()
         new_asset_balance = asset_from.balance
 
-        self.assertEqual(new_asset_balance, old_asset_balance + old_record_delta_money)
+        self.assertEqual(new_asset_balance, old_asset_balance + old_record_delta)
 
     def test_income_record_deleted_asset_updated(self):
         asset_to = AssetFactory.create(owner=self.owner)
-        currency = asset_to.balance.currency
         old_asset_balance = asset_to.balance
 
         record = RecordFactory.create(owner=self.owner, asset_to=asset_to, asset_from=None)
-        old_record_delta_money = Money(record.delta, currency)
+        old_record_delta = record.delta
 
         self.jdelete(reverse('records-detail', args=[record.pk]))
         asset_to.refresh_from_db()
         new_asset_balance = asset_to.balance
 
-        self.assertEqual(new_asset_balance, old_asset_balance - old_record_delta_money)
+        self.assertEqual(new_asset_balance, old_asset_balance - old_record_delta)
 
     def test_transfer_record_deleted_assets_updated(self):
         asset_from = AssetFactory.create(owner=self.owner, name='ASS1')
         asset_to = AssetFactory.create(owner=self.owner, name='ASS2')
-        currency = asset_to.balance.currency
 
         old_asset_from_balance = asset_from.balance
         old_asset_to_balance = asset_to.balance
@@ -369,12 +432,12 @@ class RecordAPIBusinessLogicTest(RESTTestCase):
         asset_from.refresh_from_db()
         new_asset_from_balance = asset_from.balance
         new_asset_to_balance = asset_to.balance
-        new_record_delta_money = Money(record.delta, currency)
+        new_record_delta = record.delta
 
         self.assertEqual(new_asset_from_balance,
-                         old_asset_from_balance + new_record_delta_money)
+                         old_asset_from_balance + new_record_delta)
         self.assertEqual(new_asset_to_balance,
-                         old_asset_to_balance - new_record_delta_money)
+                         old_asset_to_balance - new_record_delta)
 
 
 class AssetAPITest(RESTTestCase):
