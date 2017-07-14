@@ -32,7 +32,9 @@ class TagFactory(DjangoModelFactory):
     owner = SubFactory(UserFactory)
 
 
-class TagsMixin:
+class RecordFactory(DjangoModelFactory):
+    class Meta:
+        model = models.Record
 
     @post_generation
     def tags(self, create, extracted, **kwargs):
@@ -46,11 +48,6 @@ class TagsMixin:
 
         for tag in tags:
             self.tags.add(tag)  # pylint: disable=no-member
-
-
-class RecordFactory(TagsMixin, DjangoModelFactory):
-    class Meta:
-        model = models.Record
 
     created_dt = factories.FuzzyDateTime(
         datetime.datetime(1960, 1, 1, tzinfo=datetime.timezone.utc),
@@ -61,19 +58,6 @@ class RecordFactory(TagsMixin, DjangoModelFactory):
     asset_from = SubFactory(AssetFactory, owner=SelfAttribute('..owner'))
     asset_to = SubFactory(AssetFactory, owner=SelfAttribute('..owner'))
     owner = SubFactory(UserFactory)
-
-    @post_generation
-    def tags(self, create, extracted, **kwargs):
-        if not create:
-            return
-
-        if extracted is None:
-            tags = factories.FuzzyFactorySequence(TagFactory, owner=self.owner).fuzzer()
-        else:
-            tags = extracted
-
-        for tag in tags:
-            self.tags.add(tag)  # pylint: disable=no-member
 
     @lazy_attribute
     def mode(self):

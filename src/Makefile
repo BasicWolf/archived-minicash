@@ -10,6 +10,8 @@ FRONTEND_STATIC_LIB_DIR = $(FRONTEND_STATIC_DIR)/lib
 
 TESTS := minicash.utils minicash.core minicash.auth minicash.frontend
 
+TESTS := minicash.core.tests.test_api.RecordsFilterTagsTest
+
 all:
 	@echo 'Available actions:'
 	@echo 'devserver'

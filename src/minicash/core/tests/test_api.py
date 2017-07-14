@@ -146,7 +146,7 @@ class RecordsAPICRUDTest(RESTTestCase):
         self.assertEqual(data_out, data_internal)
 
 
-class RecordsFilterTest(RESTTestCase):
+class RecordsFilterCreatedDTTest(RESTTestCase):
     def setUp(self):
         super().setUp()
 
@@ -179,9 +179,8 @@ class RecordsFilterTest(RESTTestCase):
         }
 
         res = self.jget(reverse('records-list'), q_today)
-        pagination_details, records_data = res.data
+        _, records_data = res.data
         self.assertEqual(5, len(records_data))
-        self.assertEqual(5, pagination_details['count'])
 
     def test_filter_created_dt_from_bound(self):
         minute_later = self.now + datetime.timedelta(minutes=1)
@@ -192,9 +191,8 @@ class RecordsFilterTest(RESTTestCase):
         }
 
         res = self.jget(reverse('records-list'), q_today)
-        pagination_details, records_data = res.data
+        _, records_data = res.data
         self.assertEqual(9, len(records_data))
-        self.assertEqual(9, pagination_details['count'])
 
     def test_filter_created_dt_to_bound(self):
         q_today = {
@@ -203,9 +201,46 @@ class RecordsFilterTest(RESTTestCase):
         }
 
         res = self.jget(reverse('records-list'), q_today)
-        pagination_details, records_data = res.data
+        _, records_data = res.data
         self.assertEqual(8, len(records_data))
-        self.assertEqual(8, pagination_details['count'])
+
+
+class RecordsFilterTagsTest(RESTTestCase):
+    def setUp(self):
+        super().setUp()
+
+        tagA = TagFactory.create(name='TAG--A', owner=self.owner)
+        tagB = TagFactory.create(name='TAG--B', owner=self.owner)
+        tagC = TagFactory.create(name='TAG--C', owner=self.owner)
+
+        recordsA = RecordFactory.create_batch(2, tags=[tagA], owner=self.owner)
+        recordsB = RecordFactory.create_batch(2, tags=[tagB], owner=self.owner)
+        recordsC = RecordFactory.create_batch(2, tags=[tagC], owner=self.owner)
+        recordsAB = RecordFactory.create_batch(3, tags=[tagA, tagB], owner=self.owner)
+        recordsAC = RecordFactory.create_batch(3, tags=[tagA, tagC], owner=self.owner)
+        recordsBC = RecordFactory.create_batch(3, tags=[tagB, tagC], owner=self.owner)
+
+        self.tagA, self.tagB, self.tagC = [tagA, tagB, tagC]
+
+    def test_single_tag_filter(self):
+        q_tag_a = {
+            'tags': self.tagA.name
+        }
+
+        res = self.jget(reverse('records-list'), q_tag_a)
+        _, records_data = res.data
+
+        self.assertEqual(8, len(records_data))
+
+    def test_many_tags_in_filter(self):
+        q_tag_a = {
+            'tags': [self.tagA.name, self.tagB.name]
+        }
+
+        res = self.jget(reverse('records-list'), q_tag_a)
+        _, records_data = res.data
+
+        self.assertEqual(13, len(records_data))
 
 
 class RecordAPIAssetDataIntegrityTest(RESTTestCase):
