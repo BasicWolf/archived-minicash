@@ -2,7 +2,7 @@
 
 bpython==0.16
 behave-django==0.5.0  # requires phantomjs
-django-debug-toolbar
+django-debug-toolbar==1.8
 django-extensions
 django-pdb
 factory_boy
