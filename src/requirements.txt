@@ -20,7 +20,7 @@ django-pdb==0.5.1
 django-settings-export==1.2.1
 djangorestframework==3.6.3
 factory-boy==2.8.1
-Faker==0.7.15
+Faker==0.7.17
 flake8==3.3.0
 greenlet==0.4.12
 gunicorn==19.7.1
