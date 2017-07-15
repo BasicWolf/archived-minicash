@@ -14,5 +14,5 @@ pudb==2017.1.2
 pyflakes==1.5.0
 pylint==1.7.2
 pylint-django==0.7.2
-selenium
+selenium==3.4.3
 werkzeug
