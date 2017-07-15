@@ -5,7 +5,7 @@ behave-django==0.5.0  # requires phantomjs
 django-debug-toolbar==1.8
 django-extensions==1.8.1
 django-pdb==0.5.1
-factory_boy
+factory-boy==2.8.1
 flake8
 gunicorn
 ipython
