@@ -3,7 +3,7 @@ djangorestframework==3.6.3
 django-jsonfield==1.0.1
 django-money==0.11.4
 django-settings-export==1.2.1
-dj-database-url==0.4.*
+dj-database-url==0.4.2
 
 # Whitenoise bundle
 brotlipy==0.7.*
