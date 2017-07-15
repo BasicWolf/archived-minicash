@@ -12,7 +12,7 @@ ipython==6.1.0
 lizard==1.12.11
 pudb==2017.1.2
 pyflakes==1.5.0
-pylint
+pylint==1.7.2
 pylint-django
 selenium
 werkzeug
