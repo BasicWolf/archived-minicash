@@ -6,7 +6,7 @@ django-settings-export==1.2.1
 dj-database-url==0.4.2
 
 # Whitenoise bundle
-brotlipy==0.7.*
+brotlipy==0.7.0
 whitenoise==3.3.*
 
 
