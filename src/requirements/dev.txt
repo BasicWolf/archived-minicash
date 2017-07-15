@@ -10,7 +10,7 @@ flake8==3.3.0
 gunicorn==19.7.1
 ipython==6.1.0
 lizard==1.12.11
-pudb
+pudb==2017.1.2
 pyflakes
 pylint
 pylint-django
