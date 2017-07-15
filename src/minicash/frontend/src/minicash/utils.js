@@ -58,19 +58,6 @@ export let status = (function() {
 
 /* --- HELPER CLASSES --- */
 /*------------------------*/
-export let UnwrappedView = Mn.View.extend({
-    onRender() {
-        // Get rid of that pesky wrapping-div.
-        // Assumes 1 child element present in template.
-        this.$el = this.$el.children();
-        // Unwrap the element to prevent infinitely
-        // nesting elements during re-render.
-        this.$el.unwrap();
-        this.setElement(this.$el);
-    }
-});
-
-
 export class Bloodhound {
     constructor(collection, attribute) {
         _.extend(this, Bb.Events);
@@ -136,7 +123,7 @@ let SearcheableCollectionMixin = {
     search: function(searchArgs, options) {
         let defaults = {
             data: searchArgs,
-            processData: true
+            traditional: true,
         };
 
         let attrs = _.extend({}, defaults, options);
@@ -183,6 +170,48 @@ _.extend(BasePageableCollection.prototype, ...collectionMixins);
 
 /* ==================================================================================================== */
 
+
+/* ------ UI HELPERS  ----- */
+/*--------------------------*/
+export let UnwrappedView = Mn.View.extend({
+    onRender() {
+        // Get rid of that pesky wrapping-div.
+        // Assumes 1 child element present in template.
+        this.$el = this.$el.children();
+        // Unwrap the element to prevent infinitely
+        // nesting elements during re-render.
+        this.$el.unwrap();
+        this.setElement(this.$el);
+    }
+});
+
+export let UIEnableDisableMixin = {
+    uiEnable: function (names, enable=true) {
+        if (!_.isArray(names)) {
+            names = [names];
+        }
+
+        for (let name of names) {
+            if (enable) {
+                this.getUI(name).removeAttr('disabled');
+            } else {
+                this.getUI(name).prop('disabled', true);
+            }
+        }
+    },
+
+    uiDisable: function (names) {
+        this.uiEnable(names, false);
+    },
+};
+
+export let BaseView = Mn.View.extend({});
+_.extend(BaseView.prototype, UIEnableDisableMixin);
+
+export let BaseBehavior = Mn.Behavior.extend({});
+_.extend(BaseBehavior.prototype, UIEnableDisableMixin);
+
+/* ==================================================================================================== */
 
 /* --- HELPER FUNCTIONS --- */
 /*--------------------------*/

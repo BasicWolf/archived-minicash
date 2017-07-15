@@ -6,7 +6,7 @@
       <div class="form-group">
         <label class="col-sm-2 control-label">From</label>
         <div class="col-sm-10">
-          <div class='input-group date'>
+          <div data-spec="dt_from" class='input-group date'>
             <input name="dt_from" type="text" class="form-control" value="">
             <span class="input-group-addon">
               <span class="glyphicon glyphicon-calendar"></span>
@@ -18,7 +18,7 @@
       <div class="form-group">
         <label class="col-sm-2 control-label">To</label>
         <div class="col-sm-10">
-          <div class='input-group date'>
+          <div data-spec="dt_to" class='input-group date'>
             <input name="dt_to" type="text" class="form-control" value="">
             <span class="input-group-addon">
               <span class="glyphicon glyphicon-calendar"></span>
@@ -34,7 +34,12 @@
                  value="">
         </div>
       </div>
-
     </form>
-  </div>
+
+    <div class="btn-toolbar" role="toolbar">
+      <button data-spec="clear" disabled type="button" class="btn btn-default pull-right">Clear</button>
+      <button data-spec="apply" disabled type="button" class="btn btn-default pull-right">Apply</button>
+    </div>
+
+  </div> <!-- well -->
 </div>

@@ -7,9 +7,9 @@ import 'corejs-typeahead';
 import Decimal from 'decimal.js';
 import Radio from 'backbone.radio';
 
-import * as tabbar from 'components/tabbar';
-import * as models from 'models';
-import * as utils from 'utils';
+import * as tabbar from 'minicash/components/tabbar';
+import * as models from 'minicash/models';
+import * as utils from 'minicash/utils';
 
 
 let recordsChannel = Radio.channel('records');

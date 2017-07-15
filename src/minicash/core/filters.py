@@ -13,7 +13,8 @@ class RecordFilter(filters.FilterSet):
     tags = filters.ModelMultipleChoiceFilter(
         name='tags__name',
         to_field_name='name',
-        queryset=user_tags
+        queryset=user_tags,
+        conjoined=True,
     )
 
     class Meta:
