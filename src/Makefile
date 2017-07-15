@@ -10,7 +10,6 @@ FRONTEND_STATIC_LIB_DIR = $(FRONTEND_STATIC_DIR)/lib
 
 TESTS := minicash.utils minicash.core minicash.auth minicash.frontend
 
-TESTS := minicash.core.tests.test_api.RecordsFilterTagsTest
 
 all:
 	@echo 'Available actions:'
@@ -42,7 +41,7 @@ test-behave:
 check: check-python
 
 
-check-python: flake8 pylint
+check-python: flake8 pylint safety
 
 
 checklicense:
@@ -54,8 +53,10 @@ flake8:
 
 
 pylint:
-	pylint --load-plugins pylint_django --rcfile=.pylintrc minicash.core minicash.auth minicash.frontend > pylint.out
+	pylint --rcfile=.pylintrc minicash.core minicash.auth minicash.frontend > pylint.out
 
+safety:
+	safety check -r requirements.txt
 
 pylizard:
 	lizard . -l python

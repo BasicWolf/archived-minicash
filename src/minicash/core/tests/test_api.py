@@ -1,9 +1,7 @@
 import datetime
 import random
-from decimal import Decimal
 from urllib.parse import urlencode
 
-import factory
 from moneyed import Money
 
 from django.test import RequestFactory
@@ -164,6 +162,7 @@ class RecordsFilterCreatedDTTest(RESTTestCase):
         super().tearDown()
         Record.objects.all().delete()
 
+    # pylint: disable=arguments-differ
     def jget(self, url, q, *args, **kwargs):
         qargs = urlencode(q)
         qurl = f'{url}?{qargs}'
@@ -213,18 +212,18 @@ class RecordsFilterTagsTest(RESTTestCase):
         tagB = TagFactory.create(name='TAG--B', owner=self.owner)
         tagC = TagFactory.create(name='TAG--C', owner=self.owner)
 
-        recordsA = RecordFactory.create_batch(2, tags=[tagA], owner=self.owner)
-        recordsB = RecordFactory.create_batch(2, tags=[tagB], owner=self.owner)
-        recordsC = RecordFactory.create_batch(2, tags=[tagC], owner=self.owner)
-        recordsAB = RecordFactory.create_batch(3, tags=[tagA, tagB], owner=self.owner)
-        recordsAC = RecordFactory.create_batch(3, tags=[tagA, tagC], owner=self.owner)
-        recordsBC = RecordFactory.create_batch(3, tags=[tagB, tagC], owner=self.owner)
+        RecordFactory.create_batch(2, tags=[tagA], owner=self.owner)  # A
+        RecordFactory.create_batch(2, tags=[tagB], owner=self.owner)  # B
+        RecordFactory.create_batch(2, tags=[tagC], owner=self.owner)  # C
+        RecordFactory.create_batch(3, tags=[tagA, tagB], owner=self.owner)  # AB
+        RecordFactory.create_batch(3, tags=[tagA, tagC], owner=self.owner)  # AC
+        RecordFactory.create_batch(3, tags=[tagB, tagC], owner=self.owner)  # BC
 
         self.tagA, self.tagB, self.tagC = [tagA, tagB, tagC]
 
-    def test_single_tag_filter(self):
+    def test_single_tag_or_filter(self):
         q_tag_a = {
-            'tags': self.tagA.name
+            'tags_or': self.tagA.name
         }
 
         res = self.jget(reverse('records-list'), q_tag_a)
@@ -232,15 +231,35 @@ class RecordsFilterTagsTest(RESTTestCase):
 
         self.assertEqual(8, len(records_data))
 
-    def test_many_tags_in_filter(self):
+    def test_single_tag_and_filter(self):
         q_tag_a = {
-            'tags': [self.tagA.name, self.tagB.name]
+            'tags_and': self.tagA.name
+        }
+
+        res = self.jget(reverse('records-list'), q_tag_a)
+        _, records_data = res.data
+
+        self.assertEqual(8, len(records_data))
+
+    def test_many_tags_or_in_filter(self):
+        q_tag_a = {
+            'tags_or': [self.tagA.name, self.tagB.name]
         }
 
         res = self.jget(reverse('records-list'), q_tag_a)
         _, records_data = res.data
 
         self.assertEqual(13, len(records_data))
+
+    def test_many_tags_and_in_filter(self):
+        q_tag_a = {
+            'tags_and': [self.tagA.name, self.tagB.name]
+        }
+
+        res = self.jget(reverse('records-list'), q_tag_a)
+        _, records_data = res.data
+
+        self.assertEqual(3, len(records_data))
 
 
 class RecordAPIAssetDataIntegrityTest(RESTTestCase):
@@ -317,7 +336,7 @@ class RecordAPIAssetDataIntegrityTest(RESTTestCase):
         old_asset_other_balance = asset_from_other.balance
 
         record = RecordFactory.create(owner=self.owner, asset_from=asset_from, asset_to=None)
-        record.asset_from = asset_from_other;
+        record.asset_from = asset_from_other
         serializer = RecordSerializer(record)
 
         self.jpatch(reverse('records-detail', args=[record.pk]), serializer.data)
@@ -355,7 +374,7 @@ class RecordAPIAssetDataIntegrityTest(RESTTestCase):
         old_asset_other_balance = asset_to_other.balance
 
         record = RecordFactory.create(owner=self.owner, asset_to=asset_to, asset_from=None)
-        record.asset_to = asset_to_other;
+        record.asset_to = asset_to_other
         serializer = RecordSerializer(record)
 
         self.jpatch(reverse('records-detail', args=[record.pk]), serializer.data)

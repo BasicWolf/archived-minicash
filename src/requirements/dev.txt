@@ -14,5 +14,6 @@ pudb
 pyflakes
 pylint
 pylint-django
+safety
 selenium
 werkzeug

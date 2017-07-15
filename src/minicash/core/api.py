@@ -5,7 +5,6 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from rest_framework.permissions import IsAuthenticated
 
 from .filters import RecordFilter
-from .models import Asset, Record
 from .permissions import IsAssetRemovable
 from .serializers import (
     AssetSerializer,
