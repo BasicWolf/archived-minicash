@@ -119,7 +119,7 @@ class Record(models.Model):
 class Tag(models.Model):
     objects = MinicashModelManager()
 
-    name = models.CharField(max_length=32)
+    name = models.CharField(max_length=32, db_index=True)
     description = models.TextField(blank=True, default='')
     owner = models.ForeignKey(User, related_name='tags')
 

@@ -12,7 +12,8 @@ export let RecordsFilter = utils.BaseBehavior.extend({
     ui: {
         dtFrom: 'div[data-spec="dt_from"]',
         dtTo: 'div[data-spec="dt_to"]',
-        tagsInput: 'input[name="tags"]',
+        tagsOrInput: 'input[name="tags_or"]',
+        tagsAndInput: 'input[name="tags_and"]',
         filterForm: 'form[name="filter_records_form"]',
         applyBtn: 'button[data-spec="apply"]',
         clearBtn: 'button[data-spec="clear"]',
@@ -50,8 +51,10 @@ export let RecordsFilter = utils.BaseBehavior.extend({
     },
 
     renderTagsInput: function() {
-        let $tagsInput = this.getUI('tagsInput');
-        let $ti = this.getUI('tagsInput').tagsinput({
+        let $tagsOrInput = this.getUI('tagsOrInput');
+        let $tagsAndInput = this.getUI('tagsAndInput');
+
+        let opts = {
             tagClass: 'label label-primary',
             freeInput: false,
             typeaheadjs: {
@@ -59,16 +62,27 @@ export let RecordsFilter = utils.BaseBehavior.extend({
                 valueKey: 'name',
                 source: minicash.collections.tags.bloodhound.adapter(),
             },
+        };
+        this.getUI('tagsOrInput').tagsinput(opts);
+        this.getUI('tagsAndInput').tagsinput(opts);
+
+        $tagsOrInput.on('itemRemoved itemAdded', () => {
+            if (!_.isEmpty($tagsAndInput.tagsinput('items'))) {
+                $tagsAndInput.tagsinput('removeAll');
+            }
+            this.triggerMethod('filter:change');
         });
 
-        $tagsInput.on('itemRemoved itemAdded', () => {
+        $tagsAndInput.on('itemRemoved itemAdded', () => {
+            if (!_.isEmpty($tagsOrInput.tagsinput('items'))) {
+                $tagsOrInput.tagsinput('removeAll');
+            }
             this.triggerMethod('filter:change');
         });
     },
 
     onFilterChange: function() {
         let hasFilterCriteria = !_.isEmpty(this._collectFormData());
-        this.uiEnable('applyBtn', hasFilterCriteria);
         this.uiEnable('clearBtn', hasFilterCriteria);
     },
 
@@ -82,7 +96,6 @@ export let RecordsFilter = utils.BaseBehavior.extend({
     },
 
     _collectFormData: function() {
-        let NO_DATA = {};
         let formData = this.getUI('filterForm').serializeForm();
 
         // ---- process dt_from, dt_to ---- //
@@ -109,10 +122,16 @@ export let RecordsFilter = utils.BaseBehavior.extend({
         }
 
         // ---- process tags ---- //
-        delete formData['tags'];
-        let tags = this.getUI('tagsInput').tagsinput('items');
-        if (!_.isEmpty(tags)) {
-            formData.tags = tags;
+        delete formData['tags_or'];
+        let tagsOr = this.getUI('tagsOrInput').tagsinput('items');
+        if (!_.isEmpty(tagsOr)) {
+            formData['tags_or'] = tagsOr;
+        }
+
+        delete formData['tags_and'];
+        let tagsAnd = this.getUI('tagsAndInput').tagsinput('items');
+        if (!_.isEmpty(tagsAnd)) {
+            formData['tags_and'] = tagsAnd;
         }
 
         return formData;
@@ -121,7 +140,7 @@ export let RecordsFilter = utils.BaseBehavior.extend({
     onClearBtnClick: function() {
         this.getUI('dtTo').datetimepicker('clear');
         this.getUI('dtFrom').datetimepicker('clear');
-        this.getUI('tagsInput').tagsinput('removeAll');
+        this.getUI('tagsOrInput').tagsinput('removeAll');
         this.triggerMethod('filter:change');
         this.applyFilter({});
     },

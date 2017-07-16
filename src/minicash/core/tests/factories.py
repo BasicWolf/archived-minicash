@@ -1,7 +1,7 @@
 import datetime
 import factory.fuzzy as fuzzy
 from factory import (SubFactory, Faker, SelfAttribute, post_generation,
-                     lazy_attribute)
+                     lazy_attribute, Sequence)
 from factory.django import DjangoModelFactory
 
 
@@ -16,7 +16,7 @@ class AssetFactory(DjangoModelFactory):
         model = models.Asset
         django_get_or_create = ('name', )
 
-    name = fuzzy.FuzzyChoice(['Salary', 'Lottery', 'Gift', 'Interest'])
+    name = Sequence(lambda n: f'asset-{n}')
     balance = fuzzy.FuzzyDecimal(0.00, 10000, 2)
     description = factories.FuzzyText()
     owner = SubFactory(UserFactory)

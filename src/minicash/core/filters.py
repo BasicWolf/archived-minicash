@@ -1,10 +1,13 @@
 from django_filters import rest_framework as filters
 
-from .models import Record, Tag
+from .models import Asset, Record, Tag
 
 
 def user_tags(request):
     return Tag.objects.for_owner(request.user)
+
+def user_assets(request):
+    return Asset.objects.for_owner(request.user)
 
 
 class RecordFilter(filters.FilterSet):
@@ -23,6 +26,25 @@ class RecordFilter(filters.FilterSet):
         conjoined=True,
     )
 
+    assets_from = filters.ModelMultipleChoiceFilter(
+        name='asset_from',
+        queryset=user_assets,
+        conjoined=False,
+    )
+
+    assets_to = filters.ModelMultipleChoiceFilter(
+        name='asset_to',
+        queryset=user_assets,
+        conjoined=False,
+    )
+
     class Meta:
         model = Record
-        fields = ['dt_from', 'dt_to', 'tags_and', 'tags_or']
+        fields = [
+            'assets_from',
+            'assets_to',
+            'dt_from',
+            'dt_to',
+            'tags_and',
+            'tags_or'
+        ]
