@@ -251,7 +251,7 @@ export function compareMoments(momentA, momentB) {
 }
 
 export function getLocale() {
-    let supported = ['en', 'fi'];
+    let supported = ['en'];
     let defaultLang = 'en';
     let lang = null;
 
