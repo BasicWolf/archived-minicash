@@ -11,7 +11,7 @@ gunicorn
 ipython
 lizard
 pudb
-pyflakes
+pyflakes==1.5.0
 pylint
 pylint-django
 safety
