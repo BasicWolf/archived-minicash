@@ -8,7 +8,7 @@ django-pdb
 factory_boy
 flake8
 gunicorn
-ipython
+ipython==6.1.0
 lizard
 pudb
 pyflakes
