@@ -86,6 +86,7 @@ export let RecordTabPanelView = tabbar.TabPanelView.extend({
             showTodayButton: true,
             allowInputToggle: true,
             format: minicash.CONTEXT.user.dtFormat,
+            locale: utils.getLocale(),
         };
 
         let $dtInput = this.getUI('dtStampInput');
