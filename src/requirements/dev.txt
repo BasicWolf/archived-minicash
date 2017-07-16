@@ -1,6 +1,6 @@
 -r base.txt
 
-bpython
+bpython==0.16
 behave-django  # requires phantomjs
 django-debug-toolbar
 django-extensions
