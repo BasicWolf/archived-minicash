@@ -73,7 +73,7 @@ Hb.registerHelper('record_mode_sign', function (mode, options) {
     switch (mode) {
     case minicash.CONTEXT.RECORD_MODES.EXPENSE.value: sign = '−'; break;
     case minicash.CONTEXT.RECORD_MODES.INCOME.value: sign = '+'; break;
-    case minicash.CONTEXT.RECORD_MODES.TRANSFER.value: sign = '';
+    case minicash.CONTEXT.RECORD_MODES.TRANSFER.value: sign = ''; break;
     default: sign = 'ERROR';
     }
     return sign;
