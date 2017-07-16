@@ -8,6 +8,8 @@ import Decimal from 'decimal.js';
 import Mn from 'backbone.marionette';
 import PageableCollection from 'backbone.paginator';
 
+import 'moment/locale/fi';
+
 /* --- CONSTANTS --- */
 /*-------------------*/
 export let KEYS = {
@@ -249,10 +251,20 @@ export function compareMoments(momentA, momentB) {
 }
 
 export function getLocale() {
+    let supported = ['en', 'fi'];
+    let defaultLang = 'en';
+    let lang = null;
+
     if (navigator.languages != undefined) {
-        return window.navigator.languages[0];
+        lang = window.navigator.languages[0];
     } else {
-        return window.navigator.userLanguage || window.navigator.language;
+        lang = window.navigator.userLanguage || window.navigator.language;
+    }
+
+    if (_.contains(supported, lang)) {
+        return lang;
+    } else {
+        return defaultLang;
     }
 }
 /* ==================================================================================================== */
