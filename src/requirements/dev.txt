@@ -4,7 +4,7 @@ bpython
 behave-django  # requires phantomjs
 django-debug-toolbar
 django-extensions
-django-pdb
+django-pdb==0.5.1
 factory_boy
 flake8
 gunicorn
