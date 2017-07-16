@@ -14,9 +14,9 @@
     <script defer src="{% static 'lib/backbone.js' %}"></script>
     <script defer src="{% static 'lib/backbone.radio.js' %}"></script>
     <script defer src="{% static 'lib/backbone.marionette.js' %}"></script>
-    <script defer src="{% static 'lib/moment-with-locales.js' %}"></script>
+    <script defer src="{% static 'lib/moment.js' %}"></script>
     <script defer src="{% static 'lib/bootstrap.js' %}"></script>
-    <script defer src="{% static 'lib/bootstrap-datetimepicker.min.js' %}"></script>
+    <script defer src="{% static 'lib/bootstrap-datetimepicker.js' %}"></script>
     <script defer src="{% static 'lib/bootstrap-notify.js' %}"></script>
     <script defer src="{% static 'lib/jquery.validate.js' %}"></script>
   {% else %}

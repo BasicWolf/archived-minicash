@@ -81,8 +81,8 @@ frontend-create-dev-symlinks: ${FRONTEND_STATIC_LIB_DIR}
 	ln -sr -f ./node_modules/bootstrap-notify/bootstrap-notify.js ${FRONTEND_STATIC_LIB_DIR}
 	ln -sr -f ./node_modules/bootstrap/dist/css/bootstrap.min.css ${FRONTEND_STATIC_LIB_DIR}
 	ln -sr -f ./node_modules/bootstrap/dist/fonts ${FRONTEND_STATIC_DIR}
-	ln -sr -f ./node_modules/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js ${FRONTEND_STATIC_LIB_DIR}
-	ln -sr -f ./node_modules/moment/min/moment-with-locales.js ${FRONTEND_STATIC_LIB_DIR}
+	ln -sr -f ./node_modules/eonasdan-bootstrap-datetimepicker/src/js/bootstrap-datetimepicker.js ${FRONTEND_STATIC_LIB_DIR}
+	ln -sr -f ./node_modules/moment/moment.js ${FRONTEND_STATIC_LIB_DIR}
 	ln -sr -f ./node_modules/jquery-validation/dist/jquery.validate.js ${FRONTEND_STATIC_LIB_DIR}
 
 ${FRONTEND_STATIC_LIB_DIR}:
