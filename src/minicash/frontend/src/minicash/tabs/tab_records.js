@@ -109,7 +109,7 @@ let RecordsTabPanelView = TabPanelView.extend({
     },
 
     onChildviewPageChange: function(pageNumber) {
-        minicash.collections.records.getPage(pageNumber);
+        this.records.getPage(pageNumber);
     },
 
     onSelectedRecordsChange: function(selectedRecords) {

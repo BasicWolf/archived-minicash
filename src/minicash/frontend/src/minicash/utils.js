@@ -247,4 +247,12 @@ export function compareMoments(momentA, momentB) {
     }
     return 0;
 }
+
+export function getLocale() {
+    if (navigator.languages != undefined) {
+        return window.navigator.languages[0];
+    } else {
+        return window.navigator.userLanguage || window.navigator.language;
+    }
+}
 /* ==================================================================================================== */

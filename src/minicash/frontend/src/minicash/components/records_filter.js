@@ -33,6 +33,7 @@ export let RecordsFilter = utils.BaseBehavior.extend({
             showTodayButton: true,
             allowInputToggle: true,
             format: minicash.CONTEXT.user.dateFormat,
+            locale: utils.getLocale(),
         };
 
         this.getUI('dtFrom')
