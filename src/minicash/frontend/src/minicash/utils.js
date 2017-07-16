@@ -110,7 +110,7 @@ export let BaseModel = Bb.Model.extend({
 });
 
 
-let SerializableCollectionMixin = {
+let SerializeCollectionMixin = {
     serialize() {
 	    return this.map( (model) => {
             if (model instanceof BaseModel)
@@ -121,7 +121,8 @@ let SerializableCollectionMixin = {
     }
 };
 
-let SearcheableCollectionMixin = {
+
+export let BaseCollection = Bb.Collection.extend({
     search: function(searchArgs, options) {
         let defaults = {
             data: searchArgs,
@@ -131,15 +132,11 @@ let SearcheableCollectionMixin = {
         let attrs = _.extend({}, defaults, options);
         return this.fetch(attrs);
     }
-};
-
-let collectionMixins = [
-    SerializableCollectionMixin,
-    SearcheableCollectionMixin,
-];
-
-export let BaseCollection = Bb.Collection.extend({});
-_.extend(BaseCollection.prototype, ...collectionMixins);
+});
+_.extend(
+    BaseCollection.prototype,
+    SerializeCollectionMixin
+);
 
 
 export let BasePageableCollection = Bb.PageableCollection.extend({
@@ -167,8 +164,22 @@ export let BasePageableCollection = Bb.PageableCollection.extend({
         }
         return newState;
     },
+
+    search: function(searchArgs, options) {
+        let defaults = {
+            data: searchArgs,
+            traditional: true,
+        };
+
+        let attrs = _.extend({}, defaults, options);
+        return this.getPage(this.state.firstPage, attrs);
+    }
 });
-_.extend(BasePageableCollection.prototype, ...collectionMixins);
+_.extend(
+    BasePageableCollection.prototype,
+    SerializeCollectionMixin
+);
+
 
 /* ==================================================================================================== */
 
