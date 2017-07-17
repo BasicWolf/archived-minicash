@@ -12,7 +12,7 @@ ipython
 lizard
 pudb
 pyflakes
-pylint
+pylint==1.7.2
 pylint-django
 safety
 selenium
