@@ -7,7 +7,7 @@ django-extensions
 django-pdb
 factory_boy
 flake8
-gunicorn
+gunicorn==19.7.1
 ipython
 lizard
 pudb
