@@ -16,4 +16,4 @@ pylint
 pylint-django
 safety
 selenium
-werkzeug
+werkzeug==0.12.2
