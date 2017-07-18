@@ -122,6 +122,7 @@ class Tag(models.Model):
     name = models.CharField(max_length=32, db_index=True)
     description = models.TextField(blank=True, default='')
     owner = models.ForeignKey(User, related_name='tags')
+    records_count = models.PositiveIntegerField(default=0)
 
     class Meta:
         unique_together = (('name', 'owner'))

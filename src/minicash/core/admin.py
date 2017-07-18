@@ -19,5 +19,13 @@ class RecordAdmin(admin.ModelAdmin):
     )
 
 
+@admin.register(Tag)
+class TagAdmin(admin.ModelAdmin):
+    list_display = (
+        'name',
+        'records_count',
+    )
+
+
 admin.site.register(Asset)
-admin.site.register(Tag)
+
