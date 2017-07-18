@@ -104,8 +104,8 @@ Hb.registerHelper('context', function (keys, options) {
             let $obj = $(this);
             let arrayData = $obj.serializeArray();
             let formData = _.chain(arrayData)
-                .indexBy('name')
-                .mapObject((val, key) => val.value)
+                .keyBy('name')
+                .mapValues((val) => val.value)
                 .value();
             ret.push(formData);
         });

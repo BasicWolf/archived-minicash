@@ -4,8 +4,7 @@
     <form name="filter_records_form" autocomplete="off" class="form-horizontal">
 
       <div class="form-group form-group-sm">
-        <label class="col-sm-2 control-label">Time period</label>
-        <label class="col-sm-1 control-label">Date from:</label>
+        <label class="col-sm-2 control-label">Date from:</label>
         <div class="col-sm-4">
           <div data-spec="dt_from" class='input-group date'>
             <input name="dt_from" type="text" class="form-control" value="">
@@ -15,7 +14,7 @@
           </div>
         </div>
 
-        <label class="col-sm-1 control-label">Date to:</label>
+        <label class="col-sm-2 control-label">Date to:</label>
         <div class="col-sm-4">
           <div data-spec="dt_to" class='input-group date'>
             <input name="dt_to" type="text" class="form-control" value="">
@@ -26,25 +25,42 @@
         </div>
       </div>
 
-      <div class="form-group form-group-sm">
-        <label class="col-sm-2 control-label">Tags</label>
+      <div class="select2-wrapper">
+        <div class="form-group form-group-sm">
+          <label class="col-sm-2 control-label">Assets from:</label>
 
-        <label class="col-sm-1 control-label">Include:</label>
-        <div class="col-sm-4">
-          <input name="tags_or" type="text" class="form-control"
-                 value="">
-        </div>
+          <div class="col-sm-4">
+            <select multiple name="assets_from" style="width: 100%"></select>
+          </div>
 
-        <label class="col-sm-1 control-label">Limit to:</label>
-        <div class="col-sm-4">
-          <input name="tags_and" type="text" class="form-control"
-                 value="">
+          <label class="col-sm-2 control-label">Assets to:</label>
+
+          <div class="col-sm-4">
+            <select multiple name="assets_to" style="width: 100%"></select>
+          </div>
         </div>
       </div>
+
+      <div class="form-group form-group-sm">
+        <label class="col-sm-2 control-label">Tags:</label>
+
+        <div class="col-sm-8">
+          <input name="tags" type="text" class="form-control"
+                 value="">
+        </div>
+
+        <div class="col-sm-2 checkbox">
+          <label>
+            <input name="tags_any" type="checkbox"> Exclusive
+          </label>
+        </div>
+
+      </div>
+
     </form>
 
     <div class="btn-toolbar" role="toolbar">
-      <button data-spec="clear" disabled type="button" class="btn btn-default pull-right">Clear</button>
+      <button data-spec="clear" type="button" class="btn btn-default pull-right">Clear</button>
       <button data-spec="apply" type="button" class="btn btn-default pull-right">Apply</button>
     </div>
 

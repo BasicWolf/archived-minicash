@@ -95,17 +95,18 @@ let config = {
         new webpack.ProvidePlugin({
             $: 'jquery',
             jQuery: 'jquery',
-            _: 'underscore'
+            _: 'lodash'
         })
     ],
 
     externals: {
         "jquery": "jQuery",
-        "underscore": "_",
+        "lodash": "_",
         "backbone": "Backbone",
         "backbone.radio": "Backbone.Radio",
         "backbone.marionette": "Mn",
-        "moment": "moment"
+        "moment": "moment",
+        "select2": "select2",
     },
 
     resolve: {
@@ -133,7 +134,8 @@ if (process.env.NODE_ENV == 'production') {
     config.plugins.push(new UglifyJSPlugin({
         compress: true,
         mangle: {
-            except: ['$', '_', 'Backbone', 'exports', 'jQuery', 'minicash', 'moment', 'Mn', 'tr', 'require']
+            except: ['$', '_', 'Backbone', 'exports', 'jQuery',
+                     'minicash', 'moment', 'Mn', 'require', 'select2', 'tr']
         }
     }));
 

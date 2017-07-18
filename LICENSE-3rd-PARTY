@@ -1,16 +1,24 @@
+Minicash depends upon many third-party software libraries.
+Please check the requirements/ directory and package.json file for a list
+of dependencies.
+
 3rd-party libraries used by Minicash
 ====================================
+
 
 Backbone.js
 -----------
 
+License: MIT
+
 Copyright (c) 2010-2017 Jeremy Ashkenas, DocumentCloud
 http://backbonejs.org
-License: MIT
 
 
 jQuery
 ------
+
+License: MIT
 
 Copyright JS Foundation and other contributors, https://js.foundation/
 
@@ -19,21 +27,33 @@ individuals. For exact contribution history, see the revision history
 available at https://github.com/jquery/jquery
 
 http://jquery.com
-License: MIT
 
 
 MarionetteJS
 ------------
 
+License: MIT
+
 MarionetteJS is distributed under [MIT license](http://mutedsolutions.mit-license.org/).
 
 
-Underscore.js
--------------
+Lodash.js
+---------
 
-Copyright (c) 2009-2017 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
-http://underscorejs.org
 License: MIT
+
+Copyright JS Foundation and other contributors <https://js.foundation/>
+
+Based on Underscore.js, copyright Jeremy Ashkenas,
+DocumentCloud and Investigative Reporters & Editors <http://underscorejs.org/>
+
+This software consists of voluntary contributions made by many
+individuals. For exact contribution history, see the revision history
+available at https://github.com/lodash/lodash
+
+The following license applies to all parts of this software except as
+documented below:
+
 
 Iconmonstr icons
 ----------------
@@ -45,6 +65,7 @@ License: Iconmonstr
 
 Licenses
 ========
+
 
 MIT
 ---
