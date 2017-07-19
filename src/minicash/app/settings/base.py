@@ -92,6 +92,8 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': (
         'django_filters.rest_framework.DjangoFilterBackend',
     ),
+
+    'ORDERING_PARAM': 'sort_by',
 }
 
 ROOT_URLCONF = 'minicash.app.urls'
@@ -138,8 +140,12 @@ WSGI_APPLICATION = 'minicash.app.wsgi.application'
 # ========== Minicash-specific settings ========== #
 # ================================================ #
 
-MINICASH_AUTH_DEFAULT_BACKEND_DATETIME_FORMAT = '%d/%m/%Y %H:%M'
+MINICASH = {
+    'AUTH_DEFAULT_BACKEND_DATETIME_FORMAT': '%d/%m/%Y %H:%M',
+    'DEFAULT_CURRENCY': 'EUR',
+    'DEFAULT_PAGINATOR_PAGE_SIZE': 20,
+}
 
-MINICASH_DEFAULT_PAGINATOR_PAGE_SIZE = 20
 
-MINICASH_DEFAULT_CURRENCY = 'EUR'
+
+

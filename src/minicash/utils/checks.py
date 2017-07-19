@@ -3,17 +3,20 @@ from functools import wraps
 from django.conf import settings
 from django.core.checks import Error
 
+from minicash.core.settings import minicash_settings
 
 class NotDefined:
     pass
 
 
 def is_defined(name):
-    return getattr(settings, name, NotDefined) != NotDefined
+    return getattr(minicash_settings, name, NotDefined) != NotDefined
 
 
-class requires_settings:
-    '''A decorator which checks for required settings and yields Error CheckMessages if settings are not found.'''
+class requires_minicash_settings:
+    '''A decorator which checks for required Minicash settings
+       and yields Error CheckMessages if settings are not found.'''
+
     def __init__(self, settings_list=[]):
         self.settings_list = settings_list
 
