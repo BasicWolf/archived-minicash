@@ -115,6 +115,31 @@ class Record(models.Model):
                 asset_to.balance += delta
                 asset_to.save()
 
+    def update_tags_after_create(self):
+        for tag in self.tags.all():
+            tag.records_count += 1
+            tag.save()
+
+    def update_tags_after_update(self, old_tags):
+        '''Update related Tag objects.
+
+        :type old_tags: :class:`django.db.models.QuerySet`
+        '''
+        current_tags = self.tags.all()
+
+        for tag in current_tags.difference(old_tags):
+            tag.records_count -= 1
+            tag.save()
+
+        for tag in old_tags.difference(current_tags):
+            tag.records_count -= 1
+            tag.save()
+
+    def update_tags_before_destroy(self):
+        for tag in self.tags.all():
+            tag.records_count -= 1
+            tag.save()
+
 
 class Tag(models.Model):
     objects = MinicashModelManager()

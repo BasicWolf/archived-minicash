@@ -9,7 +9,7 @@ FRONTEND_STATIC_LIB_DIR = $(FRONTEND_STATIC_DIR)/lib
 
 
 TESTS := minicash.utils minicash.core minicash.auth minicash.frontend
-TESTS := minicash.core.tests.test_records_filter_api
+TESTS := minicash.core.tests.test_business_logic_data_integrity_api.RecordAPITagsDataIntegrityTest
 
 all:
 	@echo 'Available actions:'

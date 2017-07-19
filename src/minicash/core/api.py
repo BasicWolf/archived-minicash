@@ -49,20 +49,24 @@ class RecordsView(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         super().perform_create(serializer)
         serializer.instance.update_assets_after_create()
+        serializer.instance.update_tags_after_create()
 
     @transaction.atomic
     def perform_update(self, serializer):
         old_delta = serializer.instance.delta
         old_asset_to = serializer.instance.asset_to
         old_asset_from = serializer.instance.asset_from
+        old_tags = serializer.instance.tags.all()
 
         super().perform_update(serializer)
         serializer.instance.update_assets_after_update(
             old_delta, old_asset_to, old_asset_from)
+        serializer.instance.update_tags_after_update(old_tags)
 
     @transaction.atomic
     def perform_destroy(self, instance):
         instance.update_assets_before_destroy()
+        instance.update_tags_before_destroy()
         super().perform_destroy(instance)
 
 
