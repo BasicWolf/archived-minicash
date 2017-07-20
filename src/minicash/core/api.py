@@ -1,10 +1,11 @@
-from django.conf import settings
 from django.db import transaction
 from rest_framework import viewsets, pagination, response
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
 
+from minicash.core.settings import minicash_settings
 from .filters import RecordFilter
+from .models import Record, Asset, Tag
 from .permissions import IsAssetRemovable
 from .serializers import (
     AssetSerializer,
@@ -16,7 +17,7 @@ from .serializers import (
 
 
 class RecordsPagination(pagination.PageNumberPagination):
-    page_size = settings.MINICASH_DEFAULT_PAGINATOR_PAGE_SIZE
+    page_size = minicash_settings.DEFAULT_PAGINATOR_PAGE_SIZE
     page_size_query_param = 'page_size'
 
     def get_paginated_response(self, data):
@@ -42,31 +43,27 @@ class RecordsView(viewsets.ModelViewSet):
     filter_class = RecordFilter
 
     def get_queryset(self):
-        user = self.request.user
-        return user.records.all().order_by('-created_dt')
+        return Record.objects.for_owner(self.request.user) \
+                             .order_by('created_dt');
 
     @transaction.atomic
     def perform_create(self, serializer):
         super().perform_create(serializer)
         serializer.instance.update_assets_after_create()
-        serializer.instance.update_tags_after_create()
 
     @transaction.atomic
     def perform_update(self, serializer):
         old_delta = serializer.instance.delta
         old_asset_to = serializer.instance.asset_to
         old_asset_from = serializer.instance.asset_from
-        old_tags = serializer.instance.tags.all()
 
         super().perform_update(serializer)
         serializer.instance.update_assets_after_update(
             old_delta, old_asset_to, old_asset_from)
-        serializer.instance.update_tags_after_update(old_tags)
 
     @transaction.atomic
     def perform_destroy(self, instance):
         instance.update_assets_before_destroy()
-        instance.update_tags_before_destroy()
         super().perform_destroy(instance)
 
 
@@ -75,8 +72,7 @@ class AssetsView(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated, IsAssetRemovable,)
 
     def get_queryset(self):
-        user = self.request.user
-        return user.assets.all()
+        return Asset.objects.for_owner(self.request.user)
 
     def get_serializer_class(self):
         if self.request.method == 'POST':
@@ -93,5 +89,4 @@ class TagsView(viewsets.ModelViewSet):
     serializer_class = TagSerializer
 
     def get_queryset(self):
-        user = self.request.user
-        return user.tags.all()
+        return Tag.objects.for_owner(self.request.user)

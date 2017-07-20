@@ -6,11 +6,23 @@ from .models import Asset, Record, Tag
 def user_tags(request):
     return Tag.objects.for_owner(request.user)
 
+
 def user_assets(request):
     return Asset.objects.for_owner(request.user)
 
 
 class RecordFilter(filters.FilterSet):
+    class Meta:
+        model = Record
+        fields = [
+            'assets_from',
+            'assets_to',
+            'dt_from',
+            'dt_to',
+            'tags_and',
+            'tags_or'
+        ]
+
     dt_from = filters.DateTimeFilter(name='created_dt', lookup_expr='gte')
     dt_to = filters.DateTimeFilter(name='created_dt', lookup_expr='lte')
     tags_or = filters.ModelMultipleChoiceFilter(
@@ -38,13 +50,9 @@ class RecordFilter(filters.FilterSet):
         conjoined=False,
     )
 
-    class Meta:
-        model = Record
-        fields = [
-            'assets_from',
-            'assets_to',
-            'dt_from',
-            'dt_to',
-            'tags_and',
-            'tags_or'
-        ]
+    o = filters.OrderingFilter(
+        # tuple-mapping retains order
+        fields=(
+            ('created_dt', 'dt_from'),
+        ),
+    )

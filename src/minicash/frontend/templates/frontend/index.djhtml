@@ -24,6 +24,7 @@
     <script>
     // Early lodash fix
     _.contains = _.includes;
+    _.first = _.take;
     </script>
   {% else %}
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"

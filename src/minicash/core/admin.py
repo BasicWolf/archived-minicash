@@ -23,7 +23,7 @@ class RecordAdmin(admin.ModelAdmin):
 class TagAdmin(admin.ModelAdmin):
     list_display = (
         'name',
-        'records_count',
+        'description',
     )
 
 

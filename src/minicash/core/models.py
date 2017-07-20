@@ -1,10 +1,11 @@
 from decimal import Decimal
-from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.db import models
 from djmoney.models.fields import MoneyField
 from jsonfield import JSONField
+
+from minicash.core.settings import minicash_settings
 
 
 class MinicashModelManager(models.Manager):
@@ -46,7 +47,7 @@ class Record(models.Model):
         max_digits=10,
         decimal_places=3,
         default=Decimal('0.0'),
-        default_currency=settings.MINICASH_DEFAULT_CURRENCY
+        default_currency=minicash_settings.DEFAULT_CURRENCY
     )
     description = models.TextField(blank=True)
     extra = JSONField(default={})
@@ -115,31 +116,6 @@ class Record(models.Model):
                 asset_to.balance += delta
                 asset_to.save()
 
-    def update_tags_after_create(self):
-        for tag in self.tags.all():
-            tag.records_count += 1
-            tag.save()
-
-    def update_tags_after_update(self, old_tags):
-        '''Update related Tag objects.
-
-        :type old_tags: :class:`django.db.models.QuerySet`
-        '''
-        current_tags = self.tags.all()
-
-        for tag in current_tags.difference(old_tags):
-            tag.records_count -= 1
-            tag.save()
-
-        for tag in old_tags.difference(current_tags):
-            tag.records_count -= 1
-            tag.save()
-
-    def update_tags_before_destroy(self):
-        for tag in self.tags.all():
-            tag.records_count -= 1
-            tag.save()
-
 
 class Tag(models.Model):
     objects = MinicashModelManager()
@@ -147,7 +123,6 @@ class Tag(models.Model):
     name = models.CharField(max_length=32, db_index=True)
     description = models.TextField(blank=True, default='')
     owner = models.ForeignKey(User, related_name='tags')
-    records_count = models.PositiveIntegerField(default=0)
 
     class Meta:
         unique_together = (('name', 'owner'))
@@ -177,13 +152,13 @@ class Asset(models.Model):
         max_digits=10,
         decimal_places=2,
         default=Decimal('0.0'),
-        default_currency=settings.MINICASH_DEFAULT_CURRENCY
+        default_currency=minicash_settings.DEFAULT_CURRENCY
     )
     initial_balance = MoneyField(
         max_digits=10,
         decimal_places=2,
         default=Decimal('0.0'),
-        default_currency=settings.MINICASH_DEFAULT_CURRENCY,
+        default_currency=minicash_settings.DEFAULT_CURRENCY,
     )
 
     class Meta:

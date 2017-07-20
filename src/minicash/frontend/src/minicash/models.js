@@ -39,7 +39,6 @@ export let RecordsBase = {
 };
 
 export let PageableRecords = utils.BasePageableCollection.extend(RecordsBase);
-//_.extend(PageableRecords.prototype, RecordsBase);
 
 
 export let Asset = utils.BaseModel.extend({
@@ -74,6 +73,7 @@ export let Tag = utils.BaseModel.extend({
     serverAttributes: [
         'pk',
         'name',
+        'records_count',
         'description',
     ],
 });
@@ -89,6 +89,7 @@ export let Tags = utils.BaseCollection.extend({
 
     comparator: 'name'
 });
+
 
 export let ReportWidget = utils.BaseModel.extend({
 

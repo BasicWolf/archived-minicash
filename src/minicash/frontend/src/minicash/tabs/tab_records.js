@@ -37,7 +37,12 @@ let RecordsTabPanelView = TabPanelView.extend({
     template: require('templates/tab_records/tab_records.hbs'),
 
     initialize: function() {
-        this.records = new models.PageableRecords();
+        this.records = new models.PageableRecords([], {
+            state: {
+                sortKey: '-created_dt',
+            }
+        });
+
         this.records.fetch();
         recordsChannel.on('model:save', (model) => {
             this.records.add(model);

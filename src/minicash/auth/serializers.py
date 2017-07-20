@@ -1,7 +1,7 @@
-from django.conf import settings
 from rest_framework import serializers
 from rest_framework.settings import api_settings
 
+from minicash.core.settings import minicash_settings
 from minicash.utils.serializers import UserRelatedFieldBase
 from .models import DT_FORMATS
 
@@ -30,7 +30,7 @@ class UserDateTimeField(serializers.DateTimeField, UserRelatedFieldBase):
         if user is not None:
             backend_format = DT_FORMATS[user.profile.dt_format].backend_format
         else:
-            backend_format = settings.MINICASH_AUTH_DEFAULT_BACKEND_DATETIME_FORMAT
+            backend_format = minicash_settings.AUTH_DEFAULT_BACKEND_DATETIME_FORMAT
 
         return backend_format
 
