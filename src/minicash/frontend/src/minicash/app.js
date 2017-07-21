@@ -23,7 +23,7 @@ export default Mn.Application.extend({
     notify: utils.notifier,
 
     initialize: function() {
-        this.CONTEXT = window._minicashContext;
+        this.CONTEXT = window.minicash.CONTEXT;
         this.initCollections();
     },
 
@@ -40,7 +40,7 @@ export default Mn.Application.extend({
 
     onStart: function() {
         this.bootstrapData();
-        this.tabbar = new TabbarManager({firstTab: HomeTab});
+        this.tabbar = new TabbarManager({firstTab: ReportTab});
     },
 
     bootstrapData: function() {

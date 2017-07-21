@@ -1,3 +1,5 @@
 <script>
-window._minicashContext = {{ minicash_context|safe }};
+window.minicash = {
+    CONTEXT: {{ minicash_context|safe }}
+};
 </script>

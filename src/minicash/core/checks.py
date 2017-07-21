@@ -17,19 +17,20 @@ def check_settings(app_configs, **kwargs):
 
 
 @requires_minicash_settings([
-    'DEFAULT_PAGINATOR_PAGE_SIZE',
+    'PAGINATOR_DEFAULT_PAGE_SIZE',
+    'PAGINATOR_MAX_PAGE_SIZE',
 ])
 def check_paginator_settings():
-    name = 'DEFAULT_PAGINATOR_PAGE_SIZE'
+    name = 'PAGINATOR_DEFAULT_PAGE_SIZE'
     val = getattr(minicash_settings, name)
 
     if not isinstance(val, int):
         yield CheckError(f'{name} value ({val}) must be an integer', id='MINICASH-CHECK-E0020')
 
-    if val < 20 or val > 500:
+    if val < 20 or val > minicash_settings.PAGINATOR_MAX_PAGE_SIZE:
         yield CheckWarning(
             f'{name} value ({val}) is sub-optimal.',
-            'Consider a value in range [20..500].',
+            'Consider a value in range [20..{minicash_settings.PAGINATOR_MAX_PAGE_SIZE}].',
             id='MINICASH-CHECK-W0001'
         )
 
@@ -37,11 +38,8 @@ def check_paginator_settings():
 @requires_minicash_settings([
     'DEFAULT_CURRENCY',
 ])
-def check_minicash_default_currency():
+def check_minicash_default_currency(name, val):
     CURRENCY_CODES = (c[1] for c in CURRENCY_CHOICES)
-
-    name = 'DEFAULT_CURRENCY'
-    val = getattr(minicash_settings, name)
 
     if val in CURRENCY_CODES:
         yield CheckError(f'{name} value ({val}) is an invalid currency value', id='MINICASH-CHECK-E0030')

@@ -17,7 +17,7 @@ from .serializers import (
 
 
 class RecordsPagination(pagination.PageNumberPagination):
-    page_size = minicash_settings.DEFAULT_PAGINATOR_PAGE_SIZE
+    page_size = minicash_settings.PAGINATOR_DEFAULT_PAGE_SIZE
     page_size_query_param = 'page_size'
 
     def get_paginated_response(self, data):
@@ -39,7 +39,6 @@ class RecordsView(viewsets.ModelViewSet):
     authentication_classes = (SessionAuthentication, BasicAuthentication)
     permission_classes = (IsAuthenticated,)
     serializer_class = RecordSerializer
-    pagination_class = RecordsPagination
     filter_class = RecordFilter
 
     def get_queryset(self):
@@ -65,6 +64,10 @@ class RecordsView(viewsets.ModelViewSet):
     def perform_destroy(self, instance):
         instance.update_assets_before_destroy()
         super().perform_destroy(instance)
+
+
+class PaginatedRecordsView(RecordsView):
+    pagination_class = RecordsPagination
 
 
 class AssetsView(viewsets.ModelViewSet):

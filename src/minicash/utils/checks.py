@@ -28,7 +28,12 @@ class requires_minicash_settings:
                 yield from messages
                 raise StopIteration()
             else:
-                yield from f(*args, **kwargs)
+                if len(self.settings_list) == 1:
+                    name = self.settings_list[0]
+                    val = getattr(minicash_settings, name)
+                    yield from f(name=name, val=val, *args, **kwargs)
+                else:
+                    yield from f(*args, **kwargs)
         return wrapper
 
     def _check_settings_defined(self):

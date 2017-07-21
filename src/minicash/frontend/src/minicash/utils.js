@@ -1,6 +1,6 @@
 'use strict';
 
-/* global $, _ */
+/* global $,_,minicash */
 
 import Bb from 'backbone';
 import Bhound from 'bloodhound-js';
@@ -142,7 +142,8 @@ _.extend(
 
 export let BasePageableCollection = Bb.PageableCollection.extend({
     state: {
-        firstPage: 1
+        firstPage: 1,
+        pageSize: minicash.CONTEXT.settings.PAGINATOR_DEFAULT_PAGE_SIZE,
     },
 
     queryParams: {
@@ -227,8 +228,9 @@ _.extend(BaseBehavior.prototype, UIEnableDisableMixin);
 
 /* ==================================================================================================== */
 
-/* --- HELPER FUNCTIONS --- */
-/*--------------------------*/
+/* --- HELPER FUNCTIONS AND CLASSES --- */
+/*--------------------------------------*/
+
 
 // generateId :: Integer -> String
 export function generateId(len) {

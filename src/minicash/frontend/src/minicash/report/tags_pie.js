@@ -22,38 +22,69 @@ export let TagsPieReportView = Mn.View.extend({
 
     template: _.noop,
 
-    initialize: function() {
-        this._initializeTags();
-    },
-
-    _initializeTags: function() {
-        let tags = minicash.collections.tags.clone();
-        let tagsGroups = tags.groupBy((tag) => tag.get('records_count'));
-
-        let sortedKeys = _.chain(tagsGroups).keys().sortBy();
-        let sortedTags = [];
-
-        for (let key of sortedKeys) {
-            let names = _.map(tagsGroups[key], (tag) => tag.get('name'));
-
-            sortedTags.push({
-                'records_count': key,
-                'names': names.join(', ')
-            });
+    collection: new models.PageableRecords([], {
+        state: {
+            pageSize: minicash.CONTEXT.settings.PAGINATOR_MAX_PAGE_SIZE,
         }
+    }),
 
-        this.tags = _.take(sortedTags, 10);
+    collectionEvents: {
+        sync: 'onDataReady'
     },
 
-    onBeforeAttach: function() {
+    initialize: function() {
+        this.collection.getPage(1);
+    },
+
+    onDataReady: function(collection, response, options) {
+        if (this.isAttached()) {
+            this.renderChart();
+        } else {
+            this.listenToOnceobject('before:attach', () => this.renderChart());
+        }
+    },
+
+    renderChart: function() {
+        let tagsToRecordsCount = {};
+
+        this.collection.forEach((record) => {
+            for (let tag of record.get('tags')) {
+                if (!tagsToRecordsCount.hasOwnProperty(tag)) {
+                    tagsToRecordsCount[tag] = 0;
+                }
+                tagsToRecordsCount[tag] += 1;
+            }
+        });
+
+
+        let recordsCountToTags = _.chain(tagsToRecordsCount)
+            .map((val, key) => { return {name: key, count: val}; })
+            .groupBy('count')
+            .value();
+
+        debugger;
+        let topTagsCounts = _.chain(recordsCountToTags)
+            .keys()
+            .sortBy()
+            .takeRight(10)
+            .value();
+
+        let topTags = _.map(topTagsCounts, (c) => {
+            return _.chain(recordsCountToTags[c])
+                .take(3)
+                .map('name')
+                .join(', ')
+                .value();
+        });
+
         let data = {
             datasets: [{
-                data: this.tags.map((tag) => tag['records_count']),
-                backgroundColor: utils.colors.makeColorsGradient(10),
+                data: topTagsCounts,
+                backgroundColor: utils.colors.makeColorsGradient(topTagsCounts.length),
             }],
 
-            // These labels appear in the legend and in the tooltips when hovering different arcs
-            labels: this.tags.map((tag) => tag['names'])
+
+            labels: topTags
         };
 
         // For a pie chart
@@ -62,5 +93,5 @@ export let TagsPieReportView = Mn.View.extend({
             data: data,
             options: {},
         });
-    },
+    }
 });

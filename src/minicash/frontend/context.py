@@ -4,7 +4,7 @@ from django.core import urlresolvers
 
 from minicash.core.models import Asset, Record, Tag
 from minicash.core.serializers import AssetSerializer, TagSerializer
-
+from minicash.core.settings import minicash_settings
 
 def build_context(**kwargs):
     assert 'user' in kwargs
@@ -29,6 +29,8 @@ def build_settings(**kwargs):
     ctx_settings = {
         'DATETIME_FORMAT': 'YYYY-MM-DD hh:mm',
         'STATIC_URL': settings.STATIC_URL,
+        'PAGINATOR_DEFAULT_PAGE_SIZE': minicash_settings.PAGINATOR_DEFAULT_PAGE_SIZE,
+        'PAGINATOR_MAX_PAGE_SIZE': minicash_settings.PAGINATOR_MAX_PAGE_SIZE,
     }
 
     return {
