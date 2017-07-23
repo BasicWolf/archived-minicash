@@ -24,6 +24,7 @@
     "jquery": "^3.2.1",
     "jquery-validation": "^1.16.0",
     "lodash": "^4.17.4",
+    "underscore": "^1.8.3",
     "moment": "^2.18.1",
     "moment-timezone": "^0.4.1",
     "select2": "^4.0.3",
