@@ -15,5 +15,5 @@ pyflakes
 pylint
 pylint-django
 safety
-selenium
+selenium==3.4.3
 werkzeug
