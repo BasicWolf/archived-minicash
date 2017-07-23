@@ -2,6 +2,9 @@
   "name": "minicash-frontend",
   "description": "Minicash is a libre personal finances management application.",
   "author": "Zaur Nasibov and respected contributors",
+  "engines": {
+    "npm": "5.2.0"
+  },
   "scripts": {
     "postinstall": "NPM_CONFIG_PRODUCTION=false NODE_ENV=production node_modules/.bin/webpack --progress --profile --colors --display-error-details"
   },
