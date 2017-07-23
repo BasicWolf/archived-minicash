@@ -50,9 +50,9 @@ class RecordFilter(filters.FilterSet):
         conjoined=False,
     )
 
-    o = filters.OrderingFilter(
+    sort_by = filters.OrderingFilter(
         # tuple-mapping retains order
         fields=(
-            ('created_dt', 'dt_from'),
+            ('created_dt', 'created_ts'),
         ),
     )

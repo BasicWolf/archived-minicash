@@ -30,12 +30,6 @@ export let RecordsBase = {
     model: Record,
 
     url: function() { return minicash.url('records-list'); },
-
-    comparator: function(itemA, itemB) {
-        let m1 = moment(itemA.get('created_dt'), minicash.CONTEXT.user.dtFormat);
-        let m2 = moment(itemB.get('created_dt'), minicash.CONTEXT.user.dtFormat);
-        return -utils.compareMoments(m1, m2);
-    }
 };
 
 export let PageableRecords = utils.BasePageableCollection.extend(RecordsBase);

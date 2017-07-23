@@ -37,6 +37,7 @@ let ReportTabPanelView = TabPanelView.extend({
     collection: new models.PageableRecords([], {
         state: {
             pageSize: minicash.CONTEXT.settings.PAGINATOR_MAX_PAGE_SIZE,
+            sortKey: '-created_ts',
         }
     }),
 
