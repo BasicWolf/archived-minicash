@@ -45,7 +45,7 @@ export let TagsPieReportView = Mn.View.extend({
         if (this.isAttached()) {
             this.renderChart();
         } else {
-            this.listenToOnceobject('before:attach', () => this.renderChart());
+            this.listenToOnce('before:attach', () => this.renderChart());
         }
     },
 
