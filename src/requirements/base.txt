@@ -1,4 +1,4 @@
-django==1.11.*
+django==1.11.3
 djangorestframework==3.6.*
 django-jsonfield==1.0.*
 django-money==0.11.*
