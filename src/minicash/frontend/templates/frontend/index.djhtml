@@ -20,12 +20,6 @@
     <script src="{% static 'lib/bootstrap-notify.js' %}"></script>
     <script src="{% static 'lib/jquery.validate.js' %}"></script>
     <script src="{% static 'lib/select2.js' %}"></script>
-
-    <script>
-    // Early lodash fix
-    _.contains = _.includes;
-    _.first = _.take;
-    </script>
   {% else %}
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"
             integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
@@ -44,6 +38,12 @@
     <link href="https://cdn.jsdelivr.net/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/select2/4.0.3/js/select2.min.js"></script>
   {% endif %}
+
+  <script>
+  // Early lodash fix
+  _.contains = _.includes;
+  _.first = _.take;
+  </script>
 
   <script type="text/javascript" src="{% static 'django_js_utils.js' %}"></script>
   <script type="text/javascript" src="{% url 'jsurls' %}"></script>
