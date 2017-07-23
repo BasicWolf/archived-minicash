@@ -38,7 +38,8 @@ def check_paginator_settings():
 @requires_minicash_settings([
     'DEFAULT_CURRENCY',
 ])
-def check_minicash_default_currency(name, val):
+def check_minicash_default_currency(**kwargs):
+    name, val = kwargs['name'], kwargs['val']
     CURRENCY_CODES = (c[1] for c in CURRENCY_CHOICES)
 
     if val in CURRENCY_CODES:

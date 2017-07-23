@@ -6,6 +6,7 @@ from minicash.core.models import Asset, Record, Tag
 from minicash.core.serializers import AssetSerializer, TagSerializer
 from minicash.core.settings import minicash_settings
 
+
 def build_context(**kwargs):
     assert 'user' in kwargs
 

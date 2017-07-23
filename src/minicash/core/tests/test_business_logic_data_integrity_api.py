@@ -3,13 +3,10 @@ import random
 from rest_framework.reverse import reverse
 
 from minicash.core.serializers import (
-    AssetSerializer,
     RecordSerializer,
-    TagSerializer,
 )
-from minicash.core.models import Asset, Record, Tag
 from minicash.utils.testing import RESTTestCase
-from .factories import AssetFactory, RecordFactory, TagFactory
+from .factories import AssetFactory, RecordFactory
 
 
 class RecordAPIAssetDataIntegrityTest(RESTTestCase):

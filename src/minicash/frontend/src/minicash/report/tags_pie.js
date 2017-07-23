@@ -31,8 +31,14 @@ export let TagsPieReportView = Mn.View.extend({
 
     template: _.noop,
 
+    chart: null,
+
     collectionEvents: {
         sync: 'onDataReady'
+    },
+
+    onDestroy: function() {
+        this._destroyChart();
     },
 
     onDataReady: function(collection, response, options) {
@@ -44,6 +50,7 @@ export let TagsPieReportView = Mn.View.extend({
     },
 
     renderChart: function() {
+        this._destroyChart();
         let [data, labels] = this.compute();
 
         let chartData = {
@@ -55,12 +62,17 @@ export let TagsPieReportView = Mn.View.extend({
             labels: labels
         };
 
-        // For a pie chart
-        let myPieChart = new Chart(this.$el, {
+        this.chart = new Chart(this.$el, {
             type: 'pie',
             data: chartData,
             options: {},
         });
+    },
+
+    _destroyChart: function() {
+        if (this.chart) {
+            this.chart.destroy();
+        }
     },
 
     compute: function() {

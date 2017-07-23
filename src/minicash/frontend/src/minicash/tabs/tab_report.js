@@ -6,6 +6,7 @@ import Mn from 'backbone.marionette';
 import * as bootbox from 'bootbox';
 import * as models from 'minicash/models';
 
+import {RecordsFilter} from 'minicash/components/records_filter';
 import {TabPanelView, TabModel} from 'components/tabbar';
 import {TagsPieReportView} from 'report/tags_pie';
 
@@ -24,6 +25,8 @@ export let ReportTab = TabModel.extend({
 
 
 let ReportTabPanelView = TabPanelView.extend({
+    behaviors: [RecordsFilter, ],
+
     template: require('templates/tab_report/tab_report.hbs'),
 
     regions: {
@@ -54,7 +57,7 @@ let ReportTabPanelView = TabPanelView.extend({
     },
 
     onFilterChange: function(filterParams) {
-        this.records.search(filterParams);
+        this.collection.search(filterParams);
     },
 
 });

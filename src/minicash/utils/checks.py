@@ -1,9 +1,9 @@
 from functools import wraps
 
-from django.conf import settings
 from django.core.checks import Error
 
 from minicash.core.settings import minicash_settings
+
 
 class NotDefined:
     pass

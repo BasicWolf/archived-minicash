@@ -31,8 +31,6 @@ export let RecordsTab = TabModel.extend({
 
 
 let RecordsTabPanelView = TabPanelView.extend({
-    records: null,
-
     behaviors: [RecordsFilter, ],
 
     template: require('templates/tab_records/tab_records.hbs'),

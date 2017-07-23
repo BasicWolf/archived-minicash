@@ -18,13 +18,11 @@ class MinicashSettings(object):
         from minicash.core.settings import minicash_settings
         print(minicash_settings.DEFAULT_PAGINATOR_SIZE)
     """
-    def __init__(self, user_settings, valid_settings_list):
+    def __init__(self, user_settings=None, valid_settings_list=None):
         if user_settings:
             self._user_settings = user_settings
 
-        self.valid_settings_list = valid_settings_list
-
-
+        self.valid_settings_list = valid_settings_list or VALID_SETTINGS_LIST
 
     @property
     def user_settings(self):
@@ -43,12 +41,11 @@ class MinicashSettings(object):
         return val
 
 
-minicash_settings = MinicashSettings(None, VALID_SETTINGS_LIST)
+minicash_settings = MinicashSettings(None)
 
 
 @receiver(setting_changed)
-def reload_minicash_settings(*args, settings=None, value=None, **kwargs, ):
+def reload_minicash_settings(*args, setting=None, value=None, **kwargs, ):
     global minicash_settings
     if setting == 'MINICASH':
-        minicash_settings = APISettings(value)
-
+        minicash_settings = MinicashSettings(value)

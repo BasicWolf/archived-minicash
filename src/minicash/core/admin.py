@@ -4,6 +4,9 @@ from django.contrib import admin
 from .models import Asset, Tag, Record
 
 
+admin.site.register(Asset)
+
+
 @admin.register(Record)
 class RecordAdmin(admin.ModelAdmin):
     list_display = (
@@ -25,7 +28,3 @@ class TagAdmin(admin.ModelAdmin):
         'name',
         'description',
     )
-
-
-admin.site.register(Asset)
-
