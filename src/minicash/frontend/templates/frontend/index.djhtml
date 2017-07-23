@@ -72,7 +72,4 @@
       <!-- Tab panels -->
       <div id="tabview_panel_region"></div>
   </div>
-
-
-</div>
 {% endblock %}

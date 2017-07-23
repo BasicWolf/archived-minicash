@@ -1,6 +1,6 @@
 'use strict';
 
-/* global $,_,minicash */
+/* global $,_,minicash,tr */
 
 import Bb from 'backbone';
 import Bhound from 'bloodhound-js';
@@ -46,15 +46,18 @@ export let notifier = (function() {
     };
 })();
 
-export let status = (function() {
-    let $el = $('<div class="minicash-status" style="display:none;"><div></div></div>');
-    $('body').append($el);
+export let status = {
+    show: function(text=null) {
+        text = text || tr('Loading...');
 
-    return {
-        show: () => $el.show(),
-        hide: () => $el.fadeOut(500),
-    };
-})();
+        let $el = $('#minicash_status');
+        $el.find('div[data-spec="minicash-status-text"]').text(text);
+        $el.show();
+    },
+    hide: function() {
+        $('#minicash_status').fadeOut(500);
+    }
+};
 
 /* ==================================================================================================== */
 
@@ -371,7 +374,7 @@ export let colors = (function() {
         for (let i = 0; i < count; i++) {
             let [h, s, v] = [
                 15 + step * i,
-                100 * (1 - 2 * i / count),
+                100 - 50 * (2 * i / count),
                 100
             ];
 

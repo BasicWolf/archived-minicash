@@ -79,7 +79,7 @@ export let RecordsFilter = utils.BaseBehavior.extend({
 
     applyFilter: function(params=null) {
         let filterParams = params || this._collectFormData();
-        this.view.records.search(filterParams);
+        this.view.triggerMethod('filter:change', filterParams);
     },
 
     _collectFormData: function() {

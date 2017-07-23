@@ -1,15 +1,22 @@
 <!-- BEGIN navbar  -->
 <div id="notify" class="notifications top-right"></div>
 
-<nav class="navbar navbar-inverse navbar-static-top">
-  <div class="container">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
+<div id="minicash_status" class="minicash-status" style="display:none;">
+  <div data-spec="minicash-status-text" class="minicash-status-text"></div>
+  <div class="minicash-status-animation"></div>
+</div>
+
+
+
+  <nav class="navbar navbar-inverse navbar-static-top">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
       <a class="navbar-brand" href="#">Minicash / Pre-Alpha</a>
     </div>
 

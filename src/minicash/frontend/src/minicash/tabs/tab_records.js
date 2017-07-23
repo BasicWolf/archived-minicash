@@ -1,6 +1,7 @@
 'use strict';
 
-/* global _,$,minicash,require */
+/* global _,$,minicash,require,tr */
+
 import * as bootbox from 'bootbox';
 import Hb from 'handlebars/runtime';
 import Mn from 'backbone.marionette';
@@ -36,17 +37,18 @@ let RecordsTabPanelView = TabPanelView.extend({
 
     template: require('templates/tab_records/tab_records.hbs'),
 
+    collection: new models.PageableRecords([], {
+        state: {
+            sortKey: '-created_dt',
+        }
+    }),
+
     initialize: function() {
-        this.records = new models.PageableRecords([], {
-            state: {
-                sortKey: '-created_dt',
-            }
+        recordsChannel.on('model:save', (model) => {
+            this.collection.add(model);
         });
 
-        this.records.fetch();
-        recordsChannel.on('model:save', (model) => {
-            this.records.add(model);
-        });
+        this.collection.getPage(1);
     },
 
     ui: {
@@ -69,8 +71,8 @@ let RecordsTabPanelView = TabPanelView.extend({
     },
 
     onRender: function() {
-        this.showChildView('recordsTableRegion', new RecordsTableView({collection: this.records})) ;
-        this.showChildView('paginatorRegion', new PaginatorView({collection: this.records}));
+        this.showChildView('recordsTableRegion', new RecordsTableView({collection: this.collection})) ;
+        this.showChildView('paginatorRegion', new PaginatorView({collection: this.collection}));
     },
 
     startNewRecord: function() {
@@ -114,11 +116,15 @@ let RecordsTabPanelView = TabPanelView.extend({
     },
 
     onChildviewPageChange: function(pageNumber) {
-        this.records.getPage(pageNumber);
+        this.collection.getPage(pageNumber);
     },
 
     onSelectedRecordsChange: function(selectedRecords) {
         this.uiEnable('deleteRecordBtn', !!selectedRecords.length);
+    },
+
+    onFilterChange: function(filterParams) {
+        this.collection.search(filterParams);
     },
 
     getSelectedRecords: function() {
