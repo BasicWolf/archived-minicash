@@ -68,6 +68,8 @@ export class Bloodhound {
     constructor(collection, attribute) {
         _.extend(this, Bb.Events);
 
+        // let customAdapter = $.fn.select2.amd.require('select2/data/customAdapter');
+
         this._bloodhound = null;
         this.collection = collection;
         this.attribute = attribute;
@@ -237,8 +239,8 @@ export let TooltipBehavior = Mn.Behavior.extend({
 });
 /* ==================================================================================================== */
 
-/* --- HELPER FUNCTIONS AND CLASSES --- */
-/*--------------------------------------*/
+/* --- HELPER FUNCTIONS --- */
+/*--------------------------*/
 
 
 // generateId :: Integer -> String
@@ -264,6 +266,7 @@ export function compareStringsAsDecimals(s1, s2) {
     return decimalToString(new Decimal(s1)) === decimalToString(new Decimal(s2));
 }
 
+
 export function compareMoments(momentA, momentB) {
     if (momentA > momentB) {
         return 1;
@@ -272,6 +275,7 @@ export function compareMoments(momentA, momentB) {
     }
     return 0;
 }
+
 
 export function getLocale() {
     let supported = ['en'];

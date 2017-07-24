@@ -27,14 +27,14 @@ class RecordFilter(filters.FilterSet):
     dt_from = filters.DateTimeFilter(name='created_dt', lookup_expr='gte')
     dt_to = filters.DateTimeFilter(name='created_dt', lookup_expr='lte')
     tags_or = filters.ModelMultipleChoiceFilter(
-        name='tags__name',
-        to_field_name='name',
+        name='tags__pk',
+        to_field_name='pk',
         queryset=user_tags,
         conjoined=False,
     )
     tags_and = filters.ModelMultipleChoiceFilter(
-        name='tags__name',
-        to_field_name='name',
+        name='tags__pk',
+        to_field_name='pk',
         queryset=user_tags,
         conjoined=True,
     )

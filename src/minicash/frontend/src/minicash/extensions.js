@@ -92,6 +92,26 @@ Hb.registerHelper('context', function (keys, options) {
 /*================================*/
 
 
+
+/* --- --- */
+
+$.fn.select2.amd.define('select2/data/customAdapter',
+    ['select2/data/array', 'select2/utils'],
+    function (ArrayAdapter, Utils) {
+        function CustomDataAdapter ($element, options) {
+            CustomDataAdapter.__super__.constructor.call(this, $element, options);
+        }
+        Utils.Extend(CustomDataAdapter, ArrayAdapter);
+        CustomDataAdapter.prototype.updateOptions = function(data) {
+            this.$element.find('option').remove(); // remove all options
+            this.addOptions(this.convertToOptions(data));
+        };
+        return CustomDataAdapter;
+    }
+);
+
+/*======================================*/
+
 (function($) { $.fn.extend({
     serializeForm: function (options) {
         let defaults = {

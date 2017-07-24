@@ -14,7 +14,7 @@ export let RecordsFilter = utils.BaseBehavior.extend({
     ui: {
         dtFrom: 'div[data-spec="dt_from"]',
         dtTo: 'div[data-spec="dt_to"]',
-        tagsInput: 'input[name="tags"]',
+        tags: 'select[name="tags"]',
         tagsAllChk: 'input[name="tags_all"]',
         assetsFrom: 'select[name="assets_from"]',
         assetsTo: 'select[name="assets_to"]',
@@ -49,17 +49,20 @@ export let RecordsFilter = utils.BaseBehavior.extend({
     },
 
     renderTagsInput: function() {
-        let $tagsInput = this.getUI('tagsInput');
-
-        this.getUI('tagsInput').tagsinput({
-            tagClass: 'label label-primary',
-            freeInput: false,
-            typeaheadjs: {
-                displayKey: 'name',
-                valueKey: 'name',
-                source: minicash.collections.tags.bloodhound.adapter(),
-            },
+        let data = minicash.collections.tags.map((it) => {
+            return {id: it.id, text: it.get('name')};
         });
+
+        let opts = {
+            data: data,
+            allowClear: true,
+            placeholder: '',
+            theme: 'bootstrap',
+        };
+
+        let $tags = this.getUI('tags');
+
+        this.getUI('tags').select2(opts);
     },
 
     renderAssetsSelects: function() {
@@ -130,9 +133,10 @@ export let RecordsFilter = utils.BaseBehavior.extend({
         }
 
         // ---- process tags ---- //
+        debugger;
         delete formData['tags'];
 
-        let tags = this.getUI('tagsInput').tagsinput('items');
+        let tags = this.getUI('tags').select2().val();
         if (!_.isEmpty(tags)) {
             if (formData['tags_all']) {
                 formData['tags_and'] = tags;
@@ -149,7 +153,7 @@ export let RecordsFilter = utils.BaseBehavior.extend({
     onClearBtnClick: function() {
         this.getUI('dtTo').datetimepicker('clear');
         this.getUI('dtFrom').datetimepicker('clear');
-        this.getUI('tagsInput').tagsinput('removeAll');
+        this.getUI('tags').val(null).trigger('change');
         this.getUI('tagsAllChk').prop('checked', false);
         this.getUI('assetsFrom').val(null).trigger('change');
         this.getUI('assetsTo').val(null).trigger('change');

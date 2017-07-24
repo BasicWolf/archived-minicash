@@ -77,10 +77,6 @@ export let Tags = utils.BaseCollection.extend({
 
     url: function() { return minicash.url('tag-list'); },
 
-    initialize: function() {
-        this.bloodhound = new utils.Bloodhound(this, 'name');
-    },
-
     comparator: 'name'
 });
 
