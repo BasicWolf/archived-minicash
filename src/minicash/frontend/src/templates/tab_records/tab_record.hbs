@@ -52,25 +52,6 @@
       </div>
 
       <div class="form-group">
-        <label class="col-sm-2 control-label">Expense</label>
-        <div class="col-sm-10">
-          <input name="delta" type="text" class="form-control"
-                 placeholder="Expense paid or received"
-                 value="{{record.delta}}"
-                 autofocus>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label class="col-sm-2 control-label">Tags</label>
-        <div class="col-sm-10">
-          <input name="tags" type="text" class="form-control"
-                 placeholder="Tags like 'groceries', 'utilities', 'school', etc."
-                 value="{{record.tags}}">
-        </div>
-      </div>
-
-      <div class="form-group">
         <label class="col-sm-2 control-label">Withdrawn from</label>
         <div class="col-sm-10">
           <select name="asset_from" class="form-control">
@@ -91,6 +72,25 @@
               <option value="{{id}}" {{#ifeq ../record.asset_to id}}selected{{/ifeq}}>{{name}}</option>
             {{/each}}
           </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-2 control-label">Expense</label>
+        <div class="col-sm-10">
+          <input name="delta" type="text" class="form-control"
+                 placeholder="Expense paid or received"
+                 value="{{record.delta}}"
+                 autofocus>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-2 control-label">Tags</label>
+        <div class="col-sm-10">
+          <input name="tags" type="text" class="form-control"
+                 placeholder="Tags like 'groceries', 'utilities', 'school', etc."
+                 value="{{record.tags}}">
         </div>
       </div>
 

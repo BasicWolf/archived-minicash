@@ -13,7 +13,7 @@ export let RecordsFilter = utils.BaseBehavior.extend({
         dtFrom: 'div[data-spec="dt_from"]',
         dtTo: 'div[data-spec="dt_to"]',
         tagsInput: 'input[name="tags"]',
-        tagsAny: 'input[name="tags_any"]',
+        tagsAll: 'input[name="tags_all"]',
         assetsFrom: 'select[name="assets_from"]',
         assetsTo: 'select[name="assets_to"]',
         filterForm: 'form[name="filter_records_form"]',
@@ -66,7 +66,8 @@ export let RecordsFilter = utils.BaseBehavior.extend({
         let opts = {
             data: data,
             allowClear: true,
-            theme: "bootstrap",
+            placeholder: '',
+            theme: 'bootstrap',
         };
 
         this.getUI('assetsFrom').select2(opts);
@@ -113,14 +114,14 @@ export let RecordsFilter = utils.BaseBehavior.extend({
 
         let tags = this.getUI('tagsInput').tagsinput('items');
         if (!_.isEmpty(tags)) {
-            if (formData['tags_any']) {
-                formData['tags_or'] = tags;
-            } else {
+            if (formData['tags_all']) {
                 formData['tags_and'] = tags;
+            } else {
+                formData['tags_or'] = tags;
             }
         }
 
-        delete formData['tags_any'];
+        delete formData['tags_all'];
 
         return formData;
     },
@@ -129,7 +130,7 @@ export let RecordsFilter = utils.BaseBehavior.extend({
         this.getUI('dtTo').datetimepicker('clear');
         this.getUI('dtFrom').datetimepicker('clear');
         this.getUI('tagsInput').tagsinput('removeAll');
-        this.getUI('tagsAny').prop('checked', false);
+        this.getUI('tagsAll').prop('checked', false);
         this.getUI('assetsFrom').val(null).trigger("change");
         this.getUI('assetsTo').val(null).trigger("change");
         this.applyFilter({});

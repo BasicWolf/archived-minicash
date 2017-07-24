@@ -205,3 +205,24 @@ class RecordsFilterAssetsTest(FilterTestCaseMixin, RESTTestCase):
             'assets_to': [self.asset_to_A.pk, self.asset_to_B.pk],
         }
         self.assert_res_count(3, q)
+
+
+class RecordsFilterModeTest(FilterTestCaseMixin, RESTTestCase):
+    def setUp(self):
+        super().setUp()
+
+        RecordFactory.create_batch(5, mode=Record.EXPENSE, owner=self.owner)
+        RecordFactory.create_batch(4, mode=Record.INCOME, owner=self.owner)
+        RecordFactory.create_batch(3, mode=Record.TRANSFER, owner=self.owner)
+
+    def test_record_mode_or_expense(self):
+        q = {
+            'mode_or': Record.EXPENSE,
+        }
+        self.assert_res_count(5, q)
+
+    def test_record_mode_or_income_transfer(self):
+        q = {
+            'mode_or': [Record.INCOME, Record.TRANSFER]
+        }
+        self.assert_res_count(7, q)

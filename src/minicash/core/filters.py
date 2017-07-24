@@ -20,7 +20,8 @@ class RecordFilter(filters.FilterSet):
             'dt_from',
             'dt_to',
             'tags_and',
-            'tags_or'
+            'tags_or',
+            'mode',
         ]
 
     dt_from = filters.DateTimeFilter(name='created_dt', lookup_expr='gte')
@@ -47,6 +48,12 @@ class RecordFilter(filters.FilterSet):
     assets_to = filters.ModelMultipleChoiceFilter(
         name='asset_to',
         queryset=user_assets,
+        conjoined=False,
+    )
+
+    mode_or = filters.MultipleChoiceFilter(
+        name='mode',
+        choices=Record.MODES,
         conjoined=False,
     )
 
