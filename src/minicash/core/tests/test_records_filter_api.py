@@ -215,6 +215,12 @@ class RecordsFilterModeTest(FilterTestCaseMixin, RESTTestCase):
         RecordFactory.create_batch(4, mode=Record.INCOME, owner=self.owner)
         RecordFactory.create_batch(3, mode=Record.TRANSFER, owner=self.owner)
 
+    def test_record_mode_or_empty(self):
+        q = {
+            'mode_or': '',
+        }
+        self.assert_res_count(0, q)
+
     def test_record_mode_or_expense(self):
         q = {
             'mode_or': Record.EXPENSE,

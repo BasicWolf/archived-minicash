@@ -229,6 +229,12 @@ _.extend(BaseView.prototype, UIEnableDisableMixin);
 export let BaseBehavior = Mn.Behavior.extend({});
 _.extend(BaseBehavior.prototype, UIEnableDisableMixin);
 
+
+export let TooltipBehavior = Mn.Behavior.extend({
+    onRender: function() {
+        this.$el.find('[data-toggle="tooltip"]').tooltip();
+    }
+});
 /* ==================================================================================================== */
 
 /* --- HELPER FUNCTIONS AND CLASSES --- */

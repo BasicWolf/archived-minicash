@@ -9,13 +9,16 @@ import Mn from 'backbone.marionette';
 import * as utils from 'minicash/utils';
 
 export let RecordsFilter = utils.BaseBehavior.extend({
+    behaviors: [utils.TooltipBehavior, ],
+
     ui: {
         dtFrom: 'div[data-spec="dt_from"]',
         dtTo: 'div[data-spec="dt_to"]',
         tagsInput: 'input[name="tags"]',
-        tagsAll: 'input[name="tags_all"]',
+        tagsAllChk: 'input[name="tags_all"]',
         assetsFrom: 'select[name="assets_from"]',
         assetsTo: 'select[name="assets_to"]',
+        mode: 'select[name="mode"]',
         filterForm: 'form[name="filter_records_form"]',
         applyBtn: 'button[data-spec="apply"]',
         clearBtn: 'button[data-spec="clear"]',
@@ -30,6 +33,7 @@ export let RecordsFilter = utils.BaseBehavior.extend({
         this.renderDTInputs();
         this.renderTagsInput();
         this.renderAssetsSelects();
+        this.renderModeSelect();
     },
 
     renderDTInputs: function() {
@@ -72,6 +76,22 @@ export let RecordsFilter = utils.BaseBehavior.extend({
 
         this.getUI('assetsFrom').select2(opts);
         this.getUI('assetsTo').select2(opts);
+    },
+
+    renderModeSelect: function() {
+        let data = _.map(minicash.CONTEXT.RECORD_MODES, (val) => { return {
+            id: val.value,
+            text: val.label,
+        }; });
+
+        let opts = {
+            data: data,
+            allowClear: true,
+            placeholder: '',
+            theme: 'bootstrap',
+        };
+
+        this.getUI('mode').select2(opts);
     },
 
     onApplyBtnClick: function() {
@@ -130,9 +150,10 @@ export let RecordsFilter = utils.BaseBehavior.extend({
         this.getUI('dtTo').datetimepicker('clear');
         this.getUI('dtFrom').datetimepicker('clear');
         this.getUI('tagsInput').tagsinput('removeAll');
-        this.getUI('tagsAll').prop('checked', false);
-        this.getUI('assetsFrom').val(null).trigger("change");
-        this.getUI('assetsTo').val(null).trigger("change");
+        this.getUI('tagsAllChk').prop('checked', false);
+        this.getUI('assetsFrom').val(null).trigger('change');
+        this.getUI('assetsTo').val(null).trigger('change');
+        this.getUI('mode').val(null).trigger('change');
         this.applyFilter({});
     },
 });
