@@ -122,9 +122,7 @@ let config = {
             img:path.join(srcDir, 'img'),
 
             // import 'lib_name' aliases
-            cocktail: 'backbone.cocktail/Cocktail.js',
-            bloodhound: 'typeahead.js/dist/bloodhound.js',
-            tagsinput: 'bootstrap-tagsinput/dist/bootstrap-tagsinput.js',
+            cocktail: 'backbone.cocktail/Cocktail.jsd',
             typeahead: 'typeahead.js/dist/typeahead.jquery'
         }
     },

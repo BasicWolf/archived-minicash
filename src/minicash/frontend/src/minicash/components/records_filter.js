@@ -2,8 +2,6 @@
 
 /* global _,moment,minicash */
 
-import 'tagsinput';
-import 'corejs-typeahead';
 import Mn from 'backbone.marionette';
 
 import * as utils from 'minicash/utils';
@@ -31,7 +29,7 @@ export let RecordsFilter = utils.BaseBehavior.extend({
 
     onRender: function() {
         this.renderDTInputs();
-        this.renderTagsInput();
+        this.renderTags();
         this.renderAssetsSelects();
         this.renderModeSelect();
     },
@@ -48,7 +46,7 @@ export let RecordsFilter = utils.BaseBehavior.extend({
         this.getUI('dtTo').datetimepicker(options);
     },
 
-    renderTagsInput: function() {
+    renderTags: function() {
         let data = minicash.collections.tags.map((it) => {
             return {id: it.id, text: it.get('name')};
         });
@@ -57,10 +55,7 @@ export let RecordsFilter = utils.BaseBehavior.extend({
             data: data,
             allowClear: true,
             placeholder: '',
-            theme: 'bootstrap',
         };
-
-        let $tags = this.getUI('tags');
 
         this.getUI('tags').select2(opts);
     },
@@ -74,7 +69,6 @@ export let RecordsFilter = utils.BaseBehavior.extend({
             data: data,
             allowClear: true,
             placeholder: '',
-            theme: 'bootstrap',
         };
 
         this.getUI('assetsFrom').select2(opts);
@@ -91,7 +85,6 @@ export let RecordsFilter = utils.BaseBehavior.extend({
             data: data,
             allowClear: true,
             placeholder: '',
-            theme: 'bootstrap',
         };
 
         this.getUI('mode').select2(opts);
@@ -133,7 +126,6 @@ export let RecordsFilter = utils.BaseBehavior.extend({
         }
 
         // ---- process tags ---- //
-        debugger;
         delete formData['tags'];
 
         let tags = this.getUI('tags').select2().val();

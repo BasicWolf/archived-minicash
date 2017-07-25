@@ -41,35 +41,36 @@
         </div>
       </div>
 
-
-      <div class="form-group form-group-sm">
-        <label class="col-sm-2 col-md-2 control-label">Tags</label>
-        <div class="col-sm-4 col-md-4">
-          <div class="input-group">
-            <select name="tags" multiple class="form-control" style="width: 100%"></select>
-            <span class="input-group-addon">
-              <input name="tags_all" type="checkbox" data-toggle="tooltip" title="Match all selected tags">
-            </span>
+      <div class="select2-wrapper">
+        <div class="form-group form-group-sm">
+          <label class="col-sm-2 col-md-2 control-label">Tags</label>
+          <div class="col-sm-4 col-md-4">
+            <div class="input-group">
+              <select name="tags" multiple class="form-control" style="width: 100%"></select>
+              <span class="input-group-addon">
+                <input name="tags_all" type="checkbox" data-toggle="tooltip" title="Match all selected tags">
+              </span>
+            </div>
           </div>
-        </div>
 
 
-        <label class="col-sm-2 col-md-2 control-label">Mode</label>
-        <div class="col-sm-4 col-md-4">
-          <div class="input-group">
-            <select name="mode" multiple class="form-control" style="width: 100%">
-              {{#each (context 'RECORD_MODES') }}
-                <option value="{{this.value}}">{{this.label}}</option>
-              {{/each}}
-            </select>
+          <label class="col-sm-2 col-md-2 control-label">Mode</label>
+          <div class="col-sm-4 col-md-4">
+            <div class="input-group">
+              <select name="mode" multiple class="form-control" style="width: 100%">
+                {{#each (context 'RECORD_MODES') }}
+                  <option value="{{this.value}}">{{this.label}}</option>
+                {{/each}}
+              </select>
 
-            <span class="input-group-addon">
-              <input name="modes_all" type="checkbox" data-toggle="tooltip" title="Match all selected modes">
-            </span>
-          </div> <!-- input-group -->
-        </div>
-      </div> <!-- form-group -->
+              <span class="input-group-addon">
+                <input name="modes_all" type="checkbox" data-toggle="tooltip" title="Match all selected modes">
+              </span>
+            </div>
+          </div>
 
+        </div> <!-- form-group -->
+      </div> <!-- select2-wrapper -->
     </form>
 
     <div class="btn-toolbar" role="toolbar">

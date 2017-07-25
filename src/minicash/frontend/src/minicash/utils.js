@@ -3,7 +3,6 @@
 /* global $,_,minicash,tr */
 
 import Bb from 'backbone';
-import Bhound from 'bloodhound-js';
 import Decimal from 'decimal.js';
 import Mn from 'backbone.marionette';
 import PageableCollection from 'backbone.paginator';
@@ -60,37 +59,6 @@ export let status = {
 };
 
 /* ==================================================================================================== */
-
-
-/* --- HELPER CLASSES --- */
-/*------------------------*/
-export class Bloodhound {
-    constructor(collection, attribute) {
-        _.extend(this, Bb.Events);
-
-        // let customAdapter = $.fn.select2.amd.require('select2/data/customAdapter');
-
-        this._bloodhound = null;
-        this.collection = collection;
-        this.attribute = attribute;
-
-        this.listenTo(this.collection, 'update', this.refreshBloodhound);
-        this.listenTo(this.collection, 'reset', this.refreshBloodhound);
-    }
-
-    refreshBloodhound() {
-        this._bloodhound = new Bhound({
-            local: this.collection.toJSON(),
-            datumTokenizer: Bhound.tokenizers.obj.whitespace(this.attribute),
-            queryTokenizer: Bhound.tokenizers.whitespace,
-        });
-        this._bloodhound.initialize();
-    }
-
-    adapter() {
-        return this._bloodhound.ttAdapter();
-    }
-}
 
 
 export let BaseModel = Bb.Model.extend({

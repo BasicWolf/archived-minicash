@@ -1,7 +1,5 @@
 @import '~node_modules/bootstrap/dist/css/bootstrap.css';
 @import '~node_modules/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css';
-@import '~node_modules/bootstrap-tagsinput/dist/bootstrap-tagsinput.css';
-@import '~node_modules/bootstrap-tagsinput/dist/bootstrap-tagsinput-typeahead.css';
 @import '~node_modules/select2-bootstrap-theme/dist/select2-bootstrap.css';
 
 .minicash-status {
@@ -143,10 +141,6 @@ table[data-spec="records-table"] {
 
 /* ====== Overrides ====== */
 /* ======================= */
-
-.bootstrap-tagsinput {
-    width:100%;
-}
 
 /* Bootstrap modal vertically centered */
 .modal {

@@ -2,7 +2,6 @@
 
 /* global $,_,moment,minicash,require,tr */
 
-import 'tagsinput';
 import 'corejs-typeahead';
 import Decimal from 'decimal.js';
 import Radio from 'backbone.radio';
@@ -43,7 +42,7 @@ export let RecordTabPanelView = tabbar.TabPanelView.extend({
         modeSelect: 'select[name="mode"]',
         dtStampInput: 'input[name="created_dt"]',
         deltaInput: 'input[name="delta"]',
-        tagsInput: 'input[name="tags"]',
+        tagsSelect: 'select[name="tags"]',
         toAssetSelect: 'select[name="asset_to"]',
         fromAssetSelect: 'select[name="asset_from"]',
         form: 'form',
@@ -77,7 +76,7 @@ export let RecordTabPanelView = tabbar.TabPanelView.extend({
     onRender: function() {
         this.initializeValidator();
         this.renderDateTimePicker();
-        this.renderTagsInput();
+        this.renderTagsSelect();
         this.renderModeSelectState();
     },
 
@@ -94,15 +93,19 @@ export let RecordTabPanelView = tabbar.TabPanelView.extend({
         dtStampInputWrapper.datetimepicker(options);
     },
 
-    renderTagsInput: function() {
-        this.getUI('tagsInput').tagsinput({
-            tagClass: 'label label-primary',
-            typeaheadjs: {
-                displayKey: 'name',
-                valueKey: 'name',
-                source: minicash.collections.tags.bloodhound.adapter(),
-            },
+    renderTagsSelect: function() {
+        let data = minicash.collections.tags.map((it) => {
+            let name = it.get('name');
+            return {id: name, text: name};
         });
+
+        let opts = {
+            data: data,
+            allowClear: true,
+            placeholder: '',
+        };
+
+        this.getUI('tagsSelect').select2(opts);
     },
 
     initializeValidator: function() {
@@ -277,7 +280,7 @@ export let RecordTabPanelView = tabbar.TabPanelView.extend({
         }
 
         let formData = this.getUI('form').serializeForm();
-        formData.tags = this.getUI('tagsInput').tagsinput('items');
+        formData.tags = this.getUI('tagsSelect').select2().val();
 
         // mode either from Form Data, or if not available (control disabled, i.e. editing)
         // - from existing record which is being edited
