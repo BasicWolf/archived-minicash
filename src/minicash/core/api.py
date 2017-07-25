@@ -43,7 +43,7 @@ class RecordsView(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Record.objects.for_owner(self.request.user) \
-                             .order_by('created_dt')
+                             .order_by('-created_dt')
 
     @transaction.atomic
     def perform_create(self, serializer):

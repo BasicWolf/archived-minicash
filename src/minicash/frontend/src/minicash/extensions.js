@@ -9,6 +9,14 @@ import Hb from 'handlebars/runtime';
 // Temporal stub for translation function
 window.tr = function(s) {return  s;};
 
+/*--------- UI overrides -----------*/
+/*==================================*/
+
+$.fn.select2.defaults.set("theme", "bootstrap");
+
+/*======================================*/
+
+
 /*--------- Handlebars -----------*/
 /*================================*/
 

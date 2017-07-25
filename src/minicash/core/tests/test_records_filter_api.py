@@ -91,7 +91,7 @@ class RecordsFilterTagsTest(FilterTestCaseMixin, RESTTestCase):
 
     def test_single_tag_or_filter(self):
         q = {
-            'tags_or': self.tagA.name
+            'tags_or': self.tagA.pk
         }
         self.assert_res_count(8, q)
 
@@ -103,7 +103,7 @@ class RecordsFilterTagsTest(FilterTestCaseMixin, RESTTestCase):
 
     def test_single_tag_and_filter(self):
         q = {
-            'tags_and': self.tagA.name
+            'tags_and': self.tagA.pk
         }
         self.assert_res_count(8, q)
 
@@ -115,13 +115,13 @@ class RecordsFilterTagsTest(FilterTestCaseMixin, RESTTestCase):
 
     def test_many_tags_or_in_filter(self):
         q = {
-            'tags_or': [self.tagA.name, self.tagB.name]
+            'tags_or': [self.tagA.pk, self.tagB.pk]
         }
         self.assert_res_count(13, q)
 
     def test_many_tags_and_in_filter(self):
         q = {
-            'tags_and': [self.tagA.name, self.tagB.name]
+            'tags_and': [self.tagA.pk, self.tagB.pk]
         }
         self.assert_res_count(3, q)
 
@@ -205,3 +205,30 @@ class RecordsFilterAssetsTest(FilterTestCaseMixin, RESTTestCase):
             'assets_to': [self.asset_to_A.pk, self.asset_to_B.pk],
         }
         self.assert_res_count(3, q)
+
+
+class RecordsFilterModeTest(FilterTestCaseMixin, RESTTestCase):
+    def setUp(self):
+        super().setUp()
+
+        RecordFactory.create_batch(5, mode=Record.EXPENSE, owner=self.owner)
+        RecordFactory.create_batch(4, mode=Record.INCOME, owner=self.owner)
+        RecordFactory.create_batch(3, mode=Record.TRANSFER, owner=self.owner)
+
+    def test_record_mode_or_empty(self):
+        q = {
+            'mode_or': '',
+        }
+        self.assert_res_count(0, q)
+
+    def test_record_mode_or_expense(self):
+        q = {
+            'mode_or': Record.EXPENSE,
+        }
+        self.assert_res_count(5, q)
+
+    def test_record_mode_or_income_transfer(self):
+        q = {
+            'mode_or': [Record.INCOME, Record.TRANSFER]
+        }
+        self.assert_res_count(7, q)

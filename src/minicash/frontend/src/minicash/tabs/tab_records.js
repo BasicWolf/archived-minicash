@@ -37,13 +37,13 @@ let RecordsTabPanelView = TabPanelView.extend({
 
     collection: new models.PageableRecords([], {
         state: {
-            sortKey: '-created_dt',
+            sortKey: '-created_ts',
         }
     }),
 
     initialize: function() {
         recordsChannel.on('model:save', (model) => {
-            this.collection.add(model);
+            this.collection.add(model, {at: 0});
         });
 
         this.collection.getPage(1);
@@ -157,7 +157,7 @@ let RecordsTableView = Mn.NextCollectionView.extend({
 
     getSelectedRecords: function() {
         let selectedRecords = this.children.filter((c) => c.isSelected());
-        let selectedRecordModels = _.pluck(selectedRecords, 'model');
+        let selectedRecordModels = _.map(selectedRecords, 'model');
         return selectedRecordModels;
     },
 });
