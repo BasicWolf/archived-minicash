@@ -11,7 +11,7 @@ from minicash.auth.serializers import UserDateTimeField
 from .models import Record, Tag, Asset
 
 
-class RecordSerializer(ModelSerializer):
+class ReadRecordSerializer(ModelSerializer):
     class Meta:
         model = Record
         fields = [
@@ -47,9 +47,8 @@ class RecordSerializer(ModelSerializer):
         read_only=False,
     )
 
-    tags = CreatableUserSlugRelatedField(
+    tags = UserPrimaryKeyRelatedField(
         user_field_name='owner',
-        slug_field='name',
         queryset=Tag.objects,
         many=True,
         allow_null=True,
@@ -68,6 +67,21 @@ class RecordSerializer(ModelSerializer):
             raise serializers.ValidationError(_('VERIFY-0001: Either of the assets and mode must be defined in a record')) from e
 
         return attrs
+
+
+class CreateRecordSerializer(ReadRecordSerializer):
+    class Meta(ReadRecordSerializer.Meta):
+        fields = ReadRecordSerializer.Meta.fields + ['tags_names']
+        read_only_fields = ('tags_name', )
+
+    tags_names = CreatableUserSlugRelatedField(
+        source='tags',
+        user_field_name='owner',
+        slug_field='name',
+        queryset=Tag.objects,
+        many=True,
+        allow_null=True,
+    )
 
 
 class TagSerializer(ModelSerializer):

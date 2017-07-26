@@ -10,7 +10,8 @@ from .permissions import IsAssetRemovable
 from .serializers import (
     AssetSerializer,
     CreateAssetSerializer,
-    RecordSerializer,
+    CreateRecordSerializer,
+    ReadRecordSerializer,
     TagSerializer,
     UpdateAssetSerializer,
 )
@@ -38,12 +39,17 @@ class RecordsPagination(pagination.PageNumberPagination):
 class RecordsView(viewsets.ModelViewSet):
     authentication_classes = (SessionAuthentication, BasicAuthentication)
     permission_classes = (IsAuthenticated,)
-    serializer_class = RecordSerializer
     filter_class = RecordFilter
 
     def get_queryset(self):
         return Record.objects.for_owner(self.request.user) \
                              .order_by('-created_dt')
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return ReadRecordSerializer
+        else:
+            return CreateRecordSerializer
 
     @transaction.atomic
     def perform_create(self, serializer):

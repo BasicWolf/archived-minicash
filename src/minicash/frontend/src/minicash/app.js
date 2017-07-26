@@ -10,6 +10,8 @@ import Radio from 'backbone.radio';
 
 import * as models from './models';
 import * as utils from './utils';
+import * as views from './views';
+
 import {ReportTab} from './tabs/tab_report';
 import {HomeTab} from './tabs/tab_home';
 import {TabbarManager} from './components/tabbar_manager';

@@ -9,7 +9,7 @@ from rest_framework.reverse import reverse
 from minicash.core.models import Asset, Record, Tag
 from minicash.core.serializers import (
     AssetSerializer,
-    RecordSerializer,
+    CreateRecordSerializer,
     TagSerializer,
 )
 from minicash.utils.testing import RESTTestCase
@@ -45,7 +45,7 @@ class RecordsAPICRUDTest(RESTTestCase):
         self.assertAlmostEqual(record.delta, Money(data['delta'], currency), places=2)
         self.assertEqual(record.mode, data['mode'])
         self.assertEqual(record.description, data['description'])
-        self.assertEqual(list(record.tags.all().values_list('name', flat=True)),
+        self.assertEqual(list(record.tags.all().values_list('pk', flat=True)),
                          data['tags'])
         self.assertEqual(record.asset_to.pk, data['asset_to'])
         self.assertEqual(record.asset_from.pk, data['asset_from'])
@@ -70,7 +70,7 @@ class RecordsAPICRUDTest(RESTTestCase):
         asset_to = AssetFactory.create(owner=self.owner)
         asset_from = AssetFactory.create(owner=self.owner)
         record = RecordFactory.build(asset_to=asset_to, asset_from=asset_from, owner=self.owner)
-        serializer = RecordSerializer(record)
+        serializer = CreateRecordSerializer(record)
 
         # add a list of tags
         tags = TagFactory.build_batch(3)
@@ -84,7 +84,7 @@ class RecordsAPICRUDTest(RESTTestCase):
     def test_create_asset_partial(self):
         asset_to = AssetFactory.create(owner=self.owner)
         record = RecordFactory.build(asset_to=asset_to, asset_from=None, owner=self.owner)
-        serializer = RecordSerializer(record)
+        serializer = CreateRecordSerializer(record)
 
         data_in = serializer.data
         res = self.jpost(reverse('records-list'), data_in)
@@ -94,7 +94,7 @@ class RecordsAPICRUDTest(RESTTestCase):
     def test_update(self):
         record = RecordFactory.create(owner=self.owner)
         record.delta = random.randint(0, 1000)
-        serializer = RecordSerializer(record)
+        serializer = CreateRecordSerializer(record)
         res = self.jpatch(reverse('records-detail', args=[record.pk]), serializer.data)
         self.assert_updated(res)
 
@@ -102,7 +102,7 @@ class RecordsAPICRUDTest(RESTTestCase):
         req = RequestFactory()
         req.user = self.owner
         record_data = {}
-        serializer = RecordSerializer(data=record_data, context={'request': req})
+        serializer = CreateRecordSerializer(data=record_data, context={'request': req})
         self.assertFalse(serializer.is_valid())
 
     def test_create_invalid_mode(self):
@@ -110,19 +110,19 @@ class RecordsAPICRUDTest(RESTTestCase):
         asset_from = AssetFactory.create(owner=self.owner)
 
         record = RecordFactory.build(asset_to=asset_to, mode=Record.TRANSFER, owner=self.owner)
-        res = self.jpost(reverse('records-list'), RecordSerializer(record).data)
+        res = self.jpost(reverse('records-list'), CreateRecordSerializer(record).data)
         self.assert_bad(res)
 
         record = RecordFactory.build(asset_to=asset_to, mode=Record.EXPENSE, owner=self.owner)
-        res = self.jpost(reverse('records-list'), RecordSerializer(record).data)
+        res = self.jpost(reverse('records-list'), CreateRecordSerializer(record).data)
         self.assert_bad(res)
 
         record = RecordFactory.build(asset_from=asset_from, mode=Record.TRANSFER, owner=self.owner)
-        res = self.jpost(reverse('records-list'), RecordSerializer(record).data)
+        res = self.jpost(reverse('records-list'), CreateRecordSerializer(record).data)
         self.assert_bad(res)
 
         record = RecordFactory.build(asset_from=asset_from, mode=Record.INCOME, owner=self.owner)
-        res = self.jpost(reverse('records-list'), RecordSerializer(record).data)
+        res = self.jpost(reverse('records-list'), CreateRecordSerializer(record).data)
         self.assert_bad(res)
 
     def _compare_records_data(self, data_in, data_out):
@@ -136,7 +136,7 @@ class RecordsAPICRUDTest(RESTTestCase):
         # ensure internal structure via ORM
         rec_internal = Record.objects.get(pk=data_out_pk)
 
-        ser_internal = RecordSerializer(rec_internal)
+        ser_internal = CreateRecordSerializer(rec_internal)
         data_internal = ser_internal.data
         data_internal.pop('pk')
         self.assertEqual(data_out, data_internal)

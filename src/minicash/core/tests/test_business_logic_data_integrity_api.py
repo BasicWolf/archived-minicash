@@ -3,7 +3,7 @@ import random
 from rest_framework.reverse import reverse
 
 from minicash.core.serializers import (
-    RecordSerializer,
+    CreateRecordSerializer,
 )
 from minicash.utils.testing import RESTTestCase
 from .factories import AssetFactory, RecordFactory
@@ -14,7 +14,7 @@ class RecordAPIAssetDataIntegrityTest(RESTTestCase):
         asset_from = AssetFactory.create(owner=self.owner)
         old_asset_balance = asset_from.balance
         record = RecordFactory.build(asset_from=asset_from, asset_to=None, owner=self.owner)
-        serializer = RecordSerializer(record)
+        serializer = CreateRecordSerializer(record)
 
         self.jpost(reverse('records-list'), serializer.data)
 
@@ -28,7 +28,7 @@ class RecordAPIAssetDataIntegrityTest(RESTTestCase):
         old_asset_balance = asset_to.balance
         record = RecordFactory.build(asset_to=asset_to, asset_from=None, owner=self.owner)
 
-        serializer = RecordSerializer(record)
+        serializer = CreateRecordSerializer(record)
         self.jpost(reverse('records-list'), serializer.data)
 
         asset_to.refresh_from_db()
@@ -42,7 +42,7 @@ class RecordAPIAssetDataIntegrityTest(RESTTestCase):
         old_asset_from_balance = asset_from.balance
         old_asset_to_balance = asset_to.balance
         record = RecordFactory.build(asset_from=asset_from, asset_to=asset_to, owner=self.owner)
-        serializer = RecordSerializer(record)
+        serializer = CreateRecordSerializer(record)
 
         self.jpost(reverse('records-list'), serializer.data)
 
@@ -65,7 +65,7 @@ class RecordAPIAssetDataIntegrityTest(RESTTestCase):
 
         new_record_delta = random.randint(0, 1000)
         record.delta = new_record_delta
-        serializer = RecordSerializer(record)
+        serializer = CreateRecordSerializer(record)
 
         self.jpatch(reverse('records-detail', args=[record.pk]), serializer.data)
 
@@ -84,7 +84,7 @@ class RecordAPIAssetDataIntegrityTest(RESTTestCase):
 
         record = RecordFactory.create(asset_from=asset_from, asset_to=None, owner=self.owner)
         record.asset_from = asset_from_other
-        serializer = RecordSerializer(record)
+        serializer = CreateRecordSerializer(record)
 
         self.jpatch(reverse('records-detail', args=[record.pk]), serializer.data)
 
@@ -103,7 +103,7 @@ class RecordAPIAssetDataIntegrityTest(RESTTestCase):
 
         new_record_delta = random.randint(0, 1000)
         record.delta = new_record_delta
-        serializer = RecordSerializer(record)
+        serializer = CreateRecordSerializer(record)
 
         self.jpatch(reverse('records-detail', args=[record.pk]), serializer.data)
 
@@ -122,7 +122,7 @@ class RecordAPIAssetDataIntegrityTest(RESTTestCase):
 
         record = RecordFactory.create(asset_to=asset_to, asset_from=None, owner=self.owner)
         record.asset_to = asset_to_other
-        serializer = RecordSerializer(record)
+        serializer = CreateRecordSerializer(record)
 
         self.jpatch(reverse('records-detail', args=[record.pk]), serializer.data)
 
@@ -142,7 +142,7 @@ class RecordAPIAssetDataIntegrityTest(RESTTestCase):
 
         new_record_delta = random.randint(0, 1000)
         record.delta = new_record_delta
-        serializer = RecordSerializer(record)
+        serializer = CreateRecordSerializer(record)
 
         self.jpatch(reverse('records-detail', args=[record.pk]), serializer.data)
 
@@ -173,7 +173,7 @@ class RecordAPIAssetDataIntegrityTest(RESTTestCase):
                                       owner=self.owner)
         record.asset_to = asset_to_other
         record.asset_from = asset_from_other
-        serializer = RecordSerializer(record)
+        serializer = CreateRecordSerializer(record)
 
         self.jpatch(reverse('records-detail', args=[record.pk]), serializer.data)
 

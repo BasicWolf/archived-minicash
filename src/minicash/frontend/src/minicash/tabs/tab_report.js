@@ -7,8 +7,9 @@ import * as bootbox from 'bootbox';
 import * as models from 'minicash/models';
 
 import {RecordsFilter} from 'minicash/components/records_filter';
-import {TabPanelView, TabModel} from 'components/tabbar';
-import {TagsPieReportView} from 'report/tags_pie';
+import {TabPanelView, TabModel} from 'minicash/components/tabbar';
+import {TagsPieReportView} from 'minicash/report/tags_pie';
+
 
 export let ReportTab = TabModel.extend({
     defaults: function() {

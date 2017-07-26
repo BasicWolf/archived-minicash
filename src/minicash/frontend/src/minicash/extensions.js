@@ -26,12 +26,6 @@ let _partial = require('templates/components/records_filter.hbs');
 Hb.registerPartial('components/records_filter', _partial);
 
 /* ---------- Helpers ------------ */
-
-Hb.registerHelper('tr', function(v) {
-    /* Translation wrapper */
-    return tr(this);
-});
-
 Hb.registerHelper('ifnot', function(v, options) {
     return v? options.inverse(this) : options.fn(this);
 });
@@ -76,27 +70,6 @@ Hb.registerHelper('times', function(n, start=null, options) {
     return out;
 });
 
-Hb.registerHelper('record_mode_sign', function (mode, options) {
-    let sign = '';
-    switch (mode) {
-    case minicash.CONTEXT.RECORD_MODES.EXPENSE.value: sign = '−'; break;
-    case minicash.CONTEXT.RECORD_MODES.INCOME.value: sign = '+'; break;
-    case minicash.CONTEXT.RECORD_MODES.TRANSFER.value: sign = ''; break;
-    default: sign = 'ERROR';
-    }
-    return sign;
-});
-
-/* Minicash helpers */
-/*------------------*/
-Hb.registerHelper('context', function (keys, options) {
-    let val = window.minicash.CONTEXT;
-
-    for (let key of keys.split('.')) {
-        val = val[key];
-    }
-    return val;
-});
 /*================================*/
 
 

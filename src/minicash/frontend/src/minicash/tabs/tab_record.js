@@ -103,6 +103,7 @@ export let RecordTabPanelView = tabbar.TabPanelView.extend({
             data: data,
             allowClear: true,
             placeholder: '',
+            tags: true,
         };
 
         this.getUI('tagsSelect').select2(opts);
@@ -280,7 +281,8 @@ export let RecordTabPanelView = tabbar.TabPanelView.extend({
         }
 
         let formData = this.getUI('form').serializeForm();
-        formData.tags = this.getUI('tagsSelect').select2().val();
+        delete formData.tags;
+        formData.tags_names = this.getUI('tagsSelect').select2().val();
 
         // mode either from Form Data, or if not available (control disabled, i.e. editing)
         // - from existing record which is being edited

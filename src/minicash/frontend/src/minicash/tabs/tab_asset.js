@@ -2,8 +2,8 @@
 
 /* global $,_,minicash,require,tr */
 
-import {TabPanelView, TabModel} from 'components/tabbar';
-import * as utils from 'utils';
+import {TabPanelView, TabModel} from 'minicash/components/tabbar';
+import * as utils from 'minicash/utils';
 
 
 export let AssetTab = TabModel.extend({
