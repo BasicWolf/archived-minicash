@@ -121,7 +121,7 @@ let AssetsTableView = Mn.NextCollectionView.extend({
 
     getSelectedAssets: function() {
         let selectedAssets = this.children.filter((c) => c.isSelected());
-        let selectedAssetModels = _.pluck(selectedAssets, 'model');
+        let selectedAssetModels = _.map(selectedAssets, 'model');
         return selectedAssetModels;
     },
 });

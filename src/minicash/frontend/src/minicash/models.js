@@ -6,33 +6,28 @@ import * as utils from './utils';
 
 export let ID_NOT_SAVED = -1;
 
-export let Record = utils.BaseModel.extend({
+
+export let Tag = utils.BaseModel.extend({
     idAttribute: 'pk',
 
-    urlRoot: function() {return  minicash.url('records-list'); },
+    urlRoot: function() { return minicash.url('tags-list'); },
 
     serverAttributes: [
         'pk',
-        'asset_from',
-        'asset_to',
-        'created_dt',
-        'delta',
+        'name',
+        'records_count',
         'description',
-        'extra',
-        'mode',
-        'owner',
-        'tags',
     ],
 });
 
 
-export let RecordsBase = {
-    model: Record,
+export let Tags = utils.BaseCollection.extend({
+    model: Tag,
 
-    url: function() { return minicash.url('records-list'); },
-};
+    url: function() { return minicash.url('tags-list'); },
 
-export let PageableRecords = utils.BasePageableCollection.extend(RecordsBase);
+    comparator: 'name',
+});
 
 
 export let Asset = utils.BaseModel.extend({
@@ -59,26 +54,39 @@ export let Assets = utils.BaseCollection.extend({
 });
 
 
-export let Tag = utils.BaseModel.extend({
+export let Record = utils.BaseModel.extend({
     idAttribute: 'pk',
 
-    urlRoot: function() { return minicash.url('tag-list'); },
+    urlRoot: function() {return  minicash.url('records-list'); },
 
     serverAttributes: [
         'pk',
-        'name',
-        'records_count',
+        'asset_from',
+        'asset_to',
+        'created_dt',
+        'delta',
         'description',
+        'extra',
+        'mode',
+        'owner',
+        'tags',
+        'tags_names',
     ],
+
+    tagsNames: function() {
+        let allTags = minicash.collections.tags;
+        return _.map(this.get('tags'), (tagId) => allTags.get(tagId).get('name'));
+    }
 });
 
-export let Tags = utils.BaseCollection.extend({
-    model: Tag,
 
-    url: function() { return minicash.url('tag-list'); },
+export let RecordsBase = {
+    model: Record,
 
-    comparator: 'name',
-});
+    url: function() { return minicash.url('records-list'); },
+};
+
+export let PageableRecords = utils.BasePageableCollection.extend(RecordsBase);
 
 
 export let ReportWidget = utils.BaseModel.extend({

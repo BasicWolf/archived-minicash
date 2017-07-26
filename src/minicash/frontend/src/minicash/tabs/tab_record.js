@@ -281,7 +281,7 @@ export let RecordTabPanelView = tabbar.TabPanelView.extend({
         }
 
         let formData = this.getUI('form').serializeForm();
-        delete formData.tags;
+        formData.tags = [];
         formData.tags_names = this.getUI('tagsSelect').select2().val();
 
         // mode either from Form Data, or if not available (control disabled, i.e. editing)

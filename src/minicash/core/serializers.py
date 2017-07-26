@@ -87,11 +87,17 @@ class CreateRecordSerializer(ReadRecordSerializer):
 class TagSerializer(ModelSerializer):
     class Meta:
         model = Tag
-        fields = ['pk', 'description', 'name', 'owner']
+        fields = ['pk', 'owner',
+                  'description', 'name', 'records_count']
 
     owner = serializers.HiddenField(
         default=serializers.CurrentUserDefault(),
     )
+
+    records_count = serializers.SerializerMethodField()
+
+    def get_records_count(self, obj):
+        return obj.records.count()
 
     def validate(self, attrs):
         return self._validate_name(attrs)
@@ -109,7 +115,8 @@ class TagSerializer(ModelSerializer):
 class AssetSerializer(ModelSerializer):
     class Meta:
         model = Asset
-        fields = ['pk', 'balance', 'description', 'name', 'owner']
+        fields = ['pk', 'owner',
+                  'balance', 'description', 'name']
 
     owner = serializers.HiddenField(
         default=serializers.CurrentUserDefault(),
@@ -119,10 +126,12 @@ class AssetSerializer(ModelSerializer):
 class UpdateAssetSerializer(AssetSerializer):
     class Meta:
         model = Asset
-        fields = ['pk', 'description', 'name', 'owner']
+        fields = ['pk', 'owner',
+                  'description', 'name']
 
 
 class CreateAssetSerializer(AssetSerializer):
     class Meta:
         model = Asset
-        fields = ['pk', 'balance', 'description', 'name', 'owner']
+        fields = ['pk', 'owner',
+                  'balance', 'description', 'name']

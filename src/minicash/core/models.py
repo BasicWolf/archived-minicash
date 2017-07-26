@@ -53,7 +53,7 @@ class Record(models.Model):
     extra = JSONField(default={})
     mode = models.PositiveIntegerField(choices=MODES)
     owner = models.ForeignKey(User, related_name='records')
-    tags = models.ManyToManyField('Tag', blank=True)
+    tags = models.ManyToManyField('Tag', blank=True, related_name='records')
 
     def update_assets_after_create(self):
         self._update_assets_on_change(old_delta=0)
