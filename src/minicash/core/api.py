@@ -4,6 +4,7 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from rest_framework.permissions import IsAuthenticated
 
 from minicash.core.settings import minicash_settings
+from minicash.utils.views import MassDeleteView
 from .filters import RecordFilter
 from .models import Record, Asset, Tag
 from .permissions import IsAssetRemovable
@@ -99,3 +100,7 @@ class TagsView(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Tag.objects.for_owner(self.request.user)
+
+
+class RecordsDeleteView(MassDeleteView):
+    model_class = Record

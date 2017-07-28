@@ -15,4 +15,5 @@ router.register('tags', api.TagsView, 'tags')
 
 urlpatterns = [
     url(r'^', include(router.urls)),
+    url(r'^mass-delete/records$', api.RecordsDeleteView, name='recrods-mass-delete'),
 ]
