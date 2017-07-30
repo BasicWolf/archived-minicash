@@ -141,6 +141,14 @@ class RecordsAPICRUDTest(RESTTestCase):
         data_internal.pop('pk')
         self.assertEqual(data_out, data_internal)
 
+    def test_delete(self):
+        self.assertTrue(False)
+
+    def test_mass_delete(self):
+        records = RecordFactory.create_batch(10, owner=self.owner)
+        records_pks = [r.pk for r in records]
+        res = self.jpost(reverse('records-mass-delete'), {'ids': records_pks})
+
 
 class AssetAPITest(RESTTestCase):
     def test_smoke(self):
