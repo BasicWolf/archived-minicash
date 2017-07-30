@@ -72,7 +72,6 @@ class ReadRecordSerializer(ModelSerializer):
 class CreateRecordSerializer(ReadRecordSerializer):
     class Meta(ReadRecordSerializer.Meta):
         fields = ReadRecordSerializer.Meta.fields + ['tags_names']
-        read_only_fields = ('tags_name', )
 
     tags_names = CreatableUserSlugRelatedField(
         source='tags',
@@ -97,6 +96,9 @@ class TagSerializer(ModelSerializer):
     records_count = serializers.SerializerMethodField()
 
     def get_records_count(self, obj):
+        # tag.records cannot be resolved unless tag has a primary key
+        if not obj.pk:
+            return 0
         return obj.records.count()
 
     def validate(self, attrs):

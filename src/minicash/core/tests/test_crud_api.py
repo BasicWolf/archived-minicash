@@ -10,6 +10,7 @@ from minicash.core.models import Asset, Record, Tag
 from minicash.core.serializers import (
     AssetSerializer,
     CreateRecordSerializer,
+    ReadRecordSerializer,
     TagSerializer,
 )
 from minicash.utils.testing import RESTTestCase
@@ -75,7 +76,7 @@ class RecordsAPICRUDTest(RESTTestCase):
         # add a list of tags
         tags = TagFactory.build_batch(3)
         data_in = serializer.data
-        data_in['tags'] = [tag.name for tag in tags]
+        data_in['tags_names'] = [tag.name for tag in tags]
 
         res = self.jpost(reverse('records-list'), data_in)
         self.assert_created(res)
@@ -126,28 +127,38 @@ class RecordsAPICRUDTest(RESTTestCase):
         self.assert_bad(res)
 
     def _compare_records_data(self, data_in, data_out):
+        dt_in, dt_out = data_in.copy(), data_out.copy()
+
         # pk's are not equal (None vs. PK from database)
-        data_in_pk, data_out_pk = data_in.pop('pk'), data_out.pop('pk')
+        data_in_pk, data_out_pk = dt_in.pop('pk'), dt_out.pop('pk')
         self.assertNotEqual(data_in_pk, data_out_pk)
 
-        # the rest data is equal
-        self.assertEqual(data_in, data_out)
+        if dt_in.get('tags_names', []) != []:
+            dt_in.pop('tags')
+            dt_out.pop('tags')
+
+        self.assertEqual(dt_in, dt_out)
 
         # ensure internal structure via ORM
         rec_internal = Record.objects.get(pk=data_out_pk)
 
-        ser_internal = CreateRecordSerializer(rec_internal)
+        # test versus Record Read/List serializer
+        ser_internal = ReadRecordSerializer(rec_internal)
         data_internal = ser_internal.data
-        data_internal.pop('pk')
-        self.assertEqual(data_out, data_internal)
 
-    def test_delete(self):
-        self.assertTrue(False)
+        dt_out = data_out.copy()
+        dt_out.pop('tags_names')
+        self.assertEqual(dt_out, data_internal)
+
+    # def test_delete(self):
+    #     self.assertTrue(False)
 
     def test_mass_delete(self):
-        records = RecordFactory.create_batch(10, owner=self.owner)
-        records_pks = [r.pk for r in records]
-        res = self.jpost(reverse('records-mass-delete'), {'ids': records_pks})
+        records = RecordFactory.create_batch(9, owner=self.owner)
+        records_pks = [r.pk for r in records[:5]]
+        res = self.jpost(reverse('records-mass-delete'), {'pks': records_pks})
+        self.assertEqual(records_pks[:5], res.data['pks'])
+        self.assertEqual(4, Record.objects.for_owner(self.owner).count())
 
 
 class AssetAPITest(RESTTestCase):

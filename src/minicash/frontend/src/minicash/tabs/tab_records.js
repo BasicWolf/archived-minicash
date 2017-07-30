@@ -105,10 +105,9 @@ let RecordsTabPanelView = TabPanelView.extend({
 
         dfdDoDelete.then(() => {
             let selectedRecords = this.getSelectedRecords();
+            let recordIds = _.map(selectedRecords, (r) => r.id);
 
-            for (let model of selectedRecords) {
-                model.destroy({wait: true});
-            }
+            this.collection.delete(recordIds);
         });
 
     },

@@ -6,11 +6,7 @@ from djmoney.models.fields import MoneyField
 from jsonfield import JSONField
 
 from minicash.core.settings import minicash_settings
-
-
-class MinicashModelManager(models.Manager):
-    def for_owner(self, owner):
-        return self.filter(owner=owner)
+from minicash.utils.models import MinicashModelManager
 
 
 class Record(models.Model):

@@ -238,3 +238,18 @@ class RecordAPIAssetDataIntegrityTest(RESTTestCase):
                          old_asset_from_balance + new_record_delta)
         self.assertEqual(new_asset_to_balance,
                          old_asset_to_balance - new_record_delta)
+
+    def test_mass_records_deleted_assets_updated(self):
+        asset_from = AssetFactory.create(owner=self.owner)
+        old_asset_balance = asset_from.balance
+
+        records = RecordFactory.create_batch(5, asset_from=asset_from, asset_to=None, owner=self.owner)
+        old_records_delta = sum(rec.delta for rec in records)
+        records_pks = [rec.pk for rec in records]
+
+        self.jpost(reverse('records-mass-delete'), {'pks': records_pks})
+
+        asset_from.refresh_from_db()
+        new_asset_balance = asset_from.balance
+
+        self.assertEqual(new_asset_balance, old_asset_balance + old_records_delta)

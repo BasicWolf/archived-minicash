@@ -73,6 +73,15 @@ class RecordsView(viewsets.ModelViewSet):
         super().perform_destroy(instance)
 
 
+class RecordsDeleteView(MassDeleteView):
+    model_class = Record
+
+    @transaction.atomic
+    def perform_destroy(self, instance):
+        instance.update_assets_before_destroy()
+        super().perform_destroy(instance)
+
+
 class PaginatedRecordsView(RecordsView):
     pagination_class = RecordsPagination
 
@@ -100,7 +109,3 @@ class TagsView(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Tag.objects.for_owner(self.request.user)
-
-
-class RecordsDeleteView(MassDeleteView):
-    model_class = Record
