@@ -1,6 +1,6 @@
 'use strict';
 
-/* global minicash,moment */
+/* global _,minicash,moment */
 
 import * as utils from './utils';
 
@@ -27,6 +27,31 @@ export let Tags = utils.BaseCollection.extend({
     url: function() { return minicash.url('tags-list'); },
 
     comparator: 'name',
+
+    updateFromRecord: function(record) {
+        /* Update collection from zipped (record.tags, record.tags_names)
+            for each tag not present.
+         */
+
+        if (record.get('tags_names') == null) {
+            return;
+        }
+
+        let shouldFetch = false;
+
+        // Here a partial update to collection is happening: tags are added wit ID and NAME.
+        // However a full fetch is required to get the actual tags state.
+        for (let [tagId, tagName] of _.zip(record.get('tags'), record.get('tags_names'))) {
+            if (this.get(tagId) == null) {
+                this.add(new Tag({pk: tagId, name: tagName}));
+                shouldFetch = true;
+            }
+        }
+
+        if (shouldFetch) {
+            this.fetch();
+        }
+    },
 });
 
 

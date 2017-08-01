@@ -150,8 +150,8 @@ class RecordsAPICRUDTest(RESTTestCase):
         dt_out.pop('tags_names')
         self.assertEqual(dt_out, data_internal)
 
-    # def test_delete(self):
-    #     self.assertTrue(False)
+    def test_delete(self):
+        self.assertTrue(False)
 
     def test_mass_delete(self):
         records = RecordFactory.create_batch(9, owner=self.owner)

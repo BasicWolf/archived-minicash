@@ -6,7 +6,7 @@ import Mn from 'backbone.marionette';
 import * as bootbox from 'bootbox';
 
 import {TabPanelView, TabModel} from 'components/tabbar';
-import {TagTab} from './tab_tags';
+import {TagTab} from './tab_tag';
 
 export let TagsTab = TabModel.extend({
     defaults: function() {

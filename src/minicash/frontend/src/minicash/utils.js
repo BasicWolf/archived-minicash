@@ -73,7 +73,7 @@ export let BaseModel = Bb.Model.extend({
             attrs = _.pick(attrs, this.serverAttributes);
         }
 
-        Backbone.Model.prototype.save.call(this, attrs, options);
+        return Bb.Model.prototype.save.call(this, attrs, options);
     },
 
     serialize() {
