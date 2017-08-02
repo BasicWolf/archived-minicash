@@ -7,7 +7,8 @@ FRONTEND_DIR = ./minicash/frontend
 FRONTEND_STATIC_DIR = $(FRONTEND_DIR)/static
 FRONTEND_STATIC_LIB_DIR = $(FRONTEND_STATIC_DIR)/lib
 
-TESTS := minicash.utils minicash.core minicash.auth minicash.frontend
+TESTS := minicash.app minicash.utils minicash.core minicash.auth minicash.frontend
+TEST_ENV := REQUIREMENTS_PATH=$(realpath requirements.txt)
 
 all:
 	@echo 'Available actions:'
@@ -30,7 +31,7 @@ shell:
 
 
 test:
-	$(MANAGEPY_CMD) test -v 2 $(TESTS) --settings $(MANAGEPY_TEST_SETTINGS) --noinput
+	$(TEST_ENV) $(MANAGEPY_CMD) test -v 2 $(TESTS) --settings $(MANAGEPY_TEST_SETTINGS) --noinput
 
 test-behave:
 	$(MANAGEPY_CMD) behave --settings $(MANAGEPY_TEST_SETTINGS)
