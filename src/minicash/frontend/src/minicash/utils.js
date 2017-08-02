@@ -96,8 +96,10 @@ let SerializeCollectionMixin = {
 };
 
 let MassDeleteCollectionMixin = {
-    delete: function(pks=null) {
-        pks = pks || [];
+    delete: function(modelsOrPks=null) {
+        let pks = modelsOrPks.map((modelOrPk) => {
+            return modelOrPk instanceof Bb.Model ? modelOrPk.id : modelOrPk;
+        });
 
         let dfd = $.post({
             url: minicash.url('records-mass-delete'),

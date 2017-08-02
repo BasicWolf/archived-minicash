@@ -1,6 +1,7 @@
 'use strict';
 
-/* global _,$,minicash,require */
+/* global _,$,minicash,require,tr */
+
 import Hb from 'handlebars/runtime';
 import Mn from 'backbone.marionette';
 import * as bootbox from 'bootbox';
@@ -23,6 +24,11 @@ export let TagsTab = TabModel.extend({
 
 
 let TagsTabPanelView = TabPanelView.extend({
+    constructor: function() {
+        this.collection = minicash.collections.tags;
+        TabPanelView.prototype.constructor.apply(this, arguments);
+    },
+
     template: require('templates/tab_tags/tab_tags.hbs'),
 
     ui: {
@@ -44,7 +50,7 @@ let TagsTabPanelView = TabPanelView.extend({
     },
 
     onRender: function() {
-        this.showChildView('tagsTableRegion', new TagsTableView({collection: minicash.collections.tags})) ;
+        this.showChildView('tagsTableRegion', new TagsTableView({collection: this.collection})) ;
     },
 
     startNewTag: function() {
@@ -74,10 +80,7 @@ let TagsTabPanelView = TabPanelView.extend({
 
         dfdDoDelete.then(() => {
             let selectedTags = this.getSelectedTags();
-
-            for (let model of selectedTags) {
-                model.destroy({wait: true});
-            }
+            this.collection.delete(selectedTags);
         });
 
     },

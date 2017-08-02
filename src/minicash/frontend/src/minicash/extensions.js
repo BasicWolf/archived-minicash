@@ -34,6 +34,9 @@ Hb.registerHelper('ifdef', function(v, options) {
     return v != null ? options.fn(this) : options.inverse(this);
 });
 
+Hb.registerHelper('ifndef', function(v, options) {
+    return v == null ? options.fn(this) : options.inverse(this);
+});
 
 Hb.registerHelper('ifeq', function(v, v2, options) {
     return v === v2 ? options.fn(this) : options.inverse(this);

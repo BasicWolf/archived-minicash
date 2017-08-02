@@ -98,16 +98,9 @@ let RecordsTabPanelView = TabPanelView.extend({
             }
         });
 
-        box.on('shown.bs.modal',function(){
-            let $confirmButton = box.find('button[data-bb-handler="confirm"]');
-            $confirmButton.focus();
-        });
-
         dfdDoDelete.then(() => {
             let selectedRecords = this.getSelectedRecords();
-            let recordIds = _.map(selectedRecords, (r) => r.id);
-
-            this.collection.delete(recordIds);
+            this.collection.delete(selectedRecords);
         });
 
     },
