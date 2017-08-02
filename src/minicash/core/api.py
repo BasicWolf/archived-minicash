@@ -109,3 +109,7 @@ class TagsView(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Tag.objects.for_owner(self.request.user)
+
+
+class TagsDeleteView(MassDeleteView):
+    model_class = Tag

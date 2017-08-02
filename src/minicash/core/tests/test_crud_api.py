@@ -155,6 +155,7 @@ class RecordsAPICRUDTest(RESTTestCase):
         records = RecordFactory.create_batch(5, owner=self.owner)
         res = self.delete(reverse('records-detail', args=[records[0].pk]))
         self.assert_deleted(res)
+        self.assertEqual(4, Record.objects.all().count())
 
     def test_mass_delete(self):
         records = RecordFactory.create_batch(9, owner=self.owner)
@@ -263,3 +264,16 @@ class TagsAPITest(RESTTestCase):
         tag = TagFactory.build(name='abc,cde', owner=self.owner)
         res = self.jpost(reverse('tags-list'), TagSerializer(tag).data)
         self.assert_bad(res)
+
+    def test_delete(self):
+        tags = TagFactory.create_batch(5, owner=self.owner)
+        res = self.delete(reverse('tags-detail', args=[tags[0].pk]))
+        self.assert_deleted(res)
+        self.assertEqual(4, Tag.objects.all().count())
+
+    # def test_mass_delete(self):
+    #     tags = TagFactory.create_batch(9, owner=self.owner)
+    #     tags_pks = [r.pk for r in tags[:5]]
+    #     res = self.jpost(reverse('tags-mass-delete'), {'pks': tags_pks})
+    #     self.assertEqual(tags_pks[:5], res.data['pks'])
+    #     self.assertEqual(4, Tag.objects.for_owner(self.owner).count())
