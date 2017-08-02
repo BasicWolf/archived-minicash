@@ -198,7 +198,7 @@ class RecordAPIAssetDataIntegrityTest(RESTTestCase):
         record = RecordFactory.create(asset_from=asset_from, asset_to=None, owner=self.owner)
         old_record_delta = record.delta
 
-        self.jdelete(reverse('records-detail', args=[record.pk]))
+        self.delete(reverse('records-detail', args=[record.pk]))
 
         asset_from.refresh_from_db()
         new_asset_balance = asset_from.balance
@@ -212,7 +212,7 @@ class RecordAPIAssetDataIntegrityTest(RESTTestCase):
         record = RecordFactory.create(asset_to=asset_to, asset_from=None, owner=self.owner)
         old_record_delta = record.delta
 
-        self.jdelete(reverse('records-detail', args=[record.pk]))
+        self.delete(reverse('records-detail', args=[record.pk]))
         asset_to.refresh_from_db()
         new_asset_balance = asset_to.balance
 
@@ -226,7 +226,7 @@ class RecordAPIAssetDataIntegrityTest(RESTTestCase):
         old_asset_to_balance = asset_to.balance
         record = RecordFactory.create(asset_from=asset_from, asset_to=asset_to, owner=self.owner)
 
-        self.jdelete(reverse('records-detail', args=[record.pk]))
+        self.delete(reverse('records-detail', args=[record.pk]))
 
         asset_to.refresh_from_db()
         asset_from.refresh_from_db()

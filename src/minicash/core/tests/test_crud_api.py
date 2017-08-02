@@ -13,6 +13,7 @@ from minicash.core.serializers import (
     ReadRecordSerializer,
     TagSerializer,
 )
+
 from minicash.utils.testing import RESTTestCase
 from .factories import AssetFactory, RecordFactory, TagFactory
 
@@ -151,7 +152,9 @@ class RecordsAPICRUDTest(RESTTestCase):
         self.assertEqual(dt_out, data_internal)
 
     def test_delete(self):
-        self.assertTrue(False)
+        records = RecordFactory.create_batch(5, owner=self.owner)
+        res = self.delete(reverse('records-detail', args=[records[0].pk]))
+        self.assert_deleted(res)
 
     def test_mass_delete(self):
         records = RecordFactory.create_batch(9, owner=self.owner)
@@ -215,14 +218,14 @@ class AssetAPITest(RESTTestCase):
 
     def test_delete_empty(self):
         asset = AssetFactory.create(owner=self.owner)
-        self.jdelete(reverse('assets-detail', args=[asset.pk]))
+        self.delete(reverse('assets-detail', args=[asset.pk]))
         self.assertFalse(Asset.objects.filter(pk=asset.pk).exists())
 
     def test_delete_with_records(self):
         asset = AssetFactory.create(owner=self.owner)
         RecordFactory.create(asset_from=asset, mode=Record.INCOME, owner=self.owner)
 
-        res = self.jdelete(reverse('assets-detail', args=[asset.pk]))
+        res = self.delete(reverse('assets-detail', args=[asset.pk]))
         self.assertEqual(status.HTTP_403_FORBIDDEN, res.status_code)
         self.assertTrue(Asset.objects.filter(pk=asset.pk).exists())
 

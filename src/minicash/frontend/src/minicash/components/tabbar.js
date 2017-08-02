@@ -98,7 +98,7 @@ export let TabPanelView = utils.BaseView.extend({
         Mn.View.prototype.constructor.apply(this, arguments);
         let name = options.model.get('name');
         this.$el.attr('id', `tab_${name}`);
-        return  this;
+        return this;
     },
 });
 

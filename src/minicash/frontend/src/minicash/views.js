@@ -6,9 +6,9 @@ import * as models from 'minicash/models';
 /* Handlebars helpers */
 /*--------------------*/
 
-Hb.registerHelper('tr', function(v) {
+Hb.registerHelper('tr', function(s, options) {
     /* Translation wrapper */
-    return tr(this);
+    return tr(s);
 });
 
 
@@ -34,6 +34,30 @@ Hb.registerHelper('context', function (keys, options) {
 });
 
 
+Hb.registerHelper('record_tags_names', function(recData, options) {
+    let tagsNames = [];
+
+    if (recData.tags_names == null) {
+        for (let tagId of recData.tags) {
+            let tag = minicash.collections.tags.get(tagId);
+            let tagName;
+
+            if (tag) {
+                tagName = tag.get('name');
+            } else {
+                tagName = 'ERROR:tag_name()';
+            }
+
+            tagsNames.push(tagName);
+        }
+    } else {
+        tagsNames = recData.tags_names;
+    }
+
+    return tagsNames.join(', ');
+});
+
+
 Hb.registerHelper('tag_name', function(id, options) {
     let tag = minicash.collections.tags.get(id);
     if (tag) {
@@ -42,3 +66,4 @@ Hb.registerHelper('tag_name', function(id, options) {
         return 'ERROR:tag_name()';
     }
 });
+

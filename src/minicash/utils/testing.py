@@ -46,7 +46,7 @@ class RESTTestCase(WithOwnerTestMixin, APITransactionTestCase):
         data = data or {}
         return self.client.patch(url, data=data, format='json', *args, **kwargs)
 
-    def jdelete(self, url, *args, **kwargs):
+    def delete(self, url, *args, **kwargs):
         return self.client.delete(url, format='json', *args, **kwargs)
 
     def assert_success(self, response):
@@ -60,6 +60,9 @@ class RESTTestCase(WithOwnerTestMixin, APITransactionTestCase):
 
     def assert_bad(self, response):
         return self.assert_status(response, status.HTTP_400_BAD_REQUEST)
+
+    def assert_deleted(self, response):
+        return self.assert_status(response, status.HTTP_204_NO_CONTENT)
 
     def assert_status(self, response, status_code):
         if response.status_code != status_code:
