@@ -6,12 +6,12 @@ import {TabPanelView, TabModel} from 'minicash/components/tabbar';
 import * as utils from 'minicash/utils';
 
 
-export let AssetTab = TabModel.extend({
+export let TagTab = TabModel.extend({
     constructor: function(attributes) {
         if (attributes.adding) {
-            attributes['title'] = tr('New asset');
+            attributes['title'] = tr('New tag');
         } else {
-            attributes['title'] = tr('Edit asset');
+            attributes['title'] = tr('Edit tag');
         }
 
         TabModel.apply(this, arguments);
@@ -21,25 +21,23 @@ export let AssetTab = TabModel.extend({
         let parentDefaults = TabModel.prototype.defaults.apply(this, arguments);
 
         return _.extend(parentDefaults, {
-            name: 'asset_' + utils.generateId(),
+            name: 'tag_' + utils.generateId(),
             adding: false,
-            viewClass: AssetTabPanelView,
+            viewClass: TagTabPanelView,
         });
     },
 
     serializeModel: function() {
         let renderData = TabPanelView.prototype.serializeModel.apply(this, arguments);
-
-
         return renderData;
     }
 });
 
 
-export let AssetTabPanelView = TabPanelView.extend({
+export let TagTabPanelView = TabPanelView.extend({
     validator: null,
 
-    template: require('templates/tab_assets/tab_asset.hbs'),
+    template: require('templates/tab_tags/tab_tag.hbs'),
 
     ui: {
         saveBtn: 'button[data-spec="save"]',
@@ -54,8 +52,7 @@ export let AssetTabPanelView = TabPanelView.extend({
 
     serializeModel: function() {
         let renderData = TabPanelView.prototype.serializeModel.apply(this, arguments);
-        renderData.asset = (renderData.asset && renderData.asset.serialize() || {});
-
+        renderData.tag = (renderData.tag && renderData.tag.serialize() || {});
         return renderData;
     },
 
@@ -67,11 +64,9 @@ export let AssetTabPanelView = TabPanelView.extend({
         this.validator = this.getUI('form').validate({
             rules: {
                 name: {required: true},
-                balance: {number: true, required: true},
             },
             messages: {
                 name: tr("Please enter a valid name"),
-                balance: tr("Please enter an initial balance"),
             },
         });
     },
@@ -110,11 +105,11 @@ export let AssetTabPanelView = TabPanelView.extend({
             },
         };
 
-        let asset = this.model.get('asset');
-        if (asset) {
-            asset.save(saveData, saveOptions);
+        let tag = this.model.get('tag');
+        if (tag) {
+            tag.save(saveData, saveOptions);
         } else {
-            minicash.collections.assets.create(saveData, saveOptions);
+            minicash.collections.tags.create(saveData, saveOptions);
         }
     },
 
@@ -136,4 +131,4 @@ export let AssetTabPanelView = TabPanelView.extend({
     unlockControls: function() {
         return this.uiEnable(['saveBtn', 'cancelBtn']);
     },
-}); // AssetTabPanelView
+}); // TagTabPanelView

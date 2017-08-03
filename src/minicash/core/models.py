@@ -6,11 +6,7 @@ from djmoney.models.fields import MoneyField
 from jsonfield import JSONField
 
 from minicash.core.settings import minicash_settings
-
-
-class MinicashModelManager(models.Manager):
-    def for_owner(self, owner):
-        return self.filter(owner=owner)
+from minicash.utils.models import MinicashModelManager
 
 
 class Record(models.Model):
@@ -53,7 +49,7 @@ class Record(models.Model):
     extra = JSONField(default={})
     mode = models.PositiveIntegerField(choices=MODES)
     owner = models.ForeignKey(User, related_name='records')
-    tags = models.ManyToManyField('Tag', blank=True)
+    tags = models.ManyToManyField('Tag', blank=True, related_name='records')
 
     def update_assets_after_create(self):
         self._update_assets_on_change(old_delta=0)

@@ -8,21 +8,25 @@
         <span aria-label="New" class="glyphicon glyphicon-plus"></span>
       </button>
 
-      <div class="btn-group" role="group">
-        <button data-spec="delete-record" type="button" class="btn btn-danger" disabled>
-          <span aria-label="Delete" class="glyphicon glyphicon-trash"></span>
-        </button>
-      </div>
+      <button data-spec="delete-record" type="button" class="btn btn-danger" disabled>
+        <span aria-label="Delete" class="glyphicon glyphicon-trash"></span>
+      </button>
 
       <button class="btn btn-default" type="button"
-              data-toggle="collapse" data-target="#filter_records_{{name}}"
-              aria-expanded="false" aria-controls="collapseExample">
+              data-toggle="collapse" data-target="#filter_records_{{name}}">
         <span aria-label="refresh" class="glyphicon glyphicon-filter"></span>
       </button>
     </div>
 
-    <div data-spec="paginator-region" class="pull-right"></div>
+    <div style="margin-left:1em;" class="pull-right">
+      <button class="btn btn-default" type="button"
+              disabled="disabled"
+              data-toggle="tooltip" title="{{#tr "Tab options"}}{{/tr}}">
+        <span aria-label="refresh" class="glyphicon glyphicon-cog"></span>
+      </button>
+    </div>
 
+    <div data-spec="paginator-region" class="pull-right"></div>
   </div> <!-- panel-buttons -->
 
   <br><br>

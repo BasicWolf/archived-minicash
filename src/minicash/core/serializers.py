@@ -11,7 +11,7 @@ from minicash.auth.serializers import UserDateTimeField
 from .models import Record, Tag, Asset
 
 
-class RecordSerializer(ModelSerializer):
+class ReadRecordSerializer(ModelSerializer):
     class Meta:
         model = Record
         fields = [
@@ -47,9 +47,8 @@ class RecordSerializer(ModelSerializer):
         read_only=False,
     )
 
-    tags = CreatableUserSlugRelatedField(
+    tags = UserPrimaryKeyRelatedField(
         user_field_name='owner',
-        slug_field='name',
         queryset=Tag.objects,
         many=True,
         allow_null=True,
@@ -70,14 +69,37 @@ class RecordSerializer(ModelSerializer):
         return attrs
 
 
+class CreateRecordSerializer(ReadRecordSerializer):
+    class Meta(ReadRecordSerializer.Meta):
+        fields = ReadRecordSerializer.Meta.fields + ['tags_names']
+
+    tags_names = CreatableUserSlugRelatedField(
+        source='tags',
+        user_field_name='owner',
+        slug_field='name',
+        queryset=Tag.objects,
+        many=True,
+        allow_null=True,
+    )
+
+
 class TagSerializer(ModelSerializer):
     class Meta:
         model = Tag
-        fields = ['pk', 'description', 'name', 'owner']
+        fields = ['pk', 'owner',
+                  'description', 'name', 'records_count']
 
     owner = serializers.HiddenField(
         default=serializers.CurrentUserDefault(),
     )
+
+    records_count = serializers.SerializerMethodField()
+
+    def get_records_count(self, obj):
+        # tag.records cannot be resolved unless tag has a primary key
+        if not obj.pk:
+            return 0
+        return obj.records.count()
 
     def validate(self, attrs):
         return self._validate_name(attrs)
@@ -95,7 +117,8 @@ class TagSerializer(ModelSerializer):
 class AssetSerializer(ModelSerializer):
     class Meta:
         model = Asset
-        fields = ['pk', 'balance', 'description', 'name', 'owner']
+        fields = ['pk', 'owner',
+                  'balance', 'description', 'name']
 
     owner = serializers.HiddenField(
         default=serializers.CurrentUserDefault(),
@@ -105,10 +128,12 @@ class AssetSerializer(ModelSerializer):
 class UpdateAssetSerializer(AssetSerializer):
     class Meta:
         model = Asset
-        fields = ['pk', 'description', 'name', 'owner']
+        fields = ['pk', 'owner',
+                  'description', 'name']
 
 
 class CreateAssetSerializer(AssetSerializer):
     class Meta:
         model = Asset
-        fields = ['pk', 'balance', 'description', 'name', 'owner']
+        fields = ['pk', 'owner',
+                  'balance', 'description', 'name']

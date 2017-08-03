@@ -73,7 +73,7 @@ export let BaseModel = Bb.Model.extend({
             attrs = _.pick(attrs, this.serverAttributes);
         }
 
-        Backbone.Model.prototype.save.call(this, attrs, options);
+        return Bb.Model.prototype.save.call(this, attrs, options);
     },
 
     serialize() {
@@ -95,6 +95,26 @@ let SerializeCollectionMixin = {
     }
 };
 
+let MassDeleteCollectionMixin = {
+    delete: function(modelsOrPks=null) {
+        let pks = modelsOrPks.map((modelOrPk) => {
+            return modelOrPk instanceof Bb.Model ? modelOrPk.id : modelOrPk;
+        });
+
+        let dfd = $.post({
+            url: minicash.url('records-mass-delete'),
+            data: JSON.stringify({'pks': pks}),
+            contentType : 'application/json',
+        });
+
+        dfd.done((data) => {
+            let remPks = data.pks || [];
+            this.remove(remPks);
+        });
+
+        return dfd;
+    }
+};
 
 export let BaseCollection = Bb.Collection.extend({
     search: function(searchArgs, options) {
@@ -105,11 +125,12 @@ export let BaseCollection = Bb.Collection.extend({
 
         let attrs = _.extend({}, defaults, options);
         return this.fetch(attrs);
-    }
+    },
 });
 _.extend(
     BaseCollection.prototype,
-    SerializeCollectionMixin
+    SerializeCollectionMixin,
+    MassDeleteCollectionMixin
 );
 
 
@@ -152,7 +173,8 @@ export let BasePageableCollection = Bb.PageableCollection.extend({
 });
 _.extend(
     BasePageableCollection.prototype,
-    SerializeCollectionMixin
+    SerializeCollectionMixin,
+    MassDeleteCollectionMixin
 );
 
 

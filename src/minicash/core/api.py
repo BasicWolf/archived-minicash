@@ -4,13 +4,15 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from rest_framework.permissions import IsAuthenticated
 
 from minicash.core.settings import minicash_settings
+from minicash.utils.views import MassDeleteView
 from .filters import RecordFilter
 from .models import Record, Asset, Tag
 from .permissions import IsAssetRemovable
 from .serializers import (
     AssetSerializer,
     CreateAssetSerializer,
-    RecordSerializer,
+    CreateRecordSerializer,
+    ReadRecordSerializer,
     TagSerializer,
     UpdateAssetSerializer,
 )
@@ -38,12 +40,17 @@ class RecordsPagination(pagination.PageNumberPagination):
 class RecordsView(viewsets.ModelViewSet):
     authentication_classes = (SessionAuthentication, BasicAuthentication)
     permission_classes = (IsAuthenticated,)
-    serializer_class = RecordSerializer
     filter_class = RecordFilter
 
     def get_queryset(self):
         return Record.objects.for_owner(self.request.user) \
                              .order_by('-created_dt')
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return ReadRecordSerializer
+        else:
+            return CreateRecordSerializer
 
     @transaction.atomic
     def perform_create(self, serializer):
@@ -59,6 +66,15 @@ class RecordsView(viewsets.ModelViewSet):
         super().perform_update(serializer)
         serializer.instance.update_assets_after_update(
             old_delta, old_asset_to, old_asset_from)
+
+    @transaction.atomic
+    def perform_destroy(self, instance):
+        instance.update_assets_before_destroy()
+        super().perform_destroy(instance)
+
+
+class RecordsDeleteView(MassDeleteView):
+    model_class = Record
 
     @transaction.atomic
     def perform_destroy(self, instance):
@@ -93,3 +109,7 @@ class TagsView(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Tag.objects.for_owner(self.request.user)
+
+
+class TagsDeleteView(MassDeleteView):
+    model_class = Tag

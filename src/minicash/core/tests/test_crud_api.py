@@ -9,9 +9,11 @@ from rest_framework.reverse import reverse
 from minicash.core.models import Asset, Record, Tag
 from minicash.core.serializers import (
     AssetSerializer,
-    RecordSerializer,
+    CreateRecordSerializer,
+    ReadRecordSerializer,
     TagSerializer,
 )
+
 from minicash.utils.testing import RESTTestCase
 from .factories import AssetFactory, RecordFactory, TagFactory
 
@@ -45,7 +47,7 @@ class RecordsAPICRUDTest(RESTTestCase):
         self.assertAlmostEqual(record.delta, Money(data['delta'], currency), places=2)
         self.assertEqual(record.mode, data['mode'])
         self.assertEqual(record.description, data['description'])
-        self.assertEqual(list(record.tags.all().values_list('name', flat=True)),
+        self.assertEqual(list(record.tags.all().values_list('pk', flat=True)),
                          data['tags'])
         self.assertEqual(record.asset_to.pk, data['asset_to'])
         self.assertEqual(record.asset_from.pk, data['asset_from'])
@@ -70,12 +72,12 @@ class RecordsAPICRUDTest(RESTTestCase):
         asset_to = AssetFactory.create(owner=self.owner)
         asset_from = AssetFactory.create(owner=self.owner)
         record = RecordFactory.build(asset_to=asset_to, asset_from=asset_from, owner=self.owner)
-        serializer = RecordSerializer(record)
+        serializer = CreateRecordSerializer(record)
 
         # add a list of tags
         tags = TagFactory.build_batch(3)
         data_in = serializer.data
-        data_in['tags'] = [tag.name for tag in tags]
+        data_in['tags_names'] = [tag.name for tag in tags]
 
         res = self.jpost(reverse('records-list'), data_in)
         self.assert_created(res)
@@ -84,7 +86,7 @@ class RecordsAPICRUDTest(RESTTestCase):
     def test_create_asset_partial(self):
         asset_to = AssetFactory.create(owner=self.owner)
         record = RecordFactory.build(asset_to=asset_to, asset_from=None, owner=self.owner)
-        serializer = RecordSerializer(record)
+        serializer = CreateRecordSerializer(record)
 
         data_in = serializer.data
         res = self.jpost(reverse('records-list'), data_in)
@@ -94,7 +96,7 @@ class RecordsAPICRUDTest(RESTTestCase):
     def test_update(self):
         record = RecordFactory.create(owner=self.owner)
         record.delta = random.randint(0, 1000)
-        serializer = RecordSerializer(record)
+        serializer = CreateRecordSerializer(record)
         res = self.jpatch(reverse('records-detail', args=[record.pk]), serializer.data)
         self.assert_updated(res)
 
@@ -102,7 +104,7 @@ class RecordsAPICRUDTest(RESTTestCase):
         req = RequestFactory()
         req.user = self.owner
         record_data = {}
-        serializer = RecordSerializer(data=record_data, context={'request': req})
+        serializer = CreateRecordSerializer(data=record_data, context={'request': req})
         self.assertFalse(serializer.is_valid())
 
     def test_create_invalid_mode(self):
@@ -110,36 +112,57 @@ class RecordsAPICRUDTest(RESTTestCase):
         asset_from = AssetFactory.create(owner=self.owner)
 
         record = RecordFactory.build(asset_to=asset_to, mode=Record.TRANSFER, owner=self.owner)
-        res = self.jpost(reverse('records-list'), RecordSerializer(record).data)
+        res = self.jpost(reverse('records-list'), CreateRecordSerializer(record).data)
         self.assert_bad(res)
 
         record = RecordFactory.build(asset_to=asset_to, mode=Record.EXPENSE, owner=self.owner)
-        res = self.jpost(reverse('records-list'), RecordSerializer(record).data)
+        res = self.jpost(reverse('records-list'), CreateRecordSerializer(record).data)
         self.assert_bad(res)
 
         record = RecordFactory.build(asset_from=asset_from, mode=Record.TRANSFER, owner=self.owner)
-        res = self.jpost(reverse('records-list'), RecordSerializer(record).data)
+        res = self.jpost(reverse('records-list'), CreateRecordSerializer(record).data)
         self.assert_bad(res)
 
         record = RecordFactory.build(asset_from=asset_from, mode=Record.INCOME, owner=self.owner)
-        res = self.jpost(reverse('records-list'), RecordSerializer(record).data)
+        res = self.jpost(reverse('records-list'), CreateRecordSerializer(record).data)
         self.assert_bad(res)
 
     def _compare_records_data(self, data_in, data_out):
+        dt_in, dt_out = data_in.copy(), data_out.copy()
+
         # pk's are not equal (None vs. PK from database)
-        data_in_pk, data_out_pk = data_in.pop('pk'), data_out.pop('pk')
+        data_in_pk, data_out_pk = dt_in.pop('pk'), dt_out.pop('pk')
         self.assertNotEqual(data_in_pk, data_out_pk)
 
-        # the rest data is equal
-        self.assertEqual(data_in, data_out)
+        if dt_in.get('tags_names', []) != []:
+            dt_in.pop('tags')
+            dt_out.pop('tags')
+
+        self.assertEqual(dt_in, dt_out)
 
         # ensure internal structure via ORM
         rec_internal = Record.objects.get(pk=data_out_pk)
 
-        ser_internal = RecordSerializer(rec_internal)
+        # test versus Record Read/List serializer
+        ser_internal = ReadRecordSerializer(rec_internal)
         data_internal = ser_internal.data
-        data_internal.pop('pk')
-        self.assertEqual(data_out, data_internal)
+
+        dt_out = data_out.copy()
+        dt_out.pop('tags_names')
+        self.assertEqual(dt_out, data_internal)
+
+    def test_delete(self):
+        records = RecordFactory.create_batch(5, owner=self.owner)
+        res = self.delete(reverse('records-detail', args=[records[0].pk]))
+        self.assert_deleted(res)
+        self.assertEqual(4, Record.objects.all().count())
+
+    def test_mass_delete(self):
+        records = RecordFactory.create_batch(9, owner=self.owner)
+        records_pks = [r.pk for r in records[:5]]
+        res = self.jpost(reverse('records-mass-delete'), {'pks': records_pks})
+        self.assertEqual(records_pks[:5], res.data['pks'])
+        self.assertEqual(4, Record.objects.for_owner(self.owner).count())
 
 
 class AssetAPITest(RESTTestCase):
@@ -196,14 +219,14 @@ class AssetAPITest(RESTTestCase):
 
     def test_delete_empty(self):
         asset = AssetFactory.create(owner=self.owner)
-        self.jdelete(reverse('assets-detail', args=[asset.pk]))
+        self.delete(reverse('assets-detail', args=[asset.pk]))
         self.assertFalse(Asset.objects.filter(pk=asset.pk).exists())
 
     def test_delete_with_records(self):
         asset = AssetFactory.create(owner=self.owner)
         RecordFactory.create(asset_from=asset, mode=Record.INCOME, owner=self.owner)
 
-        res = self.jdelete(reverse('assets-detail', args=[asset.pk]))
+        res = self.delete(reverse('assets-detail', args=[asset.pk]))
         self.assertEqual(status.HTTP_403_FORBIDDEN, res.status_code)
         self.assertTrue(Asset.objects.filter(pk=asset.pk).exists())
 
@@ -241,3 +264,16 @@ class TagsAPITest(RESTTestCase):
         tag = TagFactory.build(name='abc,cde', owner=self.owner)
         res = self.jpost(reverse('tags-list'), TagSerializer(tag).data)
         self.assert_bad(res)
+
+    def test_delete(self):
+        tags = TagFactory.create_batch(5, owner=self.owner)
+        res = self.delete(reverse('tags-detail', args=[tags[0].pk]))
+        self.assert_deleted(res)
+        self.assertEqual(4, Tag.objects.all().count())
+
+    # def test_mass_delete(self):
+    #     tags = TagFactory.create_batch(9, owner=self.owner)
+    #     tags_pks = [r.pk for r in tags[:5]]
+    #     res = self.jpost(reverse('tags-mass-delete'), {'pks': tags_pks})
+    #     self.assertEqual(tags_pks[:5], res.data['pks'])
+    #     self.assertEqual(4, Tag.objects.for_owner(self.owner).count())

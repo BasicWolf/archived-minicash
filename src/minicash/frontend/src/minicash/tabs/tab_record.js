@@ -103,6 +103,7 @@ export let RecordTabPanelView = tabbar.TabPanelView.extend({
             data: data,
             allowClear: true,
             placeholder: '',
+            tags: true,
         };
 
         this.getUI('tagsSelect').select2(opts);
@@ -241,9 +242,7 @@ export let RecordTabPanelView = tabbar.TabPanelView.extend({
 
         let dfd = $.Deferred(() => {
             this.lockControls();
-        });
-
-        dfd.fail((errors) => {
+        }).fail((errors) => {
             this.validator.showErrors(errors);
             this.unlockControls();
         });
@@ -261,11 +260,14 @@ export let RecordTabPanelView = tabbar.TabPanelView.extend({
 
         let record = this.model.get('record');
         if (record && record.id != null) {
+            saveOptions.patch = true;
             record.save(saveData, saveOptions);
         } else {
             let newRecord = new models.Record();
-            newRecord.save(saveData, saveOptions);
-            this.model.set('record', newRecord);
+            let res = newRecord.save(saveData, saveOptions);
+            res.done(() => {
+                this.model.set('record', newRecord);
+            });
         }
 
         return dfd.promise();
@@ -280,7 +282,8 @@ export let RecordTabPanelView = tabbar.TabPanelView.extend({
         }
 
         let formData = this.getUI('form').serializeForm();
-        formData.tags = this.getUI('tagsSelect').select2().val();
+        formData.tags = [];
+        formData.tags_names = this.getUI('tagsSelect').select2().val();
 
         // mode either from Form Data, or if not available (control disabled, i.e. editing)
         // - from existing record which is being edited
@@ -291,6 +294,7 @@ export let RecordTabPanelView = tabbar.TabPanelView.extend({
         case RECORD_MODES.TRANSFER.value: break; // both assets are used
         default: throw 'Invalid record mode';
         };
+        formData.mode = mode;
         return formData;
     },
 

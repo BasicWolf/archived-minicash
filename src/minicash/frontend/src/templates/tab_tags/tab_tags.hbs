@@ -1,0 +1,23 @@
+<div id="tab_{{name}}" role="tabpanel" class="tab-pane">
+
+  <div class="panel-buttons" style="position:relative">
+    <div data-spec="export-loading" class="loading loading-center"></div>
+
+    <button data-spec="start-new-tag" type="button" class="btn btn-default">
+      <span aria-label="New" class="glyphicon glyphicon-plus"></span>
+    </button>
+
+    <div class="btn-group" role="group" aria-label="...">
+      <button data-spec="delete-tag" type="button" class="btn btn-danger" disabled>
+        <span aria-label="Delete" class="glyphicon glyphicon-trash"></span>
+      </button>
+    </div>
+
+  </div> <!-- panel-buttons -->
+
+  <div class="panel panel-default"><div class="panel-body">
+
+    <div data-spec="tags-table-region"></div>
+
+  </div></div>
+</div>

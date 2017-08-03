@@ -7,9 +7,10 @@ FRONTEND_DIR = ./minicash/frontend
 FRONTEND_STATIC_DIR = $(FRONTEND_DIR)/static
 FRONTEND_STATIC_LIB_DIR = $(FRONTEND_STATIC_DIR)/lib
 
+REQUIREMENTS_FILE = requirements.txt
 
-TESTS := minicash.utils minicash.core minicash.auth minicash.frontend
-
+TESTS := minicash.app minicash.utils minicash.core minicash.auth minicash.frontend
+TEST_ENV := REQUIREMENTS_PATH=$(realpath $(REQUIREMENTS_FILE))
 
 all:
 	@echo 'Available actions:'
@@ -32,7 +33,7 @@ shell:
 
 
 test:
-	$(MANAGEPY_CMD) test -v 2 $(TESTS) --settings $(MANAGEPY_TEST_SETTINGS) --noinput
+	$(TEST_ENV) $(MANAGEPY_CMD) test -v 2 $(TESTS) --settings $(MANAGEPY_TEST_SETTINGS) --noinput
 
 test-behave:
 	$(MANAGEPY_CMD) behave --settings $(MANAGEPY_TEST_SETTINGS)
@@ -61,6 +62,8 @@ safety:
 pylizard:
 	lizard . -l python
 
+$(REQUIREMENTS_FILE):
+	pip freeze | grep -v 'pkg-resource=0.0.0' > requirements.txt
 
 # === Build and release === #
 # ========================= #
@@ -106,4 +109,4 @@ heroku-migrate:
 clean:
 	rm -rf $(NODE_MODULES_DIR) ${FRONTEND_STATIC_DIR}
 
-.PHONY: clean
+.PHONY: clean $(REQUIREMENTS_FILE)

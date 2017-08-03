@@ -99,7 +99,7 @@ export let TagsPieReportView = Mn.View.extend({
         });
 
         let recordsCountToTags = _.chain(tagsToRecordsCount)
-            .map((val, key) => { return {tagName: key, count: val}; })
+            .map((val, key) => { return {tagId: key, count: val}; })
             .groupBy('count')
             .value();
 
@@ -110,11 +110,11 @@ export let TagsPieReportView = Mn.View.extend({
             .value();
 
         let topTags = _.map(topTagsCount, (c) => {
-            return _.chain(recordsCountToTags[c])
+            let tagIds = _.chain(recordsCountToTags[c])
                 .take(this.TAGS_TO_REPORT)
-                .map('tagName')
-                .join(', ')
-                .value();
+                .map('tagId');
+            let tagNames = tagIds.map((tid) => minicash.collections.tags.get(tid).get('name'));
+            return tagNames.join(', ').value();
         });
 
         return [topTagsCount, topTags];
@@ -142,7 +142,7 @@ export let TagsPieReportView = Mn.View.extend({
 
         let deltaSumToTags = _.chain(tagsToSumDelta)
             .map((val, key) => { return {
-                tagName: key,
+                tagId: key,
                 delta: val.toFixed(0)
             }; })
             .groupBy('delta')
@@ -158,11 +158,11 @@ export let TagsPieReportView = Mn.View.extend({
         topTagsDelta.push(restTagsDelta);
 
         let topTags = _.map(topTagsDelta, (d) => {
-            return _.chain(deltaSumToTags[d])
+            let tagIds = _.chain(deltaSumToTags[d])
                 .take(this.TAGS_TO_REPORT)
-                .map('tagName')
-                .join(', ')
-                .value();
+                .map('tagId');
+            let tagNames = tagIds.map((tid) => minicash.collections.tags.get(tid).get('name'));
+            return tagNames.join(', ').value();
         });
 
         topTags[topTags.length - 1] = tr('Others');
