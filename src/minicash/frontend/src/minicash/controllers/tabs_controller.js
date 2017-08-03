@@ -3,17 +3,19 @@
 /* global _ */
 
 import Mn from 'backbone.marionette';
-import * as tabbar from './tabbar';
+import * as tabbar from 'minicash/components/tabbar';
 
+import {HomeTab} from 'minicash/tabs/tab_home';
 
-export let TabbarManager = Mn.Object.extend({
+export let TabsController = Mn.Object.extend({
     initialize: function(options) {
         this.tabbarView = new tabbar.TabbarView();
         this.tabbarView.render();
-        this.openTab(options.firstTab);
     },
 
-    openTab: function(tabtype, options) {
+    openTab: function(tabName, options) {
+        let tabtype = HomeTab;
+
         options = _.extend({
             source: null,
             manager: this,

@@ -6,6 +6,7 @@ import './defaults';
 import './extensions';
 
 import {sprintf} from 'sprintf-js';
+import Bb from 'backbone';
 import Mn from 'backbone.marionette';
 import Radio from 'backbone.radio';
 
@@ -14,8 +15,8 @@ import * as utils from './utils';
 import * as views from './views';
 
 import {ReportTab} from './tabs/tab_report';
-import {HomeTab} from './tabs/tab_home';
-import {TabbarManager} from './components/tabbar_manager';
+
+import {TabsRouter} from './routers';
 
 
 let recordsChannel = Radio.channel('records');
@@ -58,7 +59,9 @@ export default Mn.Application.extend({
 
     onStart: function() {
         this._bootstrapData();
-        this.tabbar = new TabbarManager({firstTab: HomeTab});
+        this.tabs_router = new TabsRouter();
+        Bb.history.start({pushState: true});
+        this.tabs_router.navigate(this.CONTEXT.route, {trigger: true});
     },
 
     _bootstrapData: function() {

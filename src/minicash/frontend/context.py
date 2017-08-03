@@ -9,6 +9,7 @@ from minicash.core.settings import minicash_settings
 
 def build_context(**kwargs):
     assert 'user' in kwargs
+    assert 'route' in kwargs
 
     builders = [
         build_settings,
@@ -16,6 +17,7 @@ def build_context(**kwargs):
         build_bootstrap,
         build_jsurls,
         build_user,
+        build_route,
     ]
 
     context = {}
@@ -57,14 +59,12 @@ def build_bootstrap(**kwargs):
     return {'bootstrap': bootstrap}
 
 
-def _build_assets(**kwargs):
-    user = kwargs['user']
+def _build_assets(user, **kwargs):
     assets = Asset.objects.filter(owner=user)
     return AssetSerializer(assets, many=True).data
 
 
-def _build_tags(**kwargs):
-    user = kwargs['user']
+def _build_tags(user, **kwargs):
     tags = Tag.objects.filter(owner=user)
     return TagSerializer(tags, many=True).data
 
@@ -83,9 +83,7 @@ def build_jsurls(**kwargs):
     return {'urls': urls}
 
 
-def build_user(**kwargs):
-    user = kwargs['user']
-
+def build_user(user, **kwargs):
     user_context = {
         'dtFormat': user.profile.get_dt_format_display(),
         'dateFormat': user.profile.date_format_frontend,
@@ -93,3 +91,7 @@ def build_user(**kwargs):
     }
 
     return {'user': user_context}
+
+
+def build_route(route, **kwargs):
+    return {'route': f'#{route}'}

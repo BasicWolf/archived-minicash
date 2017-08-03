@@ -12,8 +12,8 @@ logger = logging.getLogger(__name__)
 
 
 @login_required
-def index(request):
-    minicash_context = build_context(user=request.user)
+def index(request, route):
+    minicash_context = build_context(user=request.user, route=route)
 
     minicash_json_context = json.dumps(minicash_context, cls=JSONEncoder)
     logger.debug('JSON context: %s', minicash_json_context)

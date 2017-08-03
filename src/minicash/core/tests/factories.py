@@ -50,8 +50,8 @@ class RecordFactory(DjangoModelFactory):
             self.tags.add(tag)  # pylint: disable=no-member
 
     created_dt = factories.FuzzyDateTime(
-        datetime.datetime(1960, 1, 1, tzinfo=datetime.timezone.utc),
-        datetime.datetime(2060, 1, 1, tzinfo=datetime.timezone.utc),
+        datetime.datetime(2016, 1, 1, tzinfo=datetime.timezone.utc),
+        datetime.datetime(2018, 1, 1, tzinfo=datetime.timezone.utc),
     )
     delta = fuzzy.FuzzyDecimal(0.01, 10000, 2)
     description = Faker('text')
