@@ -1,8 +1,8 @@
 import json
 import logging
 
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic.base import TemplateView
 
 from minicash.utils.json import JSONEncoder
 from .context import build_context
@@ -11,12 +11,16 @@ from .context import build_context
 logger = logging.getLogger(__name__)
 
 
-@login_required
-def index(request, route):
-    minicash_context = build_context(user=request.user, route=route)
+class RouteView(LoginRequiredMixin, TemplateView):
+    template_name = 'frontend/index.djhtml'
 
-    minicash_json_context = json.dumps(minicash_context, cls=JSONEncoder)
-    logger.debug('JSON context: %s', minicash_json_context)
+    def get_context_data(self, route='', suffix='', **kwargs):
+        end_route = route + suffix
 
-    context = {'minicash_context': minicash_json_context}
-    return render(request, 'frontend/index.djhtml', context)
+        minicash_context = build_context(user=self.request.user, route=end_route)
+        minicash_context_json = json.dumps(minicash_context, cls=JSONEncoder)
+
+        logger.debug('JSON context: %s', minicash_context_json)
+
+        context = {'minicash_context': minicash_context_json}
+        return context

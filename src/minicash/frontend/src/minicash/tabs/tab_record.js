@@ -20,11 +20,13 @@ export let RecordTab = tabbar.TabModel.extend({
 
         return _.extend(parentDefaults, {
             title: 'New record',
-            name: 'new_record_' + utils.generateId(),
+            name: `${RecordTab.tabName}_${utils.generateId()}`,
             viewClass: RecordTabPanelView,
             record: null,
         });
     }
+}, {
+    alias: 'record'
 });
 
 

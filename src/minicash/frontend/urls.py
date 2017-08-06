@@ -16,12 +16,17 @@ from django.conf.urls import url, include
 
 from django_js_utils.views import jsurls
 
-from . import views
+from .views import RouteView
 
 urlpatterns = [
-    url(r'^jsurls.js$', jsurls, name='jsurls'),
-
     url(r'^minicash/', include('minicash.core.urls')),
-    url(r'^home/$', views.index, {'route': 'home'}),
-    url(r'^$', views.index, {'route': ''}, name='index'),
+
+    url(r'^jsurls.js$', jsurls,
+        name='jsurls'),
+
+    url(r'^tabs/(?P<suffix>\w+)$', RouteView.as_view(), {'route': 'tabs/'},
+        name='tabs_route'),
+
+    url(r'^$', RouteView.as_view(), {'route': ''},
+        name='index'),
 ]

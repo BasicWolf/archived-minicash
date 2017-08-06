@@ -60,12 +60,12 @@ def build_bootstrap(**kwargs):
 
 
 def _build_assets(user, **kwargs):
-    assets = Asset.objects.filter(owner=user)
+    assets = Asset.objects.for_owner(user)
     return AssetSerializer(assets, many=True).data
 
 
 def _build_tags(user, **kwargs):
-    tags = Tag.objects.filter(owner=user)
+    tags = Tag.objects.for_owner(user)
     return TagSerializer(tags, many=True).data
 
 

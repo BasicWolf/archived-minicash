@@ -7,15 +7,17 @@ import * as tabbar from 'minicash/components/tabbar';
 
 import {HomeTab} from 'minicash/tabs/tab_home';
 import {AssetTab} from 'minicash/tabs/tab_asset';
+import {RecordTab} from 'minicash/tabs/tab_record';
 
 let allTabsTypes = [
     HomeTab,
     AssetTab,
+    RecordTab,
 ];
 
-let tabNamesToTypes = _.transform(
+let tabAliasToType = _.transform(
     allTabsTypes,
-    (result, tabType) => result[tabType.tabName] = tabType,
+    (result, tabType) => result[tabType.alias] = tabType,
     {}
 );
 
@@ -25,8 +27,8 @@ export let TabsController = Mn.Object.extend({
         this.tabbarView.render();
     },
 
-    openTab: function(tabName, options) {
-        let tabtype = tabNamesToTypes[tabName];
+    openTab: function(tabAlias, options) {
+        let tabtype = tabAliasToType[tabAlias];
 
         options = _.extend({
             source: null,

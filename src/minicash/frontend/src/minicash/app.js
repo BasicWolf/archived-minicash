@@ -71,7 +71,6 @@ export default Mn.Application.extend({
         this._routers = {
             tabs: new TabsRouter({controller: this.controllers.tabs}),
         };
-        Bb.history.start({pushState: true});
     },
 
     _bootstrapData: function() {
@@ -80,8 +79,13 @@ export default Mn.Application.extend({
     },
 
     onStart: function() {
-        let initialRoute = this.CONTEXT.route || 'home';
-        this._routers.tabs.navigate(initialRoute, {trigger: true});
+        this._startNavigation();
         this.started = true;
     },
+
+    _startNavigation: function() {
+        Bb.history.start({pushState: true});
+        let initialRoute = this.CONTEXT.route || 'home';
+        this._routers.tabs.navigate(initialRoute, {trigger: true});
+    }
 });

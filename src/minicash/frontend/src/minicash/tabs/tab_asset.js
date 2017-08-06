@@ -21,7 +21,7 @@ export let AssetTab = TabModel.extend({
         let parentDefaults = TabModel.prototype.defaults.apply(this, arguments);
 
         return _.extend(parentDefaults, {
-            name: `${AssetTab.tabName}_${utils.generateId()}`,
+            name: `${AssetTab.alias}_${utils.generateId()}`,
             adding: false,
             viewClass: AssetTabPanelView,
         });
@@ -33,7 +33,7 @@ export let AssetTab = TabModel.extend({
         return renderData;
     }
 }, {
-    tabName: 'asset'
+    alias: 'asset'
 });
 
 

@@ -6,10 +6,12 @@ NODE_MODULES_DIR = ./node_modules
 FRONTEND_DIR = ./minicash/frontend
 FRONTEND_STATIC_DIR = $(FRONTEND_DIR)/static
 FRONTEND_STATIC_LIB_DIR = $(FRONTEND_STATIC_DIR)/lib
+BEHAVE_FEATURES_DIR = $(FRONTEND_DIR)/tests/features
 
 REQUIREMENTS_FILE = requirements.txt
 
 TESTS := minicash.app minicash.utils minicash.core minicash.auth minicash.frontend
+BEHAVE_FEATURES := # $(BEHAVE_FEATURES_DIR)/login.feature
 TEST_ENV := REQUIREMENTS_PATH=$(realpath $(REQUIREMENTS_FILE))
 
 all:
@@ -36,7 +38,7 @@ test:
 	$(TEST_ENV) $(MANAGEPY_CMD) test -v 2 $(TESTS) --settings $(MANAGEPY_TEST_SETTINGS) --noinput
 
 test-behave:
-	$(MANAGEPY_CMD) behave --settings $(MANAGEPY_TEST_SETTINGS)
+	$(MANAGEPY_CMD) behave --settings $(MANAGEPY_TEST_SETTINGS) $(BEHAVE_FEATURES)
 
 
 check: check-python

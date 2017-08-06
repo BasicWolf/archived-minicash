@@ -1,18 +1,23 @@
-from behave import then
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+from behave import then, when
 
-from minicash.utils.testing import jswait, jsget
+from django.urls import reverse
 
-import logging
-logger = logging.getLogger(__name__)
+
+@when('I navigate to root')
+def step_navigate_to_root(context):
+    br = context.browser
+    br.get(context.base_url)
+
+
+@when('I navigate to "{tab_name}" tab')
+def step_nagivate_to_tab(context, tab_name):
+    br = context.browser
+    br.get(context.url(reverse('tabs_route', args=('record', ))))
+
 
 @then('the result page lands on "{tab_name}" tab')
 def step_result_page_lands_on_tab(context, tab_name):
-    br = context.browser
     test = context.test
 
-    jswait(br, 5, 'minicash.started', True)
-    test.assertEqual(tab_name, jsget(br, 'minicash.controllers.tabs.getCurrentTab().get("name")'))
-
-    # context.test.assertTrue(br.current_url.endswith(''), f'Current URL is {br.current_url}')
+    context.jswait(5, 'minicash.started', True)
+    test.assertEqual(tab_name, context.jsget('minicash.controllers.tabs.getCurrentTab().get("name")'))

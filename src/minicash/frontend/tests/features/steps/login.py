@@ -1,6 +1,6 @@
-from django.urls import reverse
-
 from behave import given, when, then
+
+from django.urls import reverse
 
 from minicash.auth.tests.factories import UserFactory
 
@@ -11,6 +11,14 @@ def step_anon_user(context):
     u = UserFactory(username='foo', email='foo@example.com')
     u.set_password('bar')
     u.save()
+
+
+@given('an authenticated user')
+def step_authenticated_user(context):
+    u = UserFactory(username='foo', email='foo@example.com')
+    u.set_password('bar')
+    u.save()
+    context.authenticate_user(u)
 
 
 @when('I submit a valid login page')
