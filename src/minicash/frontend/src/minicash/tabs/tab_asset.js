@@ -21,7 +21,7 @@ export let AssetTab = TabModel.extend({
         let parentDefaults = TabModel.prototype.defaults.apply(this, arguments);
 
         return _.extend(parentDefaults, {
-            name: 'asset_' + utils.generateId(),
+            name: `${AssetTab.tabName}_${utils.generateId()}`,
             adding: false,
             viewClass: AssetTabPanelView,
         });
@@ -30,9 +30,10 @@ export let AssetTab = TabModel.extend({
     serializeModel: function() {
         let renderData = TabPanelView.prototype.serializeModel.apply(this, arguments);
 
-
         return renderData;
     }
+}, {
+    tabName: 'asset'
 });
 
 

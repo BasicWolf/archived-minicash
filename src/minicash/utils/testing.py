@@ -1,11 +1,17 @@
 from http.client import responses as http_responses
 
+from selenium.common.exceptions import WebDriverException
+from selenium.webdriver.support.ui import WebDriverWait
+
 from django.contrib.auth.models import Permission
 from django.test import TransactionTestCase
 from rest_framework import status
 from rest_framework.test import APITransactionTestCase
 
 from minicash.auth.tests.factories import UserFactory
+
+import logging
+logger = logging.getLogger(__name__)
 
 
 class TestCase(TransactionTestCase):
@@ -77,3 +83,34 @@ def permissions_for(model, app=None):
     """Generate permissions based"""
     return [Permission.objects.get(codename='{}_{}'.format(p, model))
             for p in ('add', 'change', 'delete')]
+
+
+def jswait(driver, timeout, js_expr, expected_value):
+    return WebDriverWait(driver, timeout).until(
+        lambda *args: jsget(driver, js_expr) == expected_value
+    )
+
+def jsget(driver, js_expr):
+    ret_js_expr = 'return ' + js_expr
+    return driver.execute_script(ret_js_expr)
+
+
+def check_browser_errors(driver):
+    """
+    Checks browser for errors, returns a list of errors
+    :param driver:
+    :return:
+    """
+    try:
+        browserlogs = driver.get_log('browser')
+    except (ValueError, WebDriverException) as e:
+        # Some browsers does not support getting logs
+        logger.debug("Could not get browser logs for driver %s due to exception: %s",
+                     driver, e)
+        return []
+
+    errors = []
+    for entry in browserlogs:
+        # if entry['level'] == 'SEVERE':
+        errors.append(entry)
+    return errors

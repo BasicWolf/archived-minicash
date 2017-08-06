@@ -1,3 +1,5 @@
+from django.urls import reverse
+
 from behave import given, when, then
 
 from minicash.auth.tests.factories import UserFactory
@@ -14,10 +16,10 @@ def step_anon_user(context):
 @when('I submit a valid login page')
 def step_submit_login_page(context):
     br = context.browser
-    br.get(context.base_url + '/login/')
+    br.get(context.base_url + reverse('login'))
 
-    # Checks for Cross-Site Request Forgery protection input
-    assert br.find_element_by_name('csrfmiddlewaretoken').is_enabled()
+    context.test.assertTrue(br.find_element_by_name('csrfmiddlewaretoken').is_enabled(),
+                            'CSRF protection is not enabled')
 
     # Fill login form and submit it (valid version)
     br.find_element_by_name('username').send_keys('foo')
@@ -28,9 +30,7 @@ def step_submit_login_page(context):
 @then('I am redirected to the root')
 def step_redirect_to_root(context):
     br = context.browser
-
-    # Checks success status
-    assert br.current_url.endswith('/')
+    context.test.assertTrue(br.current_url.endswith('/'), f'Current URL is {br.current_url}')
 
 
 @when('I submit an invalid login page')
@@ -39,8 +39,8 @@ def step_submit_invalid_login_page(context):
 
     br.get(context.base_url + '/login/')
 
-    # Checks for Cross-Site Request Forgery protection input (once again)
-    assert br.find_element_by_name('csrfmiddlewaretoken').is_enabled()
+    context.test.assertTrue(br.find_element_by_name('csrfmiddlewaretoken').is_enabled(),
+                            'CSRF protection is not enabled')
 
     # Fill login form and submit it (invalid version)
     br.find_element_by_name('username').send_keys('foo')

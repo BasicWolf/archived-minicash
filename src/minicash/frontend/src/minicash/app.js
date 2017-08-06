@@ -13,11 +13,9 @@ import Radio from 'backbone.radio';
 import * as models from './models';
 import * as utils from './utils';
 import * as views from './views';
-
 import {ReportTab} from './tabs/tab_report';
-
 import {TabsRouter} from './routers';
-
+import {TabsController} from './controllers';
 
 let recordsChannel = Radio.channel('records');
 
@@ -25,8 +23,12 @@ let recordsChannel = Radio.channel('records');
 export default Mn.Application.extend({
     /* Public interface */
     /* ================ */
-    status: utils.status,
-    notify: utils.notifier,
+    started: false,         // indicates whether application has started
+    status: utils.status,   // shortcut to status
+    notify: utils.notifier, // shortcut to notifications
+    controllers: null,      // placeholder for controllers
+    collections: null,      // placeholder for assets and tags collections
+    CONTEXT: null,          // placeholder for server context
 
     url: function(name, args={}) {
         let url = this.CONTEXT.urls[name].url;
@@ -37,12 +39,14 @@ export default Mn.Application.extend({
         return this.CONTEXT.settings.STATIC_URL + url;
     },
 
-
     /* App initialization and internals */
     /* ================================ */
     initialize: function() {
         this.CONTEXT = window.minicash.CONTEXT;
         this._initCollections();
+        this._initControllers();
+        this._initRouters();
+        this._bootstrapData();
     },
 
     _initCollections: function() {
@@ -57,11 +61,17 @@ export default Mn.Application.extend({
         });
     },
 
-    onStart: function() {
-        this._bootstrapData();
-        this.tabs_router = new TabsRouter();
+    _initControllers: function() {
+        this.controllers = {
+            tabs: new TabsController,
+        };
+    },
+
+    _initRouters: function() {
+        this._routers = {
+            tabs: new TabsRouter({controller: this.controllers.tabs}),
+        };
         Bb.history.start({pushState: true});
-        this.tabs_router.navigate(this.CONTEXT.route, {trigger: true});
     },
 
     _bootstrapData: function() {
@@ -69,4 +79,9 @@ export default Mn.Application.extend({
         this.collections.tags.reset(this.CONTEXT.bootstrap.tags);
     },
 
+    onStart: function() {
+        let initialRoute = this.CONTEXT.route || 'home';
+        this._routers.tabs.navigate(initialRoute, {trigger: true});
+        this.started = true;
+    },
 });

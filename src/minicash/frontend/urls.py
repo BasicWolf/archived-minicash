@@ -22,5 +22,6 @@ urlpatterns = [
     url(r'^jsurls.js$', jsurls, name='jsurls'),
 
     url(r'^minicash/', include('minicash.core.urls')),
-    url(r'^$', views.index, {'route': 'tabs/home'}, name='index'),
+    url(r'^home/$', views.index, {'route': 'home'}),
+    url(r'^$', views.index, {'route': ''}, name='index'),
 ]

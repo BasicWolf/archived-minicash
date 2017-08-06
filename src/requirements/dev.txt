@@ -16,4 +16,5 @@ pylint
 pylint-django
 safety
 selenium
+splinter
 werkzeug

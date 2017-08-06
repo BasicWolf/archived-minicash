@@ -1,2 +1,2 @@
 [behave]
-paths=minicash/auth/tests/features/
+paths=minicash/frontend/tests/features/

@@ -1,9 +1,11 @@
 .env
 pylint.out
 ghostdriver.log
+geckodriver.log
 webpack.config.release.js
 
 node_modules/
+
 # --------- Python ---------- #
 # Byte-compiled / optimized / DLL files
 __pycache__/
