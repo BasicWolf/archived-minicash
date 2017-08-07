@@ -1,4 +1,5 @@
 import logging
+import types
 from functools import partial
 from typing import Any, Dict, Type
 
@@ -16,7 +17,8 @@ logger = logging.getLogger(__name__)
 
 
 def before_all(context):
-    context.config.setup_logging()
+    if not context.config.log_capture:
+        logging.basicConfig(level=logging.DEBUG)
 
     context.browser = webdriver.Firefox()
     context.browser.implicitly_wait(1)
@@ -27,6 +29,7 @@ def before_all(context):
     context.jsget = partial(jsget, context.browser)
     context.jswait = partial(jswait, context.browser)
     context.url = partial(url, context)
+    context.__class__.item = property(_get_item)
 
 
 def after_all(context):
@@ -61,6 +64,17 @@ def authenticate_user(context, user) -> None:
     session_cookie = _create_session_cookie(user)
     br.add_cookie(session_cookie)
     br.refresh()
+
+
+def _get_item(context) -> Dict:
+    table = getattr(context, 'table', [])
+    if table:
+        item = table[0]
+        ret = {name: item[name] for name in item.headings}
+    else:
+        ret = {}
+
+    return ret
 
 
 def _create_session_cookie(user: Type[User]) -> Dict[str, Any]:

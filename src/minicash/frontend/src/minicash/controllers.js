@@ -27,16 +27,12 @@ export let TabsController = Mn.Object.extend({
         this.tabbarView.render();
     },
 
-    openTab: function(tabAlias, options) {
+    openTab: function(tabAlias, tabOptions={}, options={}) {
+        options = _.extend({show: true}, options);
+
         let tabtype = tabAliasToType[tabAlias];
-
-        options = _.extend({
-            source: null,
-            manager: this,
-        }, options);
-
-        let tabModel = new tabtype(options);
-        this.tabbarView.add(tabModel, {show: true});
+        let tabModel = new tabtype(tabOptions);
+        this.tabbarView.add(tabModel, options);
     },
 
     openHome: function() {

@@ -1,37 +1,39 @@
 from behave import given, when, then
 
+from django.contrib.auth import get_user_model
 from django.urls import reverse
 
 from minicash.auth.tests.factories import UserFactory
 
 
-@given('an anonymous user')
-def step_anon_user(context):
-    # Creates a dummy user for our tests (user is not authenticated at this point)
-    u = UserFactory(username='foo', email='foo@example.com')
-    u.set_password('bar')
-    u.save()
+@given('a user')
+def a_user(context):
+    UserFactory.create(**context.item)
 
 
 @given('an authenticated user')
 def step_authenticated_user(context):
-    u = UserFactory(username='foo', email='foo@example.com')
-    u.set_password('bar')
-    u.save()
-    context.authenticate_user(u)
+    user = UserFactory.create(**context.item)
+    context.authenticate_user(user)
 
 
-@when('I submit a valid login page')
-def step_submit_login_page(context):
+@given('an authenticated user ("{pk}")')
+def step_authenticated_user_pk(context, pk):
+    user = get_user_model().objects.get(pk)
+    context.authenticate_user(user)
+
+
+@when('I submit a login page ("{username}", "{password}")')
+def step_submit_login_page(context, username, password):
     br = context.browser
-    br.get(context.base_url + reverse('login'))
+    br.get(context.url(reverse('login')))
 
     context.test.assertTrue(br.find_element_by_name('csrfmiddlewaretoken').is_enabled(),
                             'CSRF protection is not enabled')
 
     # Fill login form and submit it (valid version)
-    br.find_element_by_name('username').send_keys('foo')
-    br.find_element_by_name('password').send_keys('bar')
+    br.find_element_by_name('username').send_keys(username)
+    br.find_element_by_name('password').send_keys(password)
     br.find_element_by_name('submit').click()
 
 

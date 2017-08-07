@@ -135,8 +135,6 @@ export let TabbarView = Mn.View.extend({
     },
 
     add: function(tabModel, options) {
-        options = _.extend({'show': false}, options);
-
         let showTabModel = tabModel;
         let shouldAdd = true;
 

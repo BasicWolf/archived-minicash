@@ -84,8 +84,10 @@ export default Mn.Application.extend({
     },
 
     _startNavigation: function() {
+        // ensure that HomeTab is always loaded as the first tabe
+        this.controllers.tabs.openTab('home', {}, {show: false});
+
         Bb.history.start({pushState: true});
-        let initialRoute = this.CONTEXT.route || 'home';
-        this._routers.tabs.navigate(initialRoute, {trigger: true});
+        this._routers.tabs.navigate(this.CONTEXT.route, {trigger: true});
     }
 });
