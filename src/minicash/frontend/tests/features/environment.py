@@ -1,5 +1,5 @@
 import logging
-import types
+import time
 from functools import partial
 from typing import Any, Dict, List, Type
 
@@ -26,11 +26,13 @@ def before_all(context):
 
     # monkey-patch context with utility functions
     context.authenticate_user = partial(authenticate_user, context)
-    context.jsget = partial(jsget, context.browser)
-    context.jswait = partial(jswait, context.browser)
-    context.url = partial(url, context)
+    context.get_active_tab = partial(get_active_tab, context.browser)
     context.__class__.item = property(_get_item)
     context.__class__.items = property(_get_items)
+    context.jsget = partial(jsget, context.browser)
+    context.jswait = partial(jswait, context.browser)
+    context.sleep = time.sleep
+    context.url = partial(url, context)
 
 
 def after_all(context):
@@ -56,6 +58,12 @@ def url(context, path):
 def jsget(br, js_expr):
     ret_js_expr = 'return ' + js_expr
     return br.execute_script(ret_js_expr)
+
+
+def get_active_tab(br):
+    tab_name = jsget(br, 'minicash.controllers.tabs.getActiveTab().get("name")')
+    tab_el = br.find_element_by_id(f'tab_{tab_name}')
+    return tab_el
 
 
 def authenticate_user(context, user) -> None:

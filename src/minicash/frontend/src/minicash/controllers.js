@@ -39,7 +39,7 @@ export let TabsController = Mn.Object.extend({
         this.openTab('home');
     },
 
-    getCurrentTab: function() {
+    getActiveTab: function() {
         return this.tabbarView.collection.getFirstChosen();
     }
 

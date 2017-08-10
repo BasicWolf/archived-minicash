@@ -79,7 +79,7 @@ def build_jsurls(**kwargs):
             continue
 
         url_pattern, pattern_args = pattern[0][0]
-        urls[name_or_callable] = {'url': url_pattern, 'args': pattern_args}
+        urls[name_or_callable] = {'url': '/' + url_pattern, 'args': pattern_args}
     return {'urls': urls}
 
 
