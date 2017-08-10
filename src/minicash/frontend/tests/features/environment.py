@@ -1,7 +1,7 @@
 import logging
 import types
 from functools import partial
-from typing import Any, Dict, Type
+from typing import Any, Dict, List, Type
 
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
@@ -30,6 +30,7 @@ def before_all(context):
     context.jswait = partial(jswait, context.browser)
     context.url = partial(url, context)
     context.__class__.item = property(_get_item)
+    context.__class__.items = property(_get_items)
 
 
 def after_all(context):
@@ -75,6 +76,14 @@ def _get_item(context) -> Dict:
         ret = {}
 
     return ret
+
+
+def _get_items(context) -> List[Dict]:
+    table = getattr(context, 'table', [])
+    return [
+        {name: item[name] for name in item.headings}
+        for item in table
+    ]
 
 
 def _create_session_cookie(user: Type[User]) -> Dict[str, Any]:
