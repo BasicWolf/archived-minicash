@@ -234,13 +234,21 @@ export let TooltipBehavior = Mn.Behavior.extend({
 
 
 // generateId :: Integer -> String
-export function generateId(len) {
+export let generateId = (function () {
+    let counter = 0;
+    return function internal() {
+        counter++;
+        return counter;
+    };
+})();
+
+export function generateRandomId(len) {
+    len = len || 40;
     let dec2hex = (dec) => dec.toString(16);
-    let arr = new Uint8Array((len || 40) / 2);
+    let arr = new Uint8Array((len) / 2);
     window.crypto.getRandomValues(arr);
     return Array.from(arr).map(dec2hex).join('');
 }
-
 
 export function splitToNonEmpty(s, splitter) {
     return s.split(splitter).filter((s) => s);

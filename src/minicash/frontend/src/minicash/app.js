@@ -39,6 +39,11 @@ export default Mn.Application.extend({
         return this.CONTEXT.settings.STATIC_URL + url;
     },
 
+    navigate: function(fragment, options) {
+        options = _.extend({trigger: true}, options);
+        return Bb.history.navigate(fragment, options);
+    },
+
     /* App initialization and internals */
     /* ================================ */
     initialize: function() {

@@ -2,8 +2,8 @@ Feature: Login form
 
   Scenario: Access the login form
     Given a user
-        | username | password |
-        | alex     | mypasswd |
+      | username | password |
+      | alex     | mypasswd |
     When I submit a login page ("alex", "mypasswd")
     Then the result page lands on "home" tab
 

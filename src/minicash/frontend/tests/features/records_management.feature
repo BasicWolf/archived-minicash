@@ -8,7 +8,7 @@ Feature: Records management
       | pk  | owner | name | balance | initial_balance |
       | 200 | 200   | CA   | 1200    | 1200            |
     When I navigate to "record" tab
-    When I fill record form with data
+    When I fill record tab with data
       | Mode      | Date/Time        | From | Tags        | Description   |
       | Expense   | 07/08/2017 22:18 | 200  | hello world | some descript |
     # When I click `Save button`
