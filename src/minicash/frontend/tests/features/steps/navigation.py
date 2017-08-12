@@ -1,3 +1,5 @@
+from moneyed import Money
+
 from behave import then, when
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
@@ -16,16 +18,14 @@ def step_navigate_to_root(context):
 @when('I navigate to "{tab_name}" tab')
 def step_nagivate_to_tab(context, tab_name):
     br = context.browser
-    br.get(context.url(reverse('tabs_route', args=('record', ))))
+    br.get(context.minicash.url_reverse('tabs_route', args=('record', )))
 
 
 @when('I fill record tab with data')
 def fill_record_with_data(context):
-    br = context.browser
-    test = context.test
     item = context.item
 
-    tab_el = context.get_active_tab()
+    tab_el = context.minicash.get_active_tab()
     form = tab_el.find_element_by_xpath('.//form')
 
     # mode
@@ -59,12 +59,12 @@ def fill_record_with_data(context):
 
 @when('I click save button')
 def step_click_button(context):
-    save_btn = context.get_active_tab().find_element_by_xpath('.//button[@data-spec="save"]')
+    save_btn = context.minicash.get_active_tab().find_element_by_xpath('.//button[@data-spec="save"]')
     save_btn.click()
 
 
 @then('"{tab_name}" tab is activated')
-def tab_is_activated(context, tab_name):
+def step_tab_is_activated(context, tab_name):
     context.jswait(5, 'minicash.controllers.tabs.getActiveTab().get("name")', tab_name)
 
 
@@ -72,3 +72,15 @@ def tab_is_activated(context, tab_name):
 def step_result_page_lands_on_tab(context, tab_name):
     context.jswait(5, 'minicash.started', True)
     context.jswait('minicash.controllers.tabs.getActiveTab().get("name")', tab_name)
+
+@then('record exist on the backend')
+def step_records_exists_on_backend(context):
+    test = context.test
+    item = context.item
+    record = Record.objects.get(description=item['description'])
+    test.assertEqual(getattr(Record, item['mode']), record.mode)
+    test.assertEqual(item['created_dt'],
+                     record.created_dt.strftime(context.user.profile.date_time_format))
+    currency = record.delta.currency
+    test.assertAlmostEqual(Money(item['delta'], currency), record.delta, places=2)
+    test.assertEqual(item['tags'], ' '.join(tag.name for tag in record.tags.all()))

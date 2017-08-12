@@ -25,15 +25,12 @@ def before_all(context):
     context.server_url = 'http://localhost:8000'
 
     # monkey-patch context with utility functions
-    context.authenticate_user = partial(authenticate_user, context)
-    context.get_active_tab = partial(get_active_tab, context.browser)
     context.__class__.item = property(_get_item)
     context.__class__.items = property(_get_items)
     context.jsget = partial(jsget, context.browser)
     context.jswait = partial(jswait, context.browser)
     context.sleep = time.sleep
-    context.url = partial(url, context)
-
+    context.minicash = Minicash(context)
 
 def after_all(context):
     # Explicitly quits the browser, otherwise it won't once tests are done
@@ -45,34 +42,44 @@ def before_feature(context, feature):
     pass
 
 
+class Minicash:
+    def __init__(self, context):
+        self.context = context
+        self.br = context.browser
+
+    def authenticate_user(self, user) -> None:
+        """Authenticates the user on a WebDriver instance"""
+        context = self.context
+        br = self.br
+
+        br.get(self.url(reverse('logout')))
+        session_cookie = _create_session_cookie(user)
+        br.add_cookie(session_cookie)
+        br.refresh()
+        context.user = user
+
+    def get_active_tab(self):
+        br = self.br
+        tab_name = jsget(br, 'minicash.controllers.tabs.getActiveTab().get("name")')
+        tab_el = br.find_element_by_id(f'tab_{tab_name}')
+        return tab_el
+
+    def url(self, path):
+        return f'{self.context.base_url}{path}'
+
+    def url_reverse(self, *args, **kwargs):
+        return self.url(reverse(*args, **kwargs))
+
+
 def jswait(br, timeout, js_expr, expected_value):
     return WebDriverWait(br, timeout).until(
         lambda *args: jsget(br, js_expr) == expected_value
     )
 
 
-def url(context, path):
-    return f'{context.base_url}{path}'
-
-
 def jsget(br, js_expr):
     ret_js_expr = 'return ' + js_expr
     return br.execute_script(ret_js_expr)
-
-
-def get_active_tab(br):
-    tab_name = jsget(br, 'minicash.controllers.tabs.getActiveTab().get("name")')
-    tab_el = br.find_element_by_id(f'tab_{tab_name}')
-    return tab_el
-
-
-def authenticate_user(context, user) -> None:
-    """Authenticates the user on a WebDriver instance"""
-    br = context.browser
-    br.get(context.url(reverse('logout')))
-    session_cookie = _create_session_cookie(user)
-    br.add_cookie(session_cookie)
-    br.refresh()
 
 
 def _get_item(context) -> Dict:

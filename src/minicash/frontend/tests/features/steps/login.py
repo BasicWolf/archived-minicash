@@ -1,7 +1,6 @@
 from behave import given, when, then
 
 from django.contrib.auth import get_user_model
-from django.urls import reverse
 
 from minicash.auth.tests.factories import UserFactory
 
@@ -14,19 +13,19 @@ def a_user(context):
 @given('an authenticated user')
 def step_authenticated_user(context):
     user = UserFactory.create(**context.item)
-    context.authenticate_user(user)
+    context.minicash.authenticate_user(user)
 
 
 @given('an authenticated user ("{pk}")')
 def step_authenticated_user_pk(context, pk):
     user = get_user_model().objects.get(pk)
-    context.authenticate_user(user)
+    context.minicash.authenticate_user(user)
 
 
 @when('I submit a login page ("{username}", "{password}")')
 def step_submit_login_page(context, username, password):
     br = context.browser
-    br.get(context.url(reverse('login')))
+    br.get(context.minicash.url_reverse('login'))
 
     context.test.assertTrue(br.find_element_by_name('csrfmiddlewaretoken').is_enabled(),
                             'CSRF protection is not enabled')

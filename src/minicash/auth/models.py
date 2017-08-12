@@ -43,6 +43,10 @@ class UserProfile(models.Model):
         return backend_format.split(' ')[1]
 
     @property
+    def date_time_format(self):
+        return DT_FORMATS[self.dt_format].backend_format
+
+    @property
     def date_format_frontend(self):
         frontend_format = self.get_dt_format_display()
         return frontend_format.split(' ')[0]
