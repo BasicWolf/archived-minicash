@@ -22,7 +22,9 @@ export let ReportTab = TabModel.extend({
             viewClass: ReportTabPanelView,
         });
     },
- });
+}, {
+    alias: 'report'
+});
 
 
 let ReportTabPanelView = TabPanelView.extend({

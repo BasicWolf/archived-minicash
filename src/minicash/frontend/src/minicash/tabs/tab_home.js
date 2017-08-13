@@ -4,11 +4,6 @@
 
 import Bb from 'backbone';
 import {TabPanelView, TabModel} from 'components/tabbar';
-import {RecordsTab} from './tab_records';
-import {RecordTab} from './tab_record';
-import {AssetsTab} from './tab_assets';
-import {ReportTab} from './tab_report';
-import {TagsTab} from './tab_tags';
 
 
 export let HomeTab = TabModel.extend({
@@ -44,10 +39,10 @@ export let HomeTabPanelView = TabPanelView.extend({
     },
 
     events: {
-        'click @ui.allRecordsBtn': () => openTab(RecordsTab),
+        'click @ui.allRecordsBtn': () => minicash.navigate('tabs/records'),
         'click @ui.newRecordBtn': () => minicash.navigate('tabs/record'),
-        'click @ui.assetsBtn': () => openTab(AssetsTab),
-        'click @ui.reportsBtn': () => openTab(ReportTab),
-        'click @ui.tagsBtn': () => openTab(TagsTab),
+        'click @ui.assetsBtn': () => minicash.navigate('tabs/assets'),
+        'click @ui.reportsBtn': () => minicash.navigate('tabs/report'),
+        'click @ui.tagsBtn': () => minicash.navigate('tabs/tags')
     },
 }); // HomeTabPanelView

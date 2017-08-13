@@ -15,6 +15,8 @@ from django.urls import reverse
 
 logger = logging.getLogger(__name__)
 
+TIMEOUT = 5
+
 
 def before_all(context):
     if not context.config.log_capture:
@@ -71,10 +73,15 @@ class Minicash:
         return self.url(reverse(*args, **kwargs))
 
 
-def jswait(br, timeout, js_expr, expected_value):
-    return WebDriverWait(br, timeout).until(
-        lambda *args: jsget(br, js_expr) == expected_value
-    )
+def jswait(br, js_expr, test, timeout=TIMEOUT):
+    def _wait(*args):
+        val = jsget(br, js_expr)
+        if callable(test):
+            return test(val)
+        else:
+            return test == val
+
+    return WebDriverWait(br, timeout).until(_wait)
 
 
 def jsget(br, js_expr):

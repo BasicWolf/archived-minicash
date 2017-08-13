@@ -24,7 +24,7 @@ urlpatterns = [
     url(r'^jsurls.js$', jsurls,
         name='jsurls'),
 
-    url(r'^tabs/(?P<suffix>\w+)$', RouteView.as_view(), {'route': 'tabs/'},
+    url(r'^tabs/(?P<suffix>[\w/]+)$', RouteView.as_view(), {'route': 'tabs/'},
         name='tabs_route'),
 
     url(r'^$', RouteView.as_view(), {'route': ''},

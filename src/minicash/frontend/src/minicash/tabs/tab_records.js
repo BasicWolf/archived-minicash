@@ -27,6 +27,8 @@ export let RecordsTab = TabModel.extend({
             viewClass: RecordsTabPanelView,
         });
     },
+}, {
+    alias: 'records'
 });
 
 
@@ -74,7 +76,7 @@ let RecordsTabPanelView = TabPanelView.extend({
     },
 
     startNewRecord: function() {
-        minicash.tabbar.openTab(RecordTab);
+        minicash.navigate('tabs/record');
     },
 
     deleteSelectedRecords: function() {
@@ -188,9 +190,7 @@ let RecordRowView = Mn.View.extend({
     },
 
     editRecord: function() {
-        minicash.tabbar.openTab(RecordTab, {
-            record: this.model
-        });
+        minicash.navigate(`tabs/record/${this.model.id}`);
     },
 });
 

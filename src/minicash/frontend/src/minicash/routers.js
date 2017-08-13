@@ -8,5 +8,6 @@ export let TabsRouter = Mn.AppRouter.extend({
     appRoutes: {
         '': 'openHome',
         'tabs/:tabName': 'openTab',
+        'tabs/:tabName/:id': 'openTab'
     },
 });

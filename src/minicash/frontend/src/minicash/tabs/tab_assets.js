@@ -19,6 +19,8 @@ export let AssetsTab = TabModel.extend({
             viewClass: AssetsTabPanelView,
         });
     },
+}, {
+    alias: 'assets'
 });
 
 
@@ -48,7 +50,7 @@ let AssetsTabPanelView = TabPanelView.extend({
     },
 
     startNewAsset: function() {
-        minicash.tabbar.openTab(AssetTab, {adding: true});
+        minicash.navigate('tabs/asset');
     },
 
     deleteSelectedAssets: function() {
@@ -160,8 +162,6 @@ let AssetRowView = Mn.View.extend({
     },
 
     editAsset: function() {
-        minicash.tabbar.openTab(AssetTab, {
-            asset: this.model
-        });
+        minicash.navigate(`tabs/asset/${this.model.id}`);
     },
 });

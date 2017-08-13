@@ -9,6 +9,11 @@ from django.urls import reverse
 from minicash.core.models import Record
 
 
+@when('I wait for "{timeout}" seconds')
+def step_wait(context, timeout):
+    context.sleep(int(timeout))
+
+
 @when('I navigate to root')
 def step_navigate_to_root(context):
     br = context.browser
@@ -65,13 +70,15 @@ def step_click_button(context):
 
 @then('"{tab_name}" tab is activated')
 def step_tab_is_activated(context, tab_name):
-    context.jswait(5, 'minicash.controllers.tabs.getActiveTab().get("name")', tab_name)
+    context.jswait('minicash.controllers.tabs.getActiveTab().get("name")',
+                   lambda val: val.startswith(tab_name))
 
 
 @then('the result page lands on "{tab_name}" tab')
 def step_result_page_lands_on_tab(context, tab_name):
-    context.jswait(5, 'minicash.started', True)
-    context.jswait('minicash.controllers.tabs.getActiveTab().get("name")', tab_name)
+    context.jswait('minicash.started', True)
+    step_tab_is_activated(context, tab_name)
+
 
 @then('record exist on the backend')
 def step_records_exists_on_backend(context):

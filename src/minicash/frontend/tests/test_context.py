@@ -11,7 +11,8 @@ class ContextTestCase(WithOwnerTestMixin, TestCase):
         WithOwnerTestMixin._setUp(self)
 
         self.context = build_context(
-            user=self.user
+            user=self.user,
+            route='/',
         )
 
     def test_record_modes(self):

@@ -20,10 +20,17 @@ export let RecordTab = tabbar.TabModel.extend({
 
         return _.extend(parentDefaults, {
             title: 'New record',
-            name: `${RecordTab.alias}_${utils.generateId()}`,
+            name: `${this.alias}_${utils.generateId()}`,
             viewClass: RecordTabPanelView,
-            record: null,
         });
+    },
+
+    fetchData: function(itemId) {
+        let record = new models.Record({pk: itemId});
+        let promise = record.fetch().promise();
+
+        promise.then(() => this.set('record', record));
+        return promise;
     }
 }, {
     alias: 'record'

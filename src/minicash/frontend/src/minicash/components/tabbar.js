@@ -1,6 +1,6 @@
 'use strict';
 
-/* global _,Backbone,require, */
+/* global _,$,Backbone,require, */
 
 import Bb from 'backbone';
 import Mn from 'backbone.marionette';
@@ -22,8 +22,17 @@ export let TabModel = Bb.Model.extend({
             permanent: false,        // false - allow closing the tab
             singleInstance: true,    // true - only one instance of this tab in tabbar
             viewClass: null,
+
         };
+    },
+
+    fetchData: function() {
+        let emptyDfd = $.Deferred();
+        emptyDfd.resolve();
+        return emptyDfd.promise();
     }
+}, {
+    alias: 'basetab'
 });
 
 
