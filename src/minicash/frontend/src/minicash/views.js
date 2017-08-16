@@ -1,7 +1,11 @@
-import Hb from 'handlebars/runtime';
-import * as models from 'minicash/models';
+'use strict';
 
-/* global minicash,tr */
+import Hb from 'handlebars/runtime';
+
+import * as models from 'minicash/models';
+import {tr} from 'minicash/utils';
+
+/* global minicash */
 
 /* Handlebars helpers */
 /*--------------------*/

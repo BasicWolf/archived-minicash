@@ -1,13 +1,15 @@
 'use strict';
 
-/* global _,$,minicash,require,tr */
+/* global _,$,minicash,require */
 
 import Hb from 'handlebars/runtime';
 import Mn from 'backbone.marionette';
 import * as bootbox from 'bootbox';
 
-import {TabPanelView, TabModel} from 'components/tabbar';
+import {TabPanelView, TabModel} from 'minicash/components/tabbar';
+import {tr} from 'minicash/utils';
 import {TagTab} from './tab_tag';
+
 
 export let TagsTab = TabModel.extend({
     defaults: function() {
@@ -54,7 +56,7 @@ let TagsTabPanelView = TabPanelView.extend({
     },
 
     startNewTag: function() {
-        minicash.tabbar.openTab(TagTab, {adding: true});
+        minicash.navigateTo('new_tag');
     },
 
     deleteSelectedTags: function() {
@@ -163,8 +165,6 @@ let TagRowView = Mn.View.extend({
     },
 
     editTag: function() {
-        minicash.tabbar.openTab(TagTab, {
-            tag: this.model
-        });
+        minicash.navigateTo('tags', {id: this.model.id});
     },
 });

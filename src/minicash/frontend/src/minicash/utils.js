@@ -275,6 +275,18 @@ export function compareMoments(momentA, momentB) {
 }
 
 
+export function tr(s) {
+    // Temporal stub for translation function
+    return s;
+}
+
+
+export function rejectedPromise() {
+    let emptyDfd = $.Deferred();
+    emptyDfd.reject.apply(null, arguments);
+    return emptyDfd.promise();
+};
+
 export function getLocale() {
     let supported = ['en'];
     let defaultLang = 'en';

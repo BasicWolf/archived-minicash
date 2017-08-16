@@ -10,5 +10,4 @@ document.addEventListener('DOMContentLoaded', () => {
     // the same object (see App constructor for details).
     window.minicash = new App();
     window.minicash.start();
-    window.xxxx = 'abc';
 });

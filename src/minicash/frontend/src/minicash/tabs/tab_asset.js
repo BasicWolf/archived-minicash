@@ -1,19 +1,19 @@
 'use strict';
 
-/* global $,_,minicash,require,tr */
+/* global $,_,minicash,require */
+
+import Radio from 'backbone.radio';
 
 import * as models from 'minicash/models';
 import * as utils from 'minicash/utils';
+import {tr} from 'minicash/utils';
 import {TabPanelView, TabModel} from 'components/tabbar';
 
 
-export let AssetTab = TabModel.extend({
-    initialize: function() {
-        let title = this.get('assetId') ? tr('Edit asset') : tr('New asset');
-        this.set('title', title);
-        TabModel.prototype.initialize.apply(this, arguments);
-    },
+let assetsChannel = Radio.channel('assets');
 
+
+export let AssetTab = TabModel.extend({
     defaults: function() {
         let parentDefaults = TabModel.prototype.defaults.apply(this, arguments);
 
@@ -21,6 +21,12 @@ export let AssetTab = TabModel.extend({
             viewClass: AssetTabPanelView,
             assetId: null
         });
+    },
+
+    initialize: function() {
+        let title = this.get('assetId') ? tr('Edit asset') : tr('New asset');
+        this.set('title', title);
+        TabModel.prototype.initialize.apply(this, arguments);
     },
 });
 
@@ -52,6 +58,8 @@ export let AssetTabPanelView = TabPanelView.extend({
             asset.fetch().then(() => {
                 this.model.set('asset', asset);
             });
+        } else {
+            this.model.set('asset', new models.Asset());
         }
     },
 
@@ -90,35 +98,26 @@ export let AssetTabPanelView = TabPanelView.extend({
     saveForm: function() {
         let saveData = this._collectFormData();
         if (_.isEmpty(saveData)) {
-            return;
+            return utils.rejectedPromise();
         }
 
-        let dfd = $.Deferred(() => {
-            minicash.status.show();
-        });
-        dfd.then(() => {
+        minicash.status.show(tr('Saving asset'));
+        this.lockControls();
+
+        let asset = this.model.get('asset');
+        let saveDfd = asset.save(saveData, {wait: true});
+
+        saveDfd.done(() => {
+            assetsChannel.trigger('model:save', asset);
             this.model.destroy();
-        }).fail((errors) => {
-            this.validator.showErrors(errors);
+        }).fail((model, response) => {
+            this.validator.showErrors(response.responseJSON);
             this.unlockControls();
         }).always(() => {
             minicash.status.hide();
         });
 
-        let saveOptions = {
-            wait: true,
-            success: () => dfd.resolve(),
-            error: (model, response, options) => {
-                dfd.reject(response.responseJSON);
-            },
-        };
-
-        let asset = this.model.get('asset');
-        if (asset) {
-            asset.save(saveData, saveOptions);
-        } else {
-            minicash.collections.assets.create(saveData, saveOptions);
-        }
+        return saveDfd.promise();
     },
 
     _collectFormData: function() {

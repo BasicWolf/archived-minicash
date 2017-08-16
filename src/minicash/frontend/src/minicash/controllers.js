@@ -13,7 +13,7 @@ import {RecordTab} from 'minicash/tabs/tab_record';
 import {RecordsTab} from 'minicash/tabs/tab_records';
 import {ReportTab} from 'minicash/tabs/tab_report';
 import {TagsTab} from 'minicash/tabs/tab_tags';
-
+import {TagTab} from 'minicash/tabs/tab_tag';
 
 
 let allTabsTypes = [
@@ -69,6 +69,30 @@ export let TabsController = Mn.Object.extend({
         } else {
             this.openTab(new AssetsTab());
         }
+    },
+
+    new_asset: function(newAssetId) {
+        if (!newAssetId) {
+            newAssetId = utils.generateId();
+        }
+        let assetTab = new AssetTab({route: minicash.reverse('new_asset', {id: newAssetId})});
+        this.openTab(assetTab);
+    },
+
+    tags: function(tagId) {
+        if (tagId) {
+            this.openTab(new TagTab({tagId: tagId}));
+        } else {
+            this.openTab(new TagsTab());
+        }
+    },
+
+    new_tag: function(newTagId) {
+        if (!newTagId) {
+            newTagId = utils.generateId();
+        }
+        let tagTab = new TagTab({route: minicash.reverse('new_tag', {id: newTagId})});
+        this.openTab(tagTab);
     },
 
     getActiveTab: function() {

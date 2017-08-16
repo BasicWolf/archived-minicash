@@ -5,8 +5,10 @@ import Hb from 'handlebars/runtime';
 import Mn from 'backbone.marionette';
 import * as bootbox from 'bootbox';
 
-import {TabPanelView, TabModel} from 'components/tabbar';
+import {tr} from 'minicash/utils';
+import {TabPanelView, TabModel} from 'minicash/components/tabbar';
 import {AssetTab} from './tab_asset';
+
 
 export let AssetsTab = TabModel.extend({
     defaults: function() {

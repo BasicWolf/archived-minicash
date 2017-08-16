@@ -9,6 +9,7 @@ import Mn from 'backbone.marionette';
 
 import * as models from 'minicash/models';
 import * as utils from 'minicash/utils';
+import {tr} from 'minicash/utils';
 
 
 export let TagsPieWidget = models.ReportWidget.extend({

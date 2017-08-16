@@ -1,22 +1,19 @@
 'use strict';
 
-/* global $,_,minicash,require,tr */
+/* global $,_,minicash,require */
 
-import {TabPanelView, TabModel} from 'minicash/components/tabbar';
+import Radio from 'backbone.radio';
+
+import * as models from 'minicash/models';
 import * as utils from 'minicash/utils';
+import {TabPanelView, TabModel} from 'minicash/components/tabbar';
+import {tr} from 'minicash/utils';
+
+
+let tagsChannel = Radio.channel('tags');
 
 
 export let TagTab = TabModel.extend({
-    constructor: function(attributes) {
-        if (attributes.adding) {
-            attributes['title'] = tr('New tag');
-        } else {
-            attributes['title'] = tr('Edit tag');
-        }
-
-        TabModel.apply(this, arguments);
-    },
-
     defaults: function() {
         let parentDefaults = TabModel.prototype.defaults.apply(this, arguments);
 
@@ -27,10 +24,11 @@ export let TagTab = TabModel.extend({
         });
     },
 
-    serializeModel: function() {
-        let renderData = TabPanelView.prototype.serializeModel.apply(this, arguments);
-        return renderData;
-    }
+    initialize: function() {
+        let title = this.get('tagId') ? tr('Edit tag') : tr('New tag');
+        this.set('title', title);
+        TabModel.prototype.initialize.apply(this, arguments);
+    },
 });
 
 
@@ -48,6 +46,22 @@ export let TagTabPanelView = TabPanelView.extend({
     events: {
         'click @ui.saveBtn': 'onSaveBtnClick',
         'click @ui.cancelBtn': 'onCancelBtnClick',
+    },
+
+    modelEvents: {
+        'change:tag': 'render'
+    },
+
+    initialize: function() {
+        // load bound tag
+        if (this.model.get('tagId')) {
+            let tag = new models.Tag({pk: this.model.get('tagId')});
+            tag.fetch().then(() => {
+                this.model.set('tag', tag);
+            });
+        } else {
+            this.model.set('tag', new models.Tag());
+        }
     },
 
     serializeModel: function() {
@@ -82,35 +96,26 @@ export let TagTabPanelView = TabPanelView.extend({
     saveForm: function() {
         let saveData = this._collectFormData();
         if (_.isEmpty(saveData)) {
-            return;
+            return utils.rejectedPromise();
         }
 
-        let dfd = $.Deferred(() => {
-            minicash.status.show();
-        });
-        dfd.then(() => {
+        minicash.status.show(tr('Saving tag'));
+        this.lockControls();
+
+        let tag = this.model.get('tag');
+        let saveDfd = tag.save(saveData, {wait: true});
+
+        saveDfd.done(() => {
+            tagsChannel.trigger('model:save', tag);
             this.model.destroy();
-        }).fail((errors) => {
-            this.validator.showErrors(errors);
+        }).fail((model, response) => {
+            this.validator.showErrors(response.responseJSON);
             this.unlockControls();
         }).always(() => {
             minicash.status.hide();
         });
 
-        let saveOptions = {
-            wait: true,
-            success: () => dfd.resolve(),
-            error: (model, response, options) => {
-                dfd.reject(response.responseJSON);
-            },
-        };
-
-        let tag = this.model.get('tag');
-        if (tag) {
-            tag.save(saveData, saveOptions);
-        } else {
-            minicash.collections.tags.create(saveData, saveOptions);
-        }
+        return saveDfd.promise();
     },
 
     _collectFormData: function() {

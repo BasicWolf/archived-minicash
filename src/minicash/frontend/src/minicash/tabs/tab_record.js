@@ -1,6 +1,6 @@
 'use strict';
 
-/* global $,_,moment,minicash,require,tr */
+/* global $,_,moment,minicash,require */
 
 import 'corejs-typeahead';
 import Decimal from 'decimal.js';
@@ -8,6 +8,7 @@ import Radio from 'backbone.radio';
 
 import * as models from 'minicash/models';
 import * as utils from 'minicash/utils';
+import {tr} from 'minicash/utils';
 import {TabPanelView, TabModel} from 'components/tabbar';
 
 
@@ -19,10 +20,15 @@ export let RecordTab = TabModel.extend({
         let parentDefaults = TabModel.prototype.defaults.apply(this, arguments);
 
         return _.extend(parentDefaults, {
-            title: 'New record',
             viewClass: RecordTabPanelView,
             recordId: null,
         });
+    },
+
+    initialize: function() {
+        let title = this.get('recordId') ? tr('Edit record') : tr('New record');
+        this.set('title', title);
+        TabModel.prototype.initialize.apply(this, arguments);
     },
 });
 
@@ -67,6 +73,8 @@ export let RecordTabPanelView = TabPanelView.extend({
             record.fetch().then(() => {
                 this.model.set('record', record);
             });
+        } else {
+            this.model.set('record', new models.Record());
         }
     },
 
@@ -223,21 +231,15 @@ export let RecordTabPanelView = TabPanelView.extend({
     },
 
     _renderNewRecordSimilarToOld: function() {
-        let currentRecord = this.model.get('record');
-        let newRecordData = _.clone(currentRecord.attributes);
-        delete newRecordData[currentRecord.idAttribute];
-        delete newRecordData['delta'];
-
-        let newRecord = new models.Record(newRecordData);
-
+        let newRecord = this.model.get('record').clone();
+        newRecord.unset(newRecord.idAttribute, {silent: true});
+        newRecord.unset('delta', {silent: true});
         this.model.set('record', newRecord);
-        this.render();
     },
 
     onSaveAddAnotherBtnClick: function() {
         this.saveForm().done(() => {
             this.model.unset('record');
-            this.render();
         });
     },
 
@@ -248,42 +250,29 @@ export let RecordTabPanelView = TabPanelView.extend({
     saveForm: function() {
         let saveData = this._collectFormData();
         if (_.isEmpty(saveData)) {
-            let emptyDfd = $.Deferred();
-            emptyDfd.reject();
-            return emptyDfd.promise();
+            return utils.rejectedPromise();
         }
 
-        let dfd = $.Deferred(() => {
-            this.lockControls();
-        }).fail((errors) => {
-            this.validator.showErrors(errors);
+        minicash.status.show(tr('Saving record'));
+        this.lockControls();
+
+        let opts = {wait: true};
+        let record = this.model.get('record');
+        if (record.id) {
+            opts = _.extend(opts, {patch: true});
+        }
+
+        let saveDfd = record.save(saveData, opts);
+
+        saveDfd.done(() => {
+            // this.model.set('record', record);
+            recordsChannel.trigger('model:save', record);
+        }).fail((_, response) => {
+            this.validator.showErrors(response.responseJSON);
             this.unlockControls();
         });
 
-        let saveOptions = {
-            wait: true,
-            success: (model) => {
-                recordsChannel.trigger('model:save', model);
-                dfd.resolve();
-            },
-            error: (model, response, options) => {
-                dfd.reject(response.responseJSON);
-            },
-        };
-
-        let record = this.model.get('record');
-        if (record && record.id != null) {
-            saveOptions.patch = true;
-            record.save(saveData, saveOptions);
-        } else {
-            let newRecord = new models.Record();
-            let res = newRecord.save(saveData, saveOptions);
-            res.done(() => {
-                this.model.set('record', newRecord);
-            });
-        }
-
-        return dfd.promise();
+        return saveDfd.promise();
     },
 
     _collectFormData: function() {
@@ -300,7 +289,7 @@ export let RecordTabPanelView = TabPanelView.extend({
 
         // mode either from Form Data, or if not available (control disabled, i.e. editing)
         // - from existing record which is being edited
-        let mode = formData.mode || (this.model.get('record') && this.model.get('record').get('mode'));
+        let mode = formData.mode || this.model.get('record').get('mode');
         switch(parseInt(mode)) {
         case RECORD_MODES.INCOME.value: formData.asset_from = null; break;
         case RECORD_MODES.EXPENSE.value: formData.asset_to = null; break;

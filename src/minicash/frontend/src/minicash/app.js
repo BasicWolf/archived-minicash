@@ -1,5 +1,5 @@
 'use strict';
-/* global _,console */
+/* global _,console,window */
 
 // NOTE, these MUST be loaded before anything, because monkey-patching happens here
 import './defaults';
@@ -18,6 +18,8 @@ import {TabsRouter} from './routers';
 import {TabsController} from './controllers';
 
 let recordsChannel = Radio.channel('records');
+let assetsChannel = Radio.channel('assets');
+let tagsChannel = Radio.channel('tags');
 
 
 export default Mn.Application.extend({
@@ -41,7 +43,6 @@ export default Mn.Application.extend({
 
     /* Routes and Navigation */
     /* ===================== */
-
     navigate: function(fragment, options) {
         if (fragment == null || !_.isString(fragment)) {
             console.warning('fragment is invalid: ', fragment);
@@ -86,13 +87,21 @@ export default Mn.Application.extend({
 
     _initCollections: function() {
         this.collections = {
-            assets: new models.Assets,
-            tags: new models.Tags,
+            assets: new models.Assets(),
+            tags: new models.Tags(),
         };
 
         recordsChannel.on('model:save', (model) => {
             this.collections.assets.fetch();
             this.collections.tags.updateFromRecord(model);
+        });
+
+        assetsChannel.on('model:save', (model) => {
+            this.collections.assets.add(model, {merge: true});
+        });
+
+        tagsChannel.on('model:save', (model) => {
+            this.collections.tags.add(model, {merge: true});
         });
     },
 

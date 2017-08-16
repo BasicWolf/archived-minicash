@@ -1,13 +1,12 @@
 'use strict';
 
-/* global _,$,jQuery,minicash,tr,require */
+/* global _,$,jQuery,minicash,require */
 
 import Bb from 'backbone';
 import Decimal from 'decimal.js';
 import Hb from 'handlebars/runtime';
+import {tr} from 'minicash/utils';
 
-// Temporal stub for translation function
-window.tr = function(s) {return  s;};
 
 /*--------- UI overrides -----------*/
 /*==================================*/
@@ -143,14 +142,10 @@ $.ajaxSetup({
                 settings.url = url + '/';
             }
         }
-
-        /*====== UI ======*/
-        minicash.status.show();
     },
 
     complete: function(xhr, status) {
         handleAjaxError(xhr, status);
-        minicash.status.hide();
     },
 });
 

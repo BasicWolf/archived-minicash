@@ -1,6 +1,6 @@
 'use strict';
 
-/* global _,$,minicash,require,tr */
+/* global _,$,minicash,require */
 
 import * as bootbox from 'bootbox';
 import Hb from 'handlebars/runtime';
@@ -11,6 +11,7 @@ import * as models from 'minicash/models';
 import {PaginatorView} from 'minicash/components/paginator';
 import {RecordsFilter} from 'minicash/components/records_filter';
 import {TabPanelView, TabModel} from 'minicash/components/tabbar';
+import {tr} from 'minicash/utils';
 import {RecordTab} from './tab_record';
 
 let recordsChannel = Radio.channel('records');
@@ -42,7 +43,7 @@ let RecordsTabPanelView = TabPanelView.extend({
 
     initialize: function() {
         recordsChannel.on('model:save', (model) => {
-            this.collection.add(model, {at: 0});
+            this.collection.add(model, {at: 0, merge: true});
         });
 
         this.collection.getPage(1);
@@ -73,7 +74,7 @@ let RecordsTabPanelView = TabPanelView.extend({
     },
 
     startNewRecord: function() {
-        minicash.navigate('tabs/record');
+        minicash.navigateTo('new_record');
     },
 
     deleteSelectedRecords: function() {
@@ -97,7 +98,7 @@ let RecordsTabPanelView = TabPanelView.extend({
             }
         });
 
-        dfdDoDelete.then(() => {
+        dfdDoDelete.done(() => {
             let selectedRecords = this.getSelectedRecords();
             this.collection.delete(selectedRecords);
         });
