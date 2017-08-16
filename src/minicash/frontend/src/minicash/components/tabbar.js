@@ -18,34 +18,37 @@ export let TabModel = Bb.Model.extend({
     },
 
     defaults: function() {
+        let route = Bb.history.getFragment();
         return {
-            route: Bb.history.getFragment(),
+            route: route,
+            routeId: this._getRouteId(route), // a HTML `id` attribute-friendly formatted route
+
             title: 'New tab',
             permanent: false,        // false - allow closing the tab
             singleInstance: true,    // true - only one instance of this tab in tabbar
+            order: undefined,
             viewClass: null,
         };
     },
 
     onRouteChange: function() {
-        let routeId = _.replace(this.get('route'), /\//g, '_');
+        let routeId = this._getRouteId(this.get('route'));
         this.set('routeId', routeId);
     },
 
-    fetchData: function() {
-        let emptyDfd = $.Deferred();
-        emptyDfd.resolve();
-        return emptyDfd.promise();
-    }
-}, {
-    alias: 'basetab'
+    _getRouteId: function(route) {
+        let routeId = _.replace(route, /\//g, '_');
+        return routeId;
+    },
 });
 
 
 let TabCollection = Bb.Collection.extend({
     initialize: function() {
         return new Backbone.SingleChooser(this);
-    }
+    },
+
+    comparator: 'order'
 });
 
 

@@ -6,43 +6,32 @@ import 'corejs-typeahead';
 import Decimal from 'decimal.js';
 import Radio from 'backbone.radio';
 
-import * as tabbar from 'minicash/components/tabbar';
 import * as models from 'minicash/models';
 import * as utils from 'minicash/utils';
+import {TabPanelView, TabModel} from 'components/tabbar';
 
 
 let recordsChannel = Radio.channel('records');
 
 
-export let RecordTab = tabbar.TabModel.extend({
+export let RecordTab = TabModel.extend({
     defaults: function() {
-        let parentDefaults = tabbar.TabModel.prototype.defaults.apply(this, arguments);
+        let parentDefaults = TabModel.prototype.defaults.apply(this, arguments);
 
         return _.extend(parentDefaults, {
             title: 'New record',
             viewClass: RecordTabPanelView,
-
             recordId: null,
         });
     },
 });
 
 
-export let RecordTabPanelView = tabbar.TabPanelView.extend({
+export let RecordTabPanelView = TabPanelView.extend({
     uiInitialized: false,
     validator: null,
 
     template: require('templates/tab_records/tab_record.hbs'),
-
-    initialize: function() {
-        // load bound record
-        if (this.model.get('recordId')) {
-            let record = new models.Record({pk: this.model.get('recordId')});
-            record.fetch().then(() => {
-                this.model.set('record', record);
-            });
-        }
-    },
 
     ui: {
         saveBtn: 'button[data-spec="save"]',
@@ -58,10 +47,6 @@ export let RecordTabPanelView = tabbar.TabPanelView.extend({
         form: 'form',
     },
 
-    modelEvents: {
-        'change:record': 'render'
-    },
-
     events: {
         'click @ui.saveBtn': 'onSaveBtnClick',
         'click @ui.saveAddSimilarBtn': 'onSaveAddSimilarBtnClick',
@@ -71,8 +56,22 @@ export let RecordTabPanelView = tabbar.TabPanelView.extend({
         'keydown @ui.deltaInput': 'onDeltaInputKeyDown',
     },
 
+    modelEvents: {
+        'change:record': 'render'
+    },
+
+    initialize: function() {
+        // load bound record
+        if (this.model.get('recordId')) {
+            let record = new models.Record({pk: this.model.get('recordId')});
+            record.fetch().then(() => {
+                this.model.set('record', record);
+            });
+        }
+    },
+
     serializeModel: function() {
-        let renderData = tabbar.TabPanelView.prototype.serializeModel.apply(this, arguments);
+        let renderData = TabPanelView.prototype.serializeModel.apply(this, arguments);
         renderData.record = renderData.record ?
             renderData.record.serialize() :
             this._buildNewRecordRenderData();

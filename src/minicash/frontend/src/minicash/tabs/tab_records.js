@@ -187,7 +187,7 @@ let RecordRowView = Mn.View.extend({
     },
 
     editRecord: function() {
-        minicash.navigate(`tabs/records/${this.model.id}`);
+        minicash.navigateTo('records', {id: this.model.id});
     },
 });
 

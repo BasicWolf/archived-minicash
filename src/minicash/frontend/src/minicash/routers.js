@@ -9,6 +9,7 @@ export let TabsRouter = Mn.AppRouter.extend(RouteReverser).extend({
     appRoutes: {
         '': 'home',
         'tabs/records(/)(:id)': 'records',
-        'tabs/record(/)(:id)': 'new_record'
+        'tabs/record(/)(:id)': 'new_record',
+        'tabs/assets(/)(:id)': 'assets',
     },
 });

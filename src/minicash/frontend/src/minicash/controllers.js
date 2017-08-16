@@ -41,7 +41,6 @@ export let TabsController = Mn.Object.extend({
     openTab: function(tabModel, options={}) {
         options = _.extend({show: true}, options);
         this.tabbarView.add(tabModel, options);
-        //tabModel.fetchData(itemId).then(() => );
     },
 
     home: function(options={}) {
@@ -60,8 +59,16 @@ export let TabsController = Mn.Object.extend({
         if (!newRecordId) {
             newRecordId = utils.generateId();
         }
-        let recordTab = new RecordTab();
+        let recordTab = new RecordTab({route: minicash.reverse('new_record', {id: newRecordId})});
         this.openTab(recordTab);
+    },
+
+    assets: function(assetId) {
+        if (assetId) {
+            this.openTab(new AssetTab({assetId: assetId}));
+        } else {
+            this.openTab(new AssetsTab());
+        }
     },
 
     getActiveTab: function() {

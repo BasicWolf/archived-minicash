@@ -12,14 +12,12 @@ export let HomeTab = TabModel.extend({
 
         return _.extend(parentDefaults, {
             title: 'Home',
-            name: HomeTab.alias,
             singleInstance: true,
             permanent: true,
+            order: 0,
             viewClass: HomeTabPanelView,
         });
     }
-}, {
-    alias: 'home'
 });
 
 

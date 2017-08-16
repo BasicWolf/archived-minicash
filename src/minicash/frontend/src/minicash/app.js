@@ -119,11 +119,11 @@ export default Mn.Application.extend({
             tabs: new TabsRouter({controller: this.controllers.tabs}),
         };
 
-        Bb.history.start({pushState: false});
+        Bb.history.start({pushState: true});
 
         // ensure that HomeTab is always loaded as the first tab
         this.controllers.tabs.home({show: false});
 
-        this.routers.tabs.navigate(this.CONTEXT.route, {trigger: true});
+        // this.routers.tabs.navigate(this.CONTEXT.route, {trigger: true});
     }
 });

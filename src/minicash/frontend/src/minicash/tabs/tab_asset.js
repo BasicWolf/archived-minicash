@@ -2,38 +2,26 @@
 
 /* global $,_,minicash,require,tr */
 
-import {TabPanelView, TabModel} from 'minicash/components/tabbar';
+import * as models from 'minicash/models';
 import * as utils from 'minicash/utils';
+import {TabPanelView, TabModel} from 'components/tabbar';
 
 
 export let AssetTab = TabModel.extend({
-    constructor: function(attributes) {
-        if (attributes.adding) {
-            attributes['title'] = tr('New asset');
-        } else {
-            attributes['title'] = tr('Edit asset');
-        }
-
-        TabModel.apply(this, arguments);
+    initialize: function() {
+        let title = this.get('assetId') ? tr('Edit asset') : tr('New asset');
+        this.set('title', title);
+        TabModel.prototype.initialize.apply(this, arguments);
     },
 
     defaults: function() {
         let parentDefaults = TabModel.prototype.defaults.apply(this, arguments);
 
         return _.extend(parentDefaults, {
-            name: `${AssetTab.alias}_${utils.generateId()}`,
-            adding: false,
             viewClass: AssetTabPanelView,
+            assetId: null
         });
     },
-
-    serializeModel: function() {
-        let renderData = TabPanelView.prototype.serializeModel.apply(this, arguments);
-
-        return renderData;
-    }
-}, {
-    alias: 'asset'
 });
 
 
@@ -51,6 +39,20 @@ export let AssetTabPanelView = TabPanelView.extend({
     events: {
         'click @ui.saveBtn': 'onSaveBtnClick',
         'click @ui.cancelBtn': 'onCancelBtnClick',
+    },
+
+    modelEvents: {
+        'change:asset': 'render'
+    },
+
+    initialize: function() {
+        // load bound asset
+        if (this.model.get('assetId')) {
+            let asset = new models.Asset({pk: this.model.get('assetId')});
+            asset.fetch().then(() => {
+                this.model.set('asset', asset);
+            });
+        }
     },
 
     serializeModel: function() {

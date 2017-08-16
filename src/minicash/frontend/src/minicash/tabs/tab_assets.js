@@ -162,6 +162,6 @@ let AssetRowView = Mn.View.extend({
     },
 
     editAsset: function() {
-        minicash.navigate(`tabs/asset/${this.model.id}`);
+        minicash.navigateTo('assets', {id: this.model.id});
     },
 });

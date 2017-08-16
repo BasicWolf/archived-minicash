@@ -144,6 +144,13 @@ if (process.env.NODE_ENV == 'production') {
         canPrint: true
     }));
 
+} else {
+    config.module.rules.push({
+        enforce: "pre",
+        test: /\.js$/,
+        exclude: /node_modules/,
+        loader: "eslint-loader",
+    });
 }
 
 module.exports = config;
