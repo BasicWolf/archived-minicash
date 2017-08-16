@@ -20,20 +20,11 @@ export let RecordTab = tabbar.TabModel.extend({
 
         return _.extend(parentDefaults, {
             title: 'New record',
-            name: `${this.alias}_${utils.generateId()}`,
             viewClass: RecordTabPanelView,
+
+            recordId: null,
         });
     },
-
-    fetchData: function(itemId) {
-        let record = new models.Record({pk: itemId});
-        let promise = record.fetch().promise();
-
-        promise.then(() => this.set('record', record));
-        return promise;
-    }
-}, {
-    alias: 'record'
 });
 
 
@@ -42,6 +33,16 @@ export let RecordTabPanelView = tabbar.TabPanelView.extend({
     validator: null,
 
     template: require('templates/tab_records/tab_record.hbs'),
+
+    initialize: function() {
+        // load bound record
+        if (this.model.get('recordId')) {
+            let record = new models.Record({pk: this.model.get('recordId')});
+            record.fetch().then(() => {
+                this.model.set('record', record);
+            });
+        }
+    },
 
     ui: {
         saveBtn: 'button[data-spec="save"]',
@@ -55,6 +56,10 @@ export let RecordTabPanelView = tabbar.TabPanelView.extend({
         toAssetSelect: 'select[name="asset_to"]',
         fromAssetSelect: 'select[name="asset_from"]',
         form: 'form',
+    },
+
+    modelEvents: {
+        'change:record': 'render'
     },
 
     events: {

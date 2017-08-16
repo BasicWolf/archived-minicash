@@ -1,10 +1,11 @@
 'use strict';
 
-/* global _ */
+/* global _,minicash */
 
 import Mn from 'backbone.marionette';
 import * as tabbar from 'minicash/components/tabbar';
 
+import * as utils from 'minicash/utils';
 import {HomeTab} from 'minicash/tabs/tab_home';
 import {AssetTab} from 'minicash/tabs/tab_asset';
 import {AssetsTab} from 'minicash/tabs/tab_assets';
@@ -37,16 +38,30 @@ export let TabsController = Mn.Object.extend({
         this.tabbarView.render();
     },
 
-    openTab: function(tabAlias, itemId=undefined, tabOptions={}, options={}) {
+    openTab: function(tabModel, options={}) {
         options = _.extend({show: true}, options);
-
-        let tabtype = tabAliasToType[tabAlias];
-        let tabModel = new tabtype(tabOptions);
-        tabModel.fetchData(itemId).then(() => this.tabbarView.add(tabModel, options));
+        this.tabbarView.add(tabModel, options);
+        //tabModel.fetchData(itemId).then(() => );
     },
 
-    openHome: function() {
-        this.openTab('home');
+    home: function(options={}) {
+        this.openTab(new HomeTab({route: '/'}), options);
+    },
+
+    records: function(recordId) {
+        if (recordId) {
+            this.openTab(new RecordTab({recordId: recordId}));
+        } else {
+            this.openTab(new RecordsTab());
+        }
+    },
+
+    new_record: function(newRecordId) {
+        if (!newRecordId) {
+            newRecordId = utils.generateId();
+        }
+        let recordTab = new RecordTab();
+        this.openTab(recordTab);
     },
 
     getActiveTab: function() {

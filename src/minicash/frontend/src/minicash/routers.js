@@ -2,12 +2,13 @@
 
 import Mn from 'backbone.marionette';
 
+import RouteReverser from 'route-reverser';
 
 
-export let TabsRouter = Mn.AppRouter.extend({
+export let TabsRouter = Mn.AppRouter.extend(RouteReverser).extend({
     appRoutes: {
-        '': 'openHome',
-        'tabs/:tabName': 'openTab',
-        'tabs/:tabName/:id': 'openTab'
+        '': 'home',
+        'tabs/records(/)(:id)': 'records',
+        'tabs/record(/)(:id)': 'new_record'
     },
 });

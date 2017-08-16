@@ -1,6 +1,6 @@
 'use strict';
 
-/* global _,$,Backbone,require, */
+/* global _,$,Backbone,minicash,require, */
 
 import Bb from 'backbone';
 import Mn from 'backbone.marionette';
@@ -12,18 +12,24 @@ import * as utils from 'minicash/utils';
 
 export let TabModel = Bb.Model.extend({
     initialize: function() {
+        this.onRouteChange();
+        this.listenTo(this, 'route:change', this.onRouteChange);
         return new Backbone.Choosy(this);
     },
 
     defaults: function() {
         return {
-            name: utils.generateId(),
+            route: Bb.history.getFragment(),
             title: 'New tab',
             permanent: false,        // false - allow closing the tab
             singleInstance: true,    // true - only one instance of this tab in tabbar
             viewClass: null,
-
         };
+    },
+
+    onRouteChange: function() {
+        let routeId = _.replace(this.get('route'), /\//g, '_');
+        this.set('routeId', routeId);
     },
 
     fetchData: function() {
@@ -77,7 +83,9 @@ let TabNavView = Mn.View.extend({
     },
 
     onTabChosen: function() {
-        this.getUI('a').tab('show');
+        let $a = this.getUI('a');
+        $a.tab('show');
+        minicash.navigate($a.attr('href'), {trigger: false});
     },
 
     onCloseTabButtonClick: function() {
@@ -105,8 +113,8 @@ export let TabPanelView = utils.BaseView.extend({
 
     constructor: function(options) {
         Mn.View.prototype.constructor.apply(this, arguments);
-        let name = options.model.get('name');
-        this.$el.attr('id', `tab_${name}`);
+        let routeId = options.model.get('routeId');
+        this.$el.attr('id', `tab_${routeId}`);
         return this;
     },
 });
@@ -149,7 +157,7 @@ export let TabbarView = Mn.View.extend({
 
         if (tabModel.get('singleInstance')) {
             let existingTabModel = this.collection.find(
-                (tm) => tm.get('name') === tabModel.get('name')
+                (tm) => tm.get('route') === tabModel.get('route')
             );
 
             if (existingTabModel) {

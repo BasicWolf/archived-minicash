@@ -1,112 +1,109 @@
-<div id="tab_{{name}}" role="tabpanel" class="tab-pane" >
+<div class="panel-buttons" style="position:relative">
+  <div data-spec="export-loading" class="loading loading-center"></div>
 
-  <div class="panel-buttons" style="position:relative">
-    <div data-spec="export-loading" class="loading loading-center"></div>
+  <!-- Split button -->
+  <div class="btn-group">
+    <button data-spec="save" type="button" class="btn btn-primary">Save</button>
+    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <span class="caret"></span>
+      <span class="sr-only">Toggle Dropdown</span>
+    </button>
+    <ul class="dropdown-menu">
+      <li><a data-spec="save-add-similar" href="#">Save and add similar</a></li>
+      <li><a data-spec="save-add-another" href="#">Save and add another</a></li>
+    </ul>
+  </div>
 
-    <!-- Split button -->
-    <div class="btn-group">
-      <button data-spec="save" type="button" class="btn btn-primary">Save</button>
-      <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        <span class="caret"></span>
-        <span class="sr-only">Toggle Dropdown</span>
-      </button>
-      <ul class="dropdown-menu">
-        <li><a data-spec="save-add-similar" href="#">Save and add similar</a></li>
-        <li><a data-spec="save-add-another" href="#">Save and add another</a></li>
-      </ul>
+  <button data-spec="cancel" type="button" class="btn btn-default">Cancel</button>
+
+</div> <!-- panel-buttons -->
+
+<div class="panel panel-default"><div class="panel-body">
+  <form autocomplete="off" class="form-horizontal">
+
+    <div class="form-group">
+      <label class="col-sm-2 control-label">Type</label>
+      <div class="col-sm-10">
+        <select name="mode"
+                class="form-control"
+                {{#ifdef record.pk}}disabled{{/ifdef}}>
+          {{#each (context 'RECORD_MODES') }}
+            <option value="{{this.value}}"
+                    {{#ifeq ../record.mode this.value}}selected{{/ifeq}}
+            >{{this.label}}</option>
+          {{/each}}
+        </select>
+      </div>
     </div>
 
-    <button data-spec="cancel" type="button" class="btn btn-default">Cancel</button>
+    <div class="form-group">
+      <label class="col-sm-2 control-label">Date/Time</label>
+      <div class="col-sm-10">
+        <div class='input-group date'>
+          <input name="created_dt" type="text" class="form-control"
+                 placeholder="Date and time", value="{{record.created_dt}}">
+          <span class="input-group-addon">
+            <span class="glyphicon glyphicon-calendar"></span>
+          </span>
+        </div>
+      </div>
+    </div>
 
-  </div> <!-- panel-buttons -->
+    <div class="form-group">
+      <label class="col-sm-2 control-label">Withdrawn from</label>
+      <div class="col-sm-10">
+        <select name="asset_from" class="form-control">
+          <option value="" {{#ifnot record.asset_from}}selected{{/ifnot}}>Select account...</option>
+          {{#each assets}}
+            <option value="{{id}}" {{#ifeq ../record.asset_from id}}selected{{/ifeq}}>{{name}}</option>
+          {{/each}}
+        </select>
+      </div>
+    </div>
 
-  <div class="panel panel-default"><div class="panel-body">
-    <form autocomplete="off" class="form-horizontal">
+    <div class="form-group">
+      <label class="col-sm-2 control-label">Deposited to</label>
+      <div class="col-sm-10">
+        <select name="asset_to" class="form-control">
+          <option value="" {{#ifnot record.asset_to}}selected{{/ifnot}}>Select account...</option>
+          {{#each assets}}
+            <option value="{{id}}" {{#ifeq ../record.asset_to id}}selected{{/ifeq}}>{{name}}</option>
+          {{/each}}
+        </select>
+      </div>
+    </div>
 
+    <div class="form-group">
+      <label class="col-sm-2 control-label">Expense</label>
+      <div class="col-sm-10">
+        <input name="delta" type="text" class="form-control"
+               placeholder="Expense paid or received"
+               value="{{record.delta}}"
+               autofocus>
+      </div>
+    </div>
+
+    <div class="select2-wrapper">
       <div class="form-group">
-        <label class="col-sm-2 control-label">Type</label>
+        <label class="col-sm-2 control-label">Tags</label>
         <div class="col-sm-10">
-          <select name="mode"
-                  class="form-control"
-                  {{#ifdef record.pk}}disabled{{/ifdef}}>
-            {{#each (context 'RECORD_MODES') }}
-              <option value="{{this.value}}"
-                      {{#ifeq ../record.mode this.value}}selected{{/ifeq}}
-              >{{this.label}}</option>
+          <select name="tags" multiple class="form-control" style="width: 100%">
+            {{#each record.tags }}
+              <option value="{{#tag_name this}}{{/tag_name}}" selected="selected">{{#tag_name this}}{{/tag_name}}</option>
             {{/each}}
           </select>
         </div>
       </div>
+    </div>
 
-      <div class="form-group">
-        <label class="col-sm-2 control-label">Date/Time</label>
-        <div class="col-sm-10">
-          <div class='input-group date'>
-            <input name="created_dt" type="text" class="form-control"
-                   placeholder="Date and time", value="{{record.created_dt}}">
-            <span class="input-group-addon">
-              <span class="glyphicon glyphicon-calendar"></span>
-            </span>
-          </div>
-        </div>
+    <div class="form-group">
+      <label class="col-sm-2 control-label">Description</label>
+      <div class="col-sm-10">
+        <textarea name="description" class="form-control" rows="5" style="resize: none;">{{record.description}}</textarea>
       </div>
+    </div>
 
-      <div class="form-group">
-        <label class="col-sm-2 control-label">Withdrawn from</label>
-        <div class="col-sm-10">
-          <select name="asset_from" class="form-control">
-            <option value="" {{#ifnot record.asset_from}}selected{{/ifnot}}>Select account...</option>
-            {{#each assets}}
-              <option value="{{id}}" {{#ifeq ../record.asset_from id}}selected{{/ifeq}}>{{name}}</option>
-            {{/each}}
-          </select>
-        </div>
-      </div>
+  </form>
+</div>
 
-      <div class="form-group">
-        <label class="col-sm-2 control-label">Deposited to</label>
-        <div class="col-sm-10">
-          <select name="asset_to" class="form-control">
-            <option value="" {{#ifnot record.asset_to}}selected{{/ifnot}}>Select account...</option>
-            {{#each assets}}
-              <option value="{{id}}" {{#ifeq ../record.asset_to id}}selected{{/ifeq}}>{{name}}</option>
-            {{/each}}
-          </select>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label class="col-sm-2 control-label">Expense</label>
-        <div class="col-sm-10">
-          <input name="delta" type="text" class="form-control"
-                 placeholder="Expense paid or received"
-                 value="{{record.delta}}"
-                 autofocus>
-        </div>
-      </div>
-
-      <div class="select2-wrapper">
-        <div class="form-group">
-          <label class="col-sm-2 control-label">Tags</label>
-          <div class="col-sm-10">
-            <select name="tags" multiple class="form-control" style="width: 100%">
-              {{#each record.tags }}
-                <option value="{{#tag_name this}}{{/tag_name}}" selected="selected">{{#tag_name this}}{{/tag_name}}</option>
-              {{/each}}
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label class="col-sm-2 control-label">Description</label>
-        <div class="col-sm-10">
-          <textarea name="description" class="form-control" rows="5" style="resize: none;">{{record.description}}</textarea>
-        </div>
-      </div>
-
-    </form>
-  </div>
-
-  </div>
 </div>

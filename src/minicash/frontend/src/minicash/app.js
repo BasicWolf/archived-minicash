@@ -1,5 +1,5 @@
 'use strict';
-/* global _ */
+/* global _,console */
 
 // NOTE, these MUST be loaded before anything, because monkey-patching happens here
 import './defaults';
@@ -39,9 +39,41 @@ export default Mn.Application.extend({
         return this.CONTEXT.settings.STATIC_URL + url;
     },
 
+    /* Routes and Navigation */
+    /* ===================== */
+
     navigate: function(fragment, options) {
+        if (fragment == null || !_.isString(fragment)) {
+            console.warning('fragment is invalid: ', fragment);
+            fragment = '';
+        }
+
         options = _.extend({trigger: true}, options);
         return Bb.history.navigate(fragment, options);
+    },
+
+    navigateTo: function(name, params, options) {
+        let route = this.reverse(name, params);
+        if (!route) {
+            console.error('Unable to find router for ', name);
+            return;
+        } else {
+            this.navigate(route, options);
+        }
+    },
+
+    reverse: function(name, params) {
+        for (let r in this.routers) {
+            let router = this.routers[r];
+            try {
+                let route = router.reverse(name, params);
+                return route;
+            } catch (e) {
+                // try next router
+            }
+        }
+
+        return null;
     },
 
     /* App initialization and internals */
@@ -49,8 +81,6 @@ export default Mn.Application.extend({
     initialize: function() {
         this.CONTEXT = window.minicash.CONTEXT;
         this._initCollections();
-        this._initControllers();
-        this._initRouters();
         this._bootstrapData();
     },
 
@@ -66,33 +96,34 @@ export default Mn.Application.extend({
         });
     },
 
-    _initControllers: function() {
-        this.controllers = {
-            tabs: new TabsController,
-        };
-    },
-
-    _initRouters: function() {
-        this._routers = {
-            tabs: new TabsRouter({controller: this.controllers.tabs}),
-        };
-    },
-
     _bootstrapData: function() {
         this.collections.assets.reset(this.CONTEXT.bootstrap.assets);
         this.collections.tags.reset(this.CONTEXT.bootstrap.tags);
     },
 
     onStart: function() {
+        this._startControllers();
         this._startNavigation();
         this.started = true;
     },
 
-    _startNavigation: function() {
-        // ensure that HomeTab is always loaded as the first tabe
-        this.controllers.tabs.openTab('home', {}, {show: false});
 
-        Bb.history.start({pushState: true});
-        this._routers.tabs.navigate(this.CONTEXT.route, {trigger: true});
+    _startControllers: function() {
+        this.controllers = {
+            tabs: new TabsController,
+        };
+    },
+
+    _startNavigation: function() {
+        this.routers = {
+            tabs: new TabsRouter({controller: this.controllers.tabs}),
+        };
+
+        Bb.history.start({pushState: false});
+
+        // ensure that HomeTab is always loaded as the first tab
+        this.controllers.tabs.home({show: false});
+
+        this.routers.tabs.navigate(this.CONTEXT.route, {trigger: true});
     }
 });

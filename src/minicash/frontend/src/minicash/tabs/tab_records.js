@@ -22,13 +22,10 @@ export let RecordsTab = TabModel.extend({
 
         return _.extend(parentDefaults, {
             title: 'Records',
-            name: 'records',
             singleInstance: true,
             viewClass: RecordsTabPanelView,
         });
     },
-}, {
-    alias: 'records'
 });
 
 
@@ -190,7 +187,7 @@ let RecordRowView = Mn.View.extend({
     },
 
     editRecord: function() {
-        minicash.navigate(`tabs/record/${this.model.id}`);
+        minicash.navigate(`tabs/records/${this.model.id}`);
     },
 });
 

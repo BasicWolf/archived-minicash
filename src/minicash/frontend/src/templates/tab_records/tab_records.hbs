@@ -1,40 +1,38 @@
-<div id="tab_{{name}}" role="tabpanel" class="tab-pane">
+<div class="panel-buttons" style="position:relative">
+  <div data-spec="export-loading" class="loading loading-center"></div>
 
-  <div class="panel-buttons" style="position:relative">
-    <div data-spec="export-loading" class="loading loading-center"></div>
+  <div class="pull-left">
+    <button data-spec="start-new-record" type="button" class="btn btn-default">
+      <span aria-label="New" class="glyphicon glyphicon-plus"></span>
+    </button>
 
-    <div class="pull-left">
-      <button data-spec="start-new-record" type="button" class="btn btn-default">
-        <span aria-label="New" class="glyphicon glyphicon-plus"></span>
-      </button>
+    <button data-spec="delete-record" type="button" class="btn btn-danger" disabled>
+      <span aria-label="Delete" class="glyphicon glyphicon-trash"></span>
+    </button>
 
-      <button data-spec="delete-record" type="button" class="btn btn-danger" disabled>
-        <span aria-label="Delete" class="glyphicon glyphicon-trash"></span>
-      </button>
+    <button class="btn btn-default" type="button"
+            data-toggle="collapse" data-target="#filter_records_{{name}}">
+      <span aria-label="refresh" class="glyphicon glyphicon-filter"></span>
+    </button>
+  </div>
 
-      <button class="btn btn-default" type="button"
-              data-toggle="collapse" data-target="#filter_records_{{name}}">
-        <span aria-label="refresh" class="glyphicon glyphicon-filter"></span>
-      </button>
-    </div>
+  <div style="margin-left:1em;" class="pull-right">
+    <button class="btn btn-default" type="button"
+            disabled="disabled"
+            data-toggle="tooltip" title="{{#tr "Tab options"}}{{/tr}}">
+      <span aria-label="refresh" class="glyphicon glyphicon-cog"></span>
+    </button>
+  </div>
 
-    <div style="margin-left:1em;" class="pull-right">
-      <button class="btn btn-default" type="button"
-              disabled="disabled"
-              data-toggle="tooltip" title="{{#tr "Tab options"}}{{/tr}}">
-        <span aria-label="refresh" class="glyphicon glyphicon-cog"></span>
-      </button>
-    </div>
+  <div data-spec="paginator-region" class="pull-right"></div>
+</div> <!-- panel-buttons -->
 
-    <div data-spec="paginator-region" class="pull-right"></div>
-  </div> <!-- panel-buttons -->
+<br><br>
 
-  <br><br>
+{{> components/records_filter }}
 
-  {{> components/records_filter }}
+<div class="panel panel-default"><div class="panel-body">
+  <div data-spec="records-table-region"></div>
+</div></div>
 
-  <div class="panel panel-default"><div class="panel-body">
-    <div data-spec="records-table-region"></div>
-  </div></div>
 
-</div>
