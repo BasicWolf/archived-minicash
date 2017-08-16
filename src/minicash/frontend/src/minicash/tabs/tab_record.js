@@ -267,7 +267,7 @@ export let RecordTabPanelView = TabPanelView.extend({
         saveDfd.done(() => {
             // this.model.set('record', record);
             recordsChannel.trigger('model:save', record);
-        }).fail((_, response) => {
+        }).fail((response) => {
             this.validator.showErrors(response.responseJSON);
             this.unlockControls();
         });

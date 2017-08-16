@@ -13,6 +13,7 @@ import {tr} from 'minicash/utils';
 
 $.fn.select2.defaults.set("theme", "bootstrap");
 
+ $.validator.setDefaults({ ignore: '' });
 /*======================================*/
 
 
@@ -21,8 +22,16 @@ $.fn.select2.defaults.set("theme", "bootstrap");
 
 /* ---------- Partials ----------- */
 
-let _partial = require('templates/components/records_filter.hbs');
-Hb.registerPartial('components/records_filter', _partial);
+Hb.registerPartial(
+    'components/records_filter',
+    require('templates/components/records_filter.hbs')
+);
+
+Hb.registerPartial(
+    'components/non_field_errors',
+    require('templates/components/non_field_errors.hbs')
+);
+
 
 /* ---------- Helpers ------------ */
 Hb.registerHelper('ifnot', function(v, options) {
@@ -90,6 +99,12 @@ Hb.registerHelper('times', function(n, start=null, options) {
                 .keyBy('name')
                 .mapValues((val) => val.value)
                 .value();
+
+            // non_field_errors is an invisible field in forms,
+            // which is used to display generic form errors.
+            // see http://www.django-rest-framework.org/api-guide/serializers/
+            // Usage: in conjunction with components/non_fields_error Handlebars partial
+            delete formData['non_field_errors'];
             ret.push(formData);
         });
 

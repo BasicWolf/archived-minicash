@@ -108,7 +108,7 @@ export let TagTabPanelView = TabPanelView.extend({
         saveDfd.done(() => {
             tagsChannel.trigger('model:save', tag);
             this.model.destroy();
-        }).fail((model, response) => {
+        }).fail((response) => {
             this.validator.showErrors(response.responseJSON);
             this.unlockControls();
         }).always(() => {
