@@ -43,16 +43,16 @@ export let TabsController = Mn.Object.extend({
         this.tabbarView.add(tabModel, options);
     },
 
-    home: function(options={}) {
+    index: function(options={}) {
         this.openTab(new HomeTab({route: '/'}), options);
     },
 
-    records: function(recordId) {
-        if (recordId) {
-            this.openTab(new RecordTab({recordId: recordId}));
-        } else {
-            this.openTab(new RecordsTab());
-        }
+    tab_records: function(recordId) {
+        this.openTab(new RecordsTab());
+    },
+
+    tab_record: function(recordId) {
+        this.openTab(new RecordTab({recordId: recordId}));
     },
 
     new_record: function(newRecordId) {

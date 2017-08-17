@@ -45,8 +45,6 @@
   _.first = _.take;
   </script>
 
-  <script type="text/javascript" src="{% static 'django_js_utils.js' %}"></script>
-  <script type="text/javascript" src="{% url 'jsurls' %}"></script>
   <script defer src="{% static 'minicash.js' %}"></script>
 {% endblock %}
 

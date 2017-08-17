@@ -56,7 +56,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
 
     'django_filters',
-    'django_js_utils',
     'djmoney',
     'rest_framework',
 

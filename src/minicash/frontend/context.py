@@ -1,3 +1,5 @@
+import re
+
 from collections import OrderedDict
 from django.conf import settings
 from django.core import urlresolvers
@@ -72,6 +74,10 @@ def _build_tags(user, **kwargs):
 def build_jsurls(**kwargs):
     url_patterns = urlresolvers.get_resolver().reverse_dict.items()
     urls = {}
+    bb_url_re = re.compile(r'\%\((\w+)\)s')
+
+    def bb_url_repl(mo):
+        return ':' + mo.group(1)
 
     for name_or_callable, pattern in url_patterns:
         # for now, ignore callables (they should be unwrapped in views)
@@ -79,7 +85,11 @@ def build_jsurls(**kwargs):
             continue
 
         url_pattern, pattern_args = pattern[0][0]
-        urls[name_or_callable] = {'url': '/' + url_pattern, 'args': pattern_args}
+        urls[name_or_callable] = {
+            'sprintf_url': '/' + url_pattern,
+            'bb_url': re.sub(bb_url_re, bb_url_repl, url_pattern),
+            'args': pattern_args
+        }
     return {'urls': urls}
 
 
@@ -93,5 +103,5 @@ def build_user(user, **kwargs):
     return {'user': user_context}
 
 
-def build_route(route, **kwargs):
-    return {'route': f'#{route}'}
+def build_route(*, route='', **kwargs):
+    return {'route': route}

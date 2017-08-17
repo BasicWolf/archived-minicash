@@ -9,6 +9,3 @@ django-filter==1.0.*
 # Whitenoise bundle
 brotlipy==0.7.*
 whitenoise==3.3.*
-
-
-git+https://github.com/BasicWolf/django-js-utils.git

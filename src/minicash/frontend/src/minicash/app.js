@@ -14,7 +14,6 @@ import * as models from './models';
 import * as utils from './utils';
 import * as views from './views';
 import {ReportTab} from './tabs/tab_report';
-import {TabsRouter} from './routers';
 import {TabsController} from './controllers';
 
 let recordsChannel = Radio.channel('records');
@@ -33,7 +32,7 @@ export default Mn.Application.extend({
     CONTEXT: null,          // placeholder for server context
 
     url: function(name, args={}) {
-        let url = this.CONTEXT.urls[name].url;
+        let url = this.CONTEXT.urls[name].sprintf_url;
         return sprintf(url, args);
     },
 
@@ -53,8 +52,8 @@ export default Mn.Application.extend({
         return Bb.history.navigate(fragment, options);
     },
 
-    navigateTo: function(name, params, options) {
-        let route = this.reverse(name, params);
+    navigateTo: function(name, args, options) {
+        let route = this.url(name, args);
         if (!route) {
             console.error('Unable to find router for ', name);
             return;
@@ -63,19 +62,6 @@ export default Mn.Application.extend({
         }
     },
 
-    reverse: function(name, params) {
-        for (let r in this.routers) {
-            let router = this.routers[r];
-            try {
-                let route = router.reverse(name, params);
-                return route;
-            } catch (e) {
-                // try next router
-            }
-        }
-
-        return null;
-    },
 
     /* App initialization and internals */
     /* ================================ */
@@ -112,6 +98,7 @@ export default Mn.Application.extend({
 
     onStart: function() {
         this._startControllers();
+        this._startRouters();
         this._startNavigation();
         this.started = true;
     },
@@ -119,20 +106,35 @@ export default Mn.Application.extend({
 
     _startControllers: function() {
         this.controllers = {
-            tabs: new TabsController,
+            tabs: new TabsController(),
         };
     },
 
-    _startNavigation: function() {
+    _startRouters: function() {
+        // All routes which start with '/tab'
+        let tabRoutes = _.chain(this.CONTEXT.urls)
+            .pickBy((urlObj, name) => _.startsWith(name, 'tab'))
+            .map((urlObj, name) => [urlObj.bb_url, name])
+            .fromPairs()
+            .value();
+
+        tabRoutes = _.extend({'': 'index'}, tabRoutes);
+
         this.routers = {
-            tabs: new TabsRouter({controller: this.controllers.tabs}),
+            tabs: new Mn.AppRouter({
+                appRoutes:  tabRoutes,
+                controller: this.controllers.tabs,
+            })
         };
 
+    },
+
+    _startNavigation: function() {
         Bb.history.start({pushState: true});
 
         // ensure that HomeTab is always loaded as the first tab
-        this.controllers.tabs.home({show: false});
+        this.controllers.tabs.index({show: false});
 
-        // this.routers.tabs.navigate(this.CONTEXT.route, {trigger: true});
+        this.navigate(this.CONTEXT.route, {trigger: true});
     }
 });

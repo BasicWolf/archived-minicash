@@ -14,18 +14,13 @@
 
 from django.conf.urls import url, include
 
-from django_js_utils.views import jsurls
-
 from .views import RouteView
 
 urlpatterns = [
     url(r'^minicash/', include('minicash.core.urls')),
 
-    url(r'^jsurls.js$', jsurls,
-        name='jsurls'),
-
-    url(r'^tabs/(?P<suffix>[\w/]+)$', RouteView.as_view(), {'route': 'tabs/'},
-        name='tabs_route'),
+    url(r'^tabs/records$', RouteView.as_view(), name='tab_records'),
+    url(r'^tabs/records/?(?P<id>[\w]+)$', RouteView.as_view(), name='tab_record'),
 
     url(r'^$', RouteView.as_view(), {'route': ''},
         name='index'),
