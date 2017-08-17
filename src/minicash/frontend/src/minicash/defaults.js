@@ -30,4 +30,9 @@ $.validator.setDefaults({
             error.insertAfter(element);
         }
     },
+
+    ignore: '',
 });
+
+
+$.fn.select2.defaults.set("theme", "bootstrap");

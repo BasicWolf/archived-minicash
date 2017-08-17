@@ -1,20 +1,11 @@
 'use strict';
 
-/* global _,$,jQuery,minicash,require */
+/* global _,$,console,document,jQuery,minicash,require */
 
 import Bb from 'backbone';
 import Decimal from 'decimal.js';
 import Hb from 'handlebars/runtime';
 import {tr} from 'minicash/utils';
-
-
-/*--------- UI overrides -----------*/
-/*==================================*/
-
-$.fn.select2.defaults.set("theme", "bootstrap");
-
- $.validator.setDefaults({ ignore: '' });
-/*======================================*/
 
 
 /*--------- Handlebars -----------*/
@@ -62,7 +53,7 @@ Hb.registerHelper('decimal', function(options) {
     return new Hb.SafeString(text);
 });
 
-Hb.registerHelper('times', function(n, start=null, options) {
+Hb.registerHelper('times', function(n, start, options) {
     start = start || 0;
     let out = '';
     let data = null;
@@ -121,7 +112,7 @@ Hb.registerHelper('times', function(n, start=null, options) {
 
 let getCookie = function (name) {
     let cookieValue = null;
-    if (document.cookie && document.cookie != '') {
+    if (document.cookie && document.cookie !== '') {
         let cookies = document.cookie.split(';');
         for (let i = 0; i < cookies.length; i++) {
             let cookie = jQuery.trim(cookies[i]);
@@ -164,7 +155,8 @@ $.ajaxSetup({
     },
 });
 
-let handleAjaxError = function(xhr, status) {
+
+function handleAjaxError(xhr, status) {
     const HTTP_500_INTERNAL_SERVER_ERROR = 500;
 
     switch(status) {
@@ -182,6 +174,6 @@ let handleAjaxError = function(xhr, status) {
 
         break;
     }
-};
+}
 
 /*================================*/
