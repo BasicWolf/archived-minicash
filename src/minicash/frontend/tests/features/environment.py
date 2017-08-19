@@ -62,8 +62,8 @@ class Minicash:
 
     def get_active_tab(self):
         br = self.br
-        tab_name = jsget(br, 'minicash.controllers.tabs.getActiveTab().get("name")')
-        tab_el = br.find_element_by_id(f'tab_{tab_name}')
+        route_id = jsget(br, 'minicash.controllers.tabs.getActiveTab().get("routeId")')
+        tab_el = br.find_element_by_id(f'tab_{route_id}')
         return tab_el
 
     def url(self, path):

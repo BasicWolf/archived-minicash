@@ -5,9 +5,9 @@ Feature: Login form
       | username | password |
       | alex     | mypasswd |
     When I submit a login page ("alex", "mypasswd")
-    Then the result page lands on "home" tab
+    Then the result page lands on "Home" tab
 
   Scenario: Acess by authenticated user
     Given an authenticated user
-    When I navigate to root
-    Then the result page lands on "home" tab
+    When I navigate to "index"
+    Then the result page lands on "Home" tab

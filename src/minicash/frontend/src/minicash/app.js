@@ -32,7 +32,17 @@ export default Mn.Application.extend({
     CONTEXT: null,          // placeholder for server context
 
     url: function(name, args={}) {
-        let url = this.CONTEXT.urls[name].sprintf_url;
+        let urls = this.CONTEXT.urls[name];
+
+        // find corresponding URL expression based on args
+        let url = null;
+        for (let urlObj of urls) {
+            // if passed args' keys match url object args
+            if (_.isEmpty(_.difference(_.keys(args), urlObj.args))) {
+                url = urlObj.sprintf_url;
+                break;
+            }
+        }
         return sprintf(url, args);
     },
 
@@ -112,13 +122,20 @@ export default Mn.Application.extend({
 
     _startRouters: function() {
         // All routes which start with '/tab'
-        let tabRoutes = _.chain(this.CONTEXT.urls)
-            .pickBy((urlObj, name) => _.startsWith(name, 'tab'))
-            .map((urlObj, name) => [urlObj.bb_url, name])
-            .fromPairs()
-            .value();
+        let tabRoutes = {};
+        for (let name in this.CONTEXT.urls) {
+            if (!_.startsWith(name, 'tab')) {
+                continue;
+            }
+            let urlObjects = this.CONTEXT.urls[name];
+
+            for (let urlObject of urlObjects) {
+                tabRoutes[urlObject.bb_route] = name;
+            }
+        }
 
         tabRoutes = _.extend({'': 'index'}, tabRoutes);
+        tabRoutes = _.extend({'/': 'index'}, tabRoutes);
 
         this.routers = {
             tabs: new Mn.AppRouter({
@@ -134,7 +151,5 @@ export default Mn.Application.extend({
 
         // ensure that HomeTab is always loaded as the first tab
         this.controllers.tabs.index({show: false});
-
-        this.navigate(this.CONTEXT.route, {trigger: true});
     }
 });

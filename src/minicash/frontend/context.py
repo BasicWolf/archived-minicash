@@ -17,7 +17,7 @@ def build_context(**kwargs):
         build_settings,
         build_record_modes,
         build_bootstrap,
-        build_jsurls,
+        build_routes_maps,
         build_user,
         build_route,
     ]
@@ -71,12 +71,12 @@ def _build_tags(user, **kwargs):
     return TagSerializer(tags, many=True).data
 
 
-def build_jsurls(**kwargs):
+def build_routes_maps(**kwargs):
     url_patterns = urlresolvers.get_resolver().reverse_dict.items()
     urls = {}
-    bb_url_re = re.compile(r'\%\((\w+)\)s')
+    bb_route_re = re.compile(r'\%\((\w+)\)s')
 
-    def bb_url_repl(mo):
+    def bb_route_repl(mo):
         return ':' + mo.group(1)
 
     for name_or_callable, pattern in url_patterns:
@@ -84,12 +84,13 @@ def build_jsurls(**kwargs):
         if callable(name_or_callable):
             continue
 
-        url_pattern, pattern_args = pattern[0][0]
-        urls[name_or_callable] = {
+        urls[name_or_callable] = [{
+            # srintf-formattable url
             'sprintf_url': '/' + url_pattern,
-            'bb_url': re.sub(bb_url_re, bb_url_repl, url_pattern),
+            # Backbone/Marionette-friendly route e.g. /tabs/records/:id
+            'bb_route': re.sub(bb_route_re, bb_route_repl, url_pattern),
             'args': pattern_args
-        }
+        } for url_pattern, pattern_args in pattern[0]]
     return {'urls': urls}
 
 

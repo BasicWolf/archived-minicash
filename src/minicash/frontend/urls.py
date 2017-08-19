@@ -16,12 +16,22 @@ from django.conf.urls import url, include
 
 from .views import RouteView
 
+
+tabs_urls = [
+    url(r'^tabs/records/(?P<id>\w+)?$', RouteView.as_view(), name='tab_records'),
+    url(r'^tabs/new_record/(?P<id>[\w]+)?$', RouteView.as_view(), name='tab_new_record'),
+    url(r'^tabs/assets/(?P<id>\w+)?$', RouteView.as_view(), name='tab_assets'),
+    url(r'^tabs/new_asset/(?P<id>\w+)?$', RouteView.as_view(), name='tab_new_asset'),
+    url(r'^tabs/tags/(?P<id>\w+)?$', RouteView.as_view(), name='tab_tags'),
+    url(r'^tabs/new_tag/(?P<id>\w+)?$', RouteView.as_view(), name='tab_new_tag'),
+    url(r'^tabs/tab_report$', RouteView.as_view(), name='tab_report'),
+]
+
+
 urlpatterns = [
     url(r'^minicash/', include('minicash.core.urls')),
 
-    url(r'^tabs/records$', RouteView.as_view(), name='tab_records'),
-    url(r'^tabs/records/?(?P<id>[\w]+)$', RouteView.as_view(), name='tab_record'),
+    *tabs_urls,
 
-    url(r'^$', RouteView.as_view(), {'route': ''},
-        name='index'),
+    url(r'^$', RouteView.as_view(), {'route': '/'}, name='index'),
 ]

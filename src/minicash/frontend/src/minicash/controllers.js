@@ -47,23 +47,28 @@ export let TabsController = Mn.Object.extend({
         this.openTab(new HomeTab({route: '/'}), options);
     },
 
-    tab_records: function(recordId) {
-        this.openTab(new RecordsTab());
-    },
-
     tab_record: function(recordId) {
-        this.openTab(new RecordTab({recordId: recordId}));
+
     },
 
-    new_record: function(newRecordId) {
+    tab_records: function(recordId) {
+        if (recordId) {
+            this.openTab(new RecordTab({recordId: recordId}));
+        } else {
+            this.openTab(new RecordsTab());
+        }
+    },
+
+    tab_new_record: function(newRecordId) {
         if (!newRecordId) {
             newRecordId = utils.generateId();
         }
-        let recordTab = new RecordTab({route: minicash.reverse('new_record', {id: newRecordId})});
+
+        let recordTab = new RecordTab({route: minicash.url('tab_new_record', {id: newRecordId})});
         this.openTab(recordTab);
     },
 
-    assets: function(assetId) {
+    tab_assets: function(assetId) {
         if (assetId) {
             this.openTab(new AssetTab({assetId: assetId}));
         } else {
@@ -71,15 +76,15 @@ export let TabsController = Mn.Object.extend({
         }
     },
 
-    new_asset: function(newAssetId) {
+    tab_new_asset: function(newAssetId) {
         if (!newAssetId) {
             newAssetId = utils.generateId();
         }
-        let assetTab = new AssetTab({route: minicash.reverse('new_asset', {id: newAssetId})});
+        let assetTab = new AssetTab({route: minicash.url('tab_new_asset', {id: newAssetId})});
         this.openTab(assetTab);
     },
 
-    tags: function(tagId) {
+    tab_tags: function(tagId) {
         if (tagId) {
             this.openTab(new TagTab({tagId: tagId}));
         } else {
@@ -87,12 +92,17 @@ export let TabsController = Mn.Object.extend({
         }
     },
 
-    new_tag: function(newTagId) {
+    tab_new_tag: function(newTagId) {
         if (!newTagId) {
             newTagId = utils.generateId();
         }
-        let tagTab = new TagTab({route: minicash.reverse('new_tag', {id: newTagId})});
+        let tagTab = new TagTab({route: minicash.url('tab_new_tag', {id: newTagId})});
         this.openTab(tagTab);
+    },
+
+    tab_report: function() {
+        let reportTab = new ReportTab();
+        this.openTab(reportTab);
     },
 
     getActiveTab: function() {

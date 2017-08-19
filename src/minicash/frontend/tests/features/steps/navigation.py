@@ -14,17 +14,10 @@ def step_wait(context, timeout):
     context.sleep(int(timeout))
 
 
-@when('I navigate to root')
-def step_navigate_to_root(context):
+@when('I navigate to "{route}"')
+def step_nagivate_to_tab(context, route):
     br = context.browser
-    br.get(context.base_url)
-
-
-@when('I navigate to "{tab_name}" tab')
-def step_nagivate_to_tab(context, tab_name):
-    br = context.browser
-    br.get(context.minicash.url_reverse('tabs_route', args=('record', )))
-
+    br.get(context.minicash.url_reverse(route))
 
 @when('I fill record tab with data')
 def fill_record_with_data(context):
@@ -68,16 +61,15 @@ def step_click_button(context):
     save_btn.click()
 
 
-@then('"{tab_name}" tab is activated')
-def step_tab_is_activated(context, tab_name):
-    context.jswait('minicash.controllers.tabs.getActiveTab().get("name")',
-                   lambda val: val.startswith(tab_name))
+@then('"{tab_title}" tab is activated')
+def step_tab_is_activated(context, tab_title):
+    context.jswait('minicash.controllers.tabs.getActiveTab().get("title")', tab_title)
 
 
-@then('the result page lands on "{tab_name}" tab')
-def step_result_page_lands_on_tab(context, tab_name):
+@then('the result page lands on "{tab_title}" tab')
+def step_result_page_lands_on_tab(context, tab_title):
     context.jswait('minicash.started', True)
-    step_tab_is_activated(context, tab_name)
+    step_tab_is_activated(context, tab_title)
 
 
 @then('record exist on the backend')

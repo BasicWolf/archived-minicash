@@ -74,7 +74,7 @@ let RecordsTabPanelView = TabPanelView.extend({
     },
 
     startNewRecord: function() {
-        minicash.navigateTo('new_record');
+        minicash.navigateTo('tab_new_record');
     },
 
     deleteSelectedRecords: function() {
@@ -188,7 +188,7 @@ let RecordRowView = Mn.View.extend({
     },
 
     editRecord: function() {
-        minicash.navigateTo('tab_record', {id: this.model.id});
+        minicash.navigateTo('tab_records', {id: this.model.id});
     },
 });
 

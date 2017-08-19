@@ -270,6 +270,8 @@ export let RecordTabPanelView = TabPanelView.extend({
         }).fail((response) => {
             this.validator.showErrors(response.responseJSON);
             this.unlockControls();
+        }).always(() => {
+            minicash.status.hide();
         });
 
         return saveDfd.promise();

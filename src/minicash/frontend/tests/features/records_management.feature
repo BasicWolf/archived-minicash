@@ -7,12 +7,12 @@ Feature: Records management
     And assets
       |  pk | owner | name | balance | initial_balance |
       | 200 |   200 | CA   |    1200 |            1200 |
-    When I navigate to "record" tab
+    When I navigate to "tab_new_record"
     And I fill record tab with data
       | Mode    | Date/Time        | From | Expense | Tags        | Description             |
       | EXPENSE | 07/08/2017 22:18 |  200 |     111 | hello world | some descript _for__200 |
     And I click Save button
-    Then "home" tab is activated
+    Then "Home" tab is activated
     And record exist on the backend
       | mode    | created_dt       | asset_from | delta | tags        | description             |
       | EXPENSE | 07/08/2017 22:18 |        200 |   111 | hello world | some descript _for__200 |

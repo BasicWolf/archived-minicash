@@ -52,7 +52,7 @@ let AssetsTabPanelView = TabPanelView.extend({
     },
 
     startNewAsset: function() {
-        minicash.navigate('tabs/asset');
+        minicash.navigateTo('tab_new_asset');
     },
 
     deleteSelectedAssets: function() {
@@ -164,6 +164,6 @@ let AssetRowView = Mn.View.extend({
     },
 
     editAsset: function() {
-        minicash.navigateTo('assets', {id: this.model.id});
+        minicash.navigateTo('tab_assets', {id: this.model.id});
     },
 });

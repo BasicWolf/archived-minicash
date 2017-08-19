@@ -56,7 +56,7 @@ let TagsTabPanelView = TabPanelView.extend({
     },
 
     startNewTag: function() {
-        minicash.navigateTo('new_tag');
+        minicash.navigateTo('tab_new_tag');
     },
 
     deleteSelectedTags: function() {
@@ -165,6 +165,6 @@ let TagRowView = Mn.View.extend({
     },
 
     editTag: function() {
-        minicash.navigateTo('tags', {id: this.model.id});
+        minicash.navigateTo('tab_tags', {id: this.model.id});
     },
 });

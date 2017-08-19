@@ -37,10 +37,10 @@ export let HomeTabPanelView = TabPanelView.extend({
     },
 
     events: {
-        'click @ui.allRecordsBtn': () => minicash.navigate('tabs/records'),
-        'click @ui.newRecordBtn': () => minicash.navigate('tabs/record'),
-        'click @ui.assetsBtn': () => minicash.navigate('tabs/assets'),
-        'click @ui.reportsBtn': () => minicash.navigate('tabs/report'),
-        'click @ui.tagsBtn': () => minicash.navigate('tabs/tags')
+        'click @ui.allRecordsBtn': () => minicash.navigateTo('tab_records'),
+        'click @ui.newRecordBtn': () => minicash.navigateTo('tab_new_record'),
+        'click @ui.assetsBtn': () => minicash.navigateTo('tab_assets'),
+        'click @ui.reportsBtn': () => minicash.navigateTo('tab_report'),
+        'click @ui.tagsBtn': () => minicash.navigateTo('tab_tags')
     },
 }); // HomeTabPanelView

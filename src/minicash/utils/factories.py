@@ -1,13 +1,14 @@
 import datetime
 from datetime import timezone
 
+import factory.random
 from factory import fuzzy
 
 
 class FuzzyFactorySequence(fuzzy.FuzzyAttribute):
     def __init__(self, sub_factory, min_count=0, max_count=10, *args, **kwargs):
         self.sub_factory = sub_factory
-        self.count = fuzzy._random.randint(min_count, max_count)
+        self.count = factory.random.randgen.randint(min_count, max_count)
         self._args = args
         self._kwargs = kwargs
 
@@ -24,7 +25,7 @@ class FuzzyDateTime(fuzzy.FuzzyDateTime):
 
 class FuzzyText(fuzzy.FuzzyText):
     def __init__(self, length=10, min_length=0, max_length=60):
-        length = length or fuzzy._random.randint(min_length, max_length)
+        length = length or factory.random.randgen.randint(min_length, max_length)
         super().__init__(length=length)
 
 
