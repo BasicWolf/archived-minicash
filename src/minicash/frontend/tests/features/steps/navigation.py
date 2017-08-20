@@ -4,8 +4,6 @@ from behave import then, when
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 
-from django.urls import reverse
-
 from minicash.core.models import Record
 
 
@@ -18,6 +16,7 @@ def step_wait(context, timeout):
 def step_nagivate_to_tab(context, route):
     br = context.browser
     br.get(context.minicash.url_reverse(route))
+
 
 @when('I fill record tab with data')
 def fill_record_with_data(context):

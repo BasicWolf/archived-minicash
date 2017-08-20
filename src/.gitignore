@@ -5,6 +5,7 @@ geckodriver.log
 webpack.config.release.js
 
 node_modules/
+.mypy_cache/
 
 # --------- Python ---------- #
 # Byte-compiled / optimized / DLL files

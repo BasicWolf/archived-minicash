@@ -43,26 +43,22 @@ test-behave:
 
 check: check-python
 
-
-check-python: flake8 pylint safety
-
-
-checklicense:
-	git grep --files-without-match 'Copyright (C) 2017' -- './*' ':(exclude)*/.*' ':(exclude).*' ':(exclude)*.txt'
-
+check-python: flake8 pylint mypy safety
 
 flake8:
 	flake8 --config=.flake8rc .
 
-
 pylint:
 	pylint --rcfile=.pylintrc minicash.core minicash.auth minicash.frontend > pylint.out
+
+mypy:
+	mypy . --ignore-missing-imports --follow-imports=skip
 
 safety:
 	safety check -r requirements.txt
 
 pylizard:
-	lizard . -l python
+	lizard ./minicash -l python
 
 $(REQUIREMENTS_FILE):
 	pip freeze | grep -v 'pkg-resource=0.0.0' > requirements.txt

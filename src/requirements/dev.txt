@@ -10,6 +10,7 @@ flake8
 gunicorn
 ipython
 lizard
+mypy
 pudb
 pyflakes
 pylint

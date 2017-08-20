@@ -1,3 +1,6 @@
+from typing import Optional
+
+from django.db import models
 from rest_framework import views
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
@@ -10,7 +13,7 @@ class MassDeleteView(views.APIView):
     '''
     authentication_classes = (SessionAuthentication, BasicAuthentication)
     permission_classes = (IsAuthenticated, )
-    model_class = None
+    model_class: Optional[models.Model] = None
     batch_delete = False
 
     def post(self, request):

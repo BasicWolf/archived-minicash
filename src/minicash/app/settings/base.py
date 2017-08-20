@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 import os
+from typing import List
 
 import dj_database_url
 
@@ -23,7 +24,7 @@ BASE_DIR = os.path.abspath(os.path.join(APP_ROOT, '../../'))
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS: List[str] = []
 
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
 AUTH_PASSWORD_VALIDATORS = [

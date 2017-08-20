@@ -42,6 +42,7 @@ let config = {
                 query: {
                     presets: ['es2015'],
                     plugins: [
+                        // use with es2015 preset
                         ["transform-es2015-modules-commonjs", {
                             "allowTopLevelThis": false
                         }],

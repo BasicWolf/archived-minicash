@@ -1,8 +1,9 @@
-from behave import given, when, then
+from behave import given
 
 from django.contrib.auth import get_user_model
 
 from minicash.core.models import Asset
+
 
 @given(u'assets')
 def create_assets(context):
