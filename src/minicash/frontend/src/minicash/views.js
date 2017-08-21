@@ -1,11 +1,12 @@
 'use strict';
 
+/* global _,minicash */
+
 import Hb from 'handlebars/runtime';
 
 import * as models from 'minicash/models';
 import {tr} from 'minicash/utils';
 
-/* global minicash */
 
 /* Handlebars helpers */
 /*--------------------*/
@@ -58,6 +59,7 @@ Hb.registerHelper('record_tags_names', function(recData, options) {
         tagsNames = recData.tags_names;
     }
 
+    tagsNames = _.sortBy(tagsNames);
     return tagsNames.join(', ');
 });
 

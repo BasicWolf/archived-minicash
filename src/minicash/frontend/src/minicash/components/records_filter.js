@@ -60,6 +60,10 @@ export let RecordsFilter = utils.BaseBehavior.extend({
         this.getUI('tags').select2(opts);
     },
 
+    onApplyBtnClick: function() {
+        this.applyFilter();
+    },
+
     renderAssetsSelects: function() {
         let data = minicash.collections.assets.map((it) => {
             return {id: it.id, text: it.get('name')};
@@ -90,13 +94,9 @@ export let RecordsFilter = utils.BaseBehavior.extend({
         this.getUI('mode').select2(opts);
     },
 
-    onApplyBtnClick: function() {
-        this.applyFilter();
-    },
-
-    applyFilter: function(params=null) {
-        let filterParams = params || this._collectFormData();
-        this.view.triggerMethod('filter:change', filterParams);
+    applyFilter: function(queryArgs=null) {
+        queryArgs = queryArgs || this._collectFormData();
+        this.view.triggerMethod('filter:change', queryArgs);
     },
 
     _collectFormData: function() {

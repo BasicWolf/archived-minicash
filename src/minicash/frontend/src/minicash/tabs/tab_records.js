@@ -113,8 +113,9 @@ let RecordsTabPanelView = TabPanelView.extend({
         this.uiEnable('deleteRecordBtn', !!selectedRecords.length);
     },
 
-    onFilterChange: function(filterParams) {
-        this.collection.search(filterParams);
+    onFilterChange: function(queryArgs) {
+        this.collection.queryArgs = queryArgs;
+        this.collection.getPage(1);
     },
 
     getSelectedRecords: function() {

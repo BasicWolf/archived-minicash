@@ -3,5 +3,11 @@
     "globalstrict": true,
     "globals": {
 
-    }
+    },
+
+    // != / == null comparison
+    "-W041": false,
+
+    // {variable} is better written in dot notation.
+    "-W069": false
 }

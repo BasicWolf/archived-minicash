@@ -2,12 +2,12 @@
 
 /* global _,minicash,moment */
 
-import * as utils from './utils';
+import * as base from './models_base';
 
 export let ID_NOT_SAVED = -1;
 
 
-export let Tag = utils.BaseModel.extend({
+export let Tag = base.BaseModel.extend({
     idAttribute: 'pk',
 
     urlRoot: function() { return minicash.url('tags-list'); },
@@ -21,7 +21,7 @@ export let Tag = utils.BaseModel.extend({
 });
 
 
-export let Tags = utils.BaseCollection.extend({
+export let Tags = base.BaseCollection.extend({
     model: Tag,
 
     url: function() { return minicash.url('tags-list'); },
@@ -55,7 +55,7 @@ export let Tags = utils.BaseCollection.extend({
 });
 
 
-export let Asset = utils.BaseModel.extend({
+export let Asset = base.BaseModel.extend({
     idAttribute: 'pk',
 
     urlRoot: function() { return minicash.url('assets-list'); },
@@ -70,7 +70,7 @@ export let Asset = utils.BaseModel.extend({
 });
 
 
-export let Assets = utils.BaseCollection.extend({
+export let Assets = base.BaseCollection.extend({
     model: Asset,
 
     url: function() { return minicash.url('assets-list'); },
@@ -79,7 +79,7 @@ export let Assets = utils.BaseCollection.extend({
 });
 
 
-export let Record = utils.BaseModel.extend({
+export let Record = base.BaseModel.extend({
     idAttribute: 'pk',
 
     urlRoot: function() {return  minicash.url('records-list'); },
@@ -111,9 +111,9 @@ export let RecordsBase = {
     url: function() { return minicash.url('records-list'); },
 };
 
-export let PageableRecords = utils.BasePageableCollection.extend(RecordsBase);
+export let PageableRecords = base.BasePageableCollection.extend(RecordsBase);
 
 
-export let ReportWidget = utils.BaseModel.extend({
+export let ReportWidget = base.BaseModel.extend({
 
 });

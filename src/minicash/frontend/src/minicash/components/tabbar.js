@@ -37,9 +37,11 @@ export let TabModel = Bb.Model.extend({
     },
 
     _getRouteId: function(route) {
-        let routeId = _.replace(route, /\//g, '_');
+        let routeId = _.replace(route, this.constructor._routeIdRegex, '_');
         return routeId;
     },
+}, {
+    _routeIdRegex: new RegExp('[\/?=]', 'g')
 });
 
 
