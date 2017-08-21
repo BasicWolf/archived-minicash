@@ -7,7 +7,7 @@ import Mn from 'backbone.marionette';
 import Radio from 'backbone.radio';
 import 'backbone.choosy';
 
-import * as utils from 'minicash/utils';
+import * as views from 'minicash/views';
 
 
 export let TabModel = Bb.Model.extend({
@@ -109,7 +109,7 @@ let TabsNavsView = Mn.NextCollectionView.extend({
 });
 
 
-export let TabPanelView = utils.BaseView.extend({
+export let TabPanelView = views.BaseView.extend({
     tagName: 'div',
     className: 'tab-pane',
     attributes: {

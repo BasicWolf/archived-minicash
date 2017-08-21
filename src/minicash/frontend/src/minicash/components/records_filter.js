@@ -4,10 +4,11 @@
 
 import Mn from 'backbone.marionette';
 
+import * as views from 'minicash/views';
 import * as utils from 'minicash/utils';
 
-export let RecordsFilter = utils.BaseBehavior.extend({
-    behaviors: [utils.TooltipBehavior, ],
+export let RecordsFilter = views.BaseBehavior.extend({
+    behaviors: [views.TooltipBehavior, ],
 
     ui: {
         dtFrom: 'div[data-spec="dt_from"]',
