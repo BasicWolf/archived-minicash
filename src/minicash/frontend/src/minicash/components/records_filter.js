@@ -4,10 +4,11 @@
 
 import Mn from 'backbone.marionette';
 
+import * as views from 'minicash/views';
 import * as utils from 'minicash/utils';
 
-export let RecordsFilter = utils.BaseBehavior.extend({
-    behaviors: [utils.TooltipBehavior, ],
+export let RecordsFilter = views.BaseBehavior.extend({
+    behaviors: [views.TooltipBehavior, ],
 
     ui: {
         dtFrom: 'div[data-spec="dt_from"]',
@@ -60,6 +61,10 @@ export let RecordsFilter = utils.BaseBehavior.extend({
         this.getUI('tags').select2(opts);
     },
 
+    onApplyBtnClick: function() {
+        this.applyFilter();
+    },
+
     renderAssetsSelects: function() {
         let data = minicash.collections.assets.map((it) => {
             return {id: it.id, text: it.get('name')};
@@ -90,13 +95,9 @@ export let RecordsFilter = utils.BaseBehavior.extend({
         this.getUI('mode').select2(opts);
     },
 
-    onApplyBtnClick: function() {
-        this.applyFilter();
-    },
-
-    applyFilter: function(params=null) {
-        let filterParams = params || this._collectFormData();
-        this.view.triggerMethod('filter:change', filterParams);
+    applyFilter: function(queryArgs=null) {
+        queryArgs = queryArgs || this._collectFormData();
+        this.view.triggerMethod('filter:change', queryArgs);
     },
 
     _collectFormData: function() {

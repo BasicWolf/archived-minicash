@@ -7,7 +7,7 @@ import Mn from 'backbone.marionette';
 import Radio from 'backbone.radio';
 import 'backbone.choosy';
 
-import * as utils from 'minicash/utils';
+import * as views from 'minicash/views';
 
 
 export let TabModel = Bb.Model.extend({
@@ -37,9 +37,11 @@ export let TabModel = Bb.Model.extend({
     },
 
     _getRouteId: function(route) {
-        let routeId = _.replace(route, /\//g, '_');
+        let routeId = _.replace(route, this.constructor._routeIdRegex, '_');
         return routeId;
     },
+}, {
+    _routeIdRegex: new RegExp('[\/?=]', 'g')
 });
 
 
@@ -107,7 +109,7 @@ let TabsNavsView = Mn.NextCollectionView.extend({
 });
 
 
-export let TabPanelView = utils.BaseView.extend({
+export let TabPanelView = views.BaseView.extend({
     tagName: 'div',
     className: 'tab-pane',
     attributes: {

@@ -1,8 +1,7 @@
 'use strict';
 
-/* global $,_,minicash,tr */
+/* global $,_,minicash */
 
-import Bb from 'backbone';
 import Decimal from 'decimal.js';
 import Mn from 'backbone.marionette';
 import PageableCollection from 'backbone.paginator';
@@ -14,7 +13,7 @@ import 'moment/locale/fi';
 export let KEYS = {
     ENTER: 13,
     ESCAPE: 27,
-}
+};
 
 
 /* --- NOTIFICATIONS AND STATUS --- */
@@ -57,176 +56,6 @@ export let status = {
         $('#minicash_status').fadeOut(500);
     }
 };
-
-/* ==================================================================================================== */
-
-
-export let BaseModel = Bb.Model.extend({
-    serverAttributes: null,
-
-    save(attrs, options) {
-        attrs = attrs || this.toJSON();
-        options = options || {};
-
-        // if model defines serverAttributes, replace attrs with trimmed version
-        if (_.isNull(this.serverAttributes)) {
-            attrs = _.pick(attrs, this.serverAttributes);
-        }
-
-        return Bb.Model.prototype.save.call(this, attrs, options);
-    },
-
-    serialize() {
-        let data = _.clone(this.attributes);
-        data['id'] = this.id;
-        return data;
-    }
-});
-
-
-let SerializeCollectionMixin = {
-    serialize() {
-	    return this.map( (model) => {
-            if (model instanceof BaseModel)
-                return model.serialize();
-            else
-                return _.clone(model.attributes);
-        });
-    }
-};
-
-let MassDeleteCollectionMixin = {
-    delete: function(modelsOrPks=null) {
-        let pks = modelsOrPks.map((modelOrPk) => {
-            return modelOrPk instanceof Bb.Model ? modelOrPk.id : modelOrPk;
-        });
-
-        let dfd = $.post({
-            url: minicash.url('records-mass-delete'),
-            data: JSON.stringify({'pks': pks}),
-            contentType : 'application/json',
-        });
-
-        dfd.done((data) => {
-            let remPks = data.pks || [];
-            this.remove(remPks);
-        });
-
-        return dfd;
-    }
-};
-
-export let BaseCollection = Bb.Collection.extend({
-    search: function(searchArgs, options) {
-        let defaults = {
-            data: searchArgs,
-            traditional: true,
-        };
-
-        let attrs = _.extend({}, defaults, options);
-        return this.fetch(attrs);
-    },
-});
-_.extend(
-    BaseCollection.prototype,
-    SerializeCollectionMixin,
-    MassDeleteCollectionMixin
-);
-
-
-export let BasePageableCollection = Bb.PageableCollection.extend({
-    state: {
-        firstPage: 1,
-        pageSize: minicash.CONTEXT.settings.PAGINATOR_DEFAULT_PAGE_SIZE,
-    },
-
-    queryParams: {
-        currentPage: 'page',
-        pageSize: 'page_size',
-        totalRecords: 'count',
-        totalPages: 'num_pages',
-    },
-
-    parseState(resp, queryParams, state, options) {
-        let newState = Bb.PageableCollection.prototype.parseState.apply(this, arguments);
-
-        // add `previousPage` and `nextPage` to state - handy when rendering
-        newState.previousPage = null;
-        newState.nextPage = null;
-
-        if (!_.isNull(newState.currentPage)) {
-            newState.previousPage = newState.currentPage - 1;
-            newState.nextPage = newState.currentPage + 1;
-        }
-        return newState;
-    },
-
-    search: function(searchArgs, options) {
-        let defaults = {
-            data: searchArgs,
-            traditional: true,
-        };
-
-        let attrs = _.extend({}, defaults, options);
-        return this.getPage(this.state.firstPage, attrs);
-    }
-});
-_.extend(
-    BasePageableCollection.prototype,
-    SerializeCollectionMixin,
-    MassDeleteCollectionMixin
-);
-
-
-/* ==================================================================================================== */
-
-
-/* ------ UI HELPERS  ----- */
-/*--------------------------*/
-export let UnwrappedView = Mn.View.extend({
-    onRender() {
-        // Get rid of that pesky wrapping-div.
-        // Assumes 1 child element present in template.
-        this.$el = this.$el.children();
-        // Unwrap the element to prevent infinitely
-        // nesting elements during re-render.
-        this.$el.unwrap();
-        this.setElement(this.$el);
-    }
-});
-
-export let UIEnableDisableMixin = {
-    uiEnable: function (names, enable=true) {
-        if (!_.isArray(names)) {
-            names = [names];
-        }
-
-        for (let name of names) {
-            if (enable) {
-                this.getUI(name).removeAttr('disabled');
-            } else {
-                this.getUI(name).prop('disabled', true);
-            }
-        }
-    },
-
-    uiDisable: function (names) {
-        this.uiEnable(names, false);
-    },
-};
-
-export let BaseView = Mn.View.extend({});
-_.extend(BaseView.prototype, UIEnableDisableMixin);
-
-export let BaseBehavior = Mn.Behavior.extend({});
-_.extend(BaseBehavior.prototype, UIEnableDisableMixin);
-
-
-export let TooltipBehavior = Mn.Behavior.extend({
-    onRender: function() {
-        this.$el.find('[data-toggle="tooltip"]').tooltip();
-    }
-});
 /* ==================================================================================================== */
 
 /* --- HELPER FUNCTIONS --- */
