@@ -1,5 +1,5 @@
 'use strict';
-/* global _,console,window */
+/* global _,$,console,window */
 
 // NOTE, these MUST be loaded before anything, because monkey-patching happens here
 import './defaults';
@@ -34,6 +34,14 @@ export default Mn.Application.extend({
     url: function(name, args={}) {
         let urls = this.CONTEXT.urls[name];
 
+        let query = '';
+        // find query arguments which are transformed to
+        // something like ?arg1=val1&arg2=val2...
+        if (args._queryArgs != null) {
+            query = $.param(args._queryArgs);
+            delete args._queryArgs;
+        }
+
         // find corresponding URL expression based on args
         let url = null;
         for (let urlObj of urls) {
@@ -43,7 +51,12 @@ export default Mn.Application.extend({
                 break;
             }
         }
-        return sprintf(url, args);
+
+        let route = sprintf(url, args);
+        if (query) {
+            route += '?' + query;
+        }
+        return route;
     },
 
     static: function (url) {
@@ -62,10 +75,10 @@ export default Mn.Application.extend({
         return Bb.history.navigate(fragment, options);
     },
 
-    navigateTo: function(name, args, options) {
+    navigateTo: function(name, args={}, options={}) {
         let route = this.url(name, args);
         if (!route) {
-            console.error('Unable to find router for ', name);
+            console.error('Unable to find router for ', name, args);
             return;
         } else {
             this.navigate(route, options);

@@ -41,12 +41,18 @@ let RecordsTabPanelView = TabPanelView.extend({
         }
     }),
 
+    collectionEvents: {
+        'pageable:state:change': 'onCollectionStateChange',
+    },
+
     initialize: function() {
         recordsChannel.on('model:save', (model) => {
             this.collection.add(model, {at: 0, merge: true});
         });
 
-        this.collection.getPage(1);
+        let queryArgs = this.model.get('queryArgs');
+        let page = parseInt(queryArgs.page) || 1;
+        this.collection.getPage(page);
     },
 
     ui: {
@@ -108,6 +114,11 @@ let RecordsTabPanelView = TabPanelView.extend({
     },
 
     onChildviewPageChange: function(pageNumber) {
+        //         let queryArgs = {
+        //     page: newState.currentPage || 1
+        // };
+
+        minicash.navigateTo('tab_records', {_queryArgs: queryArgs}, {trigger: false});
         this.collection.getPage(pageNumber);
     },
 
@@ -123,7 +134,11 @@ let RecordsTabPanelView = TabPanelView.extend({
     getSelectedRecords: function() {
         let recordsTableView = this.getChildView('recordsTableRegion');
         return recordsTableView.getSelectedRecords();
-    }
+    },
+
+    onCollectionStateChange: function(newState={}) {
+
+    },
 });
 
 

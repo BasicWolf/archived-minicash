@@ -1,6 +1,6 @@
 'use strict';
 
-/* global _,$,Backbone,minicash,require, */
+/* global _,$,Backbone,minicash,require */
 
 import Bb from 'backbone';
 import Mn from 'backbone.marionette';
@@ -19,9 +19,14 @@ export let TabModel = Bb.Model.extend({
 
     defaults: function() {
         let route = Bb.history.getFragment();
+
         return {
             route: route,
-            routeId: this._getRouteId(route), // a HTML `id` attribute-friendly formatted route
+            // a HTML `id` attribute-friendly formatted route
+            routeId: this._getRouteId(route),
+            // a dictionary with HTTP GET args passed in the route
+            // updated automatically when route is changed
+            queryArgs: {},
 
             title: 'New tab',
             permanent: false,        // false - allow closing the tab
@@ -34,6 +39,10 @@ export let TabModel = Bb.Model.extend({
     onRouteChange: function() {
         let routeId = this._getRouteId(this.get('route'));
         this.set('routeId', routeId);
+
+        let [route, query] = _.split(this.get('route'), '?');
+        let queryArgs = _.fromPairs([...new URLSearchParams(query)]);
+        this.set('queryArgs', queryArgs);
     },
 
     _getRouteId: function(route) {
