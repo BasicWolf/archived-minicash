@@ -56,7 +56,8 @@ let RecordsTabPanelView = TabPanelView.extend({
 
     regions: {
         recordsTableRegion: {el: '[data-spec="records-table-region"]'},
-        paginatorRegion: {el: '[data-spec="paginator-region"]'},
+        topPaginatorRegion: {el: '[data-spec="top-paginator-region"]'},
+        bottomPaginatorRegion: {el: '[data-spec="bottom-paginator-region"]'},
     },
 
     events: {
@@ -70,7 +71,8 @@ let RecordsTabPanelView = TabPanelView.extend({
 
     onRender: function() {
         this.showChildView('recordsTableRegion', new RecordsTableView({collection: this.collection})) ;
-        this.showChildView('paginatorRegion', new PaginatorView({collection: this.collection}));
+        this.showChildView('topPaginatorRegion', new PaginatorView({collection: this.collection}));
+        this.showChildView('bottomPaginatorRegion', new PaginatorView({collection: this.collection}));
     },
 
     startNewRecord: function() {
@@ -189,7 +191,7 @@ let RecordRowView = Mn.View.extend({
     },
 
     editRecord: function() {
-        minicash.navigateTo('tab_records', {id: this.model.id});
+        minicash.navigateTo('tab_record', {id: this.model.id});
     },
 });
 

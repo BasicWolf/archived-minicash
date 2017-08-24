@@ -48,15 +48,11 @@ export let TabsController = Mn.Object.extend({
     },
 
     tab_record: function(recordId) {
-
+        this.openTab(new RecordTab({recordId: recordId}));
     },
 
-    tab_records: function(recordId) {
-        if (recordId) {
-            this.openTab(new RecordTab({recordId: recordId}));
-        } else {
-            this.openTab(new RecordsTab());
-        }
+    tab_records: function(query) {
+        this.openTab(new RecordsTab());
     },
 
     tab_new_record: function(newRecordId) {

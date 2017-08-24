@@ -41,3 +41,5 @@ LOGGING = {
         },
     },
 }
+
+MINICASH['PAGINATOR_DEFAULT_PAGE_SIZE'] = 2

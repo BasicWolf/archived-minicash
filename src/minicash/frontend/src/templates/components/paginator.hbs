@@ -1,23 +1,23 @@
 <nav aria-label="navigation">
 
   <ul class="pagination" style="margin:0px !important;">
+    {{#paginator_buttons totalPages currentPage}}{{/paginator_buttons}}
+
     <li class="{{#ifeq currentPage firstPage}}disabled{{/ifeq}}">
       {{#ifeq currentPage firstPage}}
         <span>&laquo;</span>
-      {{^}}
-        <a data-spec="page-button" data-page-number="{{previousPage}}" href="#" aria-label="Previous">
+        {{^}}
+        <a data-spec="page-button" data-page-number="{{previousPage}}" href="javascript:void(0);" aria-label="Previous">
           &laquo;
         </a>
       {{/ifeq}}
     </li>
 
-    {{#paginator_buttons totalPages currentPage}}{{/paginator_buttons}}
-
     <li class="{{#ifeq currentPage lastPage}}disabled{{/ifeq}}">
       {{#ifeq currentPage lastPage}}
         <span>&raquo;</span>
       {{^}}
-        <a data-spec="page-button" data-page-number="{{nextPage}}" href="#" aria-label="Next">
+        <a data-spec="page-button" data-page-number="{{nextPage}}" href="javascript:void(0);" aria-label="Next">
           &raquo;
         </a>
       {{/ifeq}}

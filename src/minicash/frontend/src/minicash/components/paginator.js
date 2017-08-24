@@ -55,34 +55,36 @@ export let PaginatorView = Mn.View.extend({
 
 
 /* ------ Handlebar helpers ------ */
-
 Hb.registerHelper('paginator_buttons', function(totalPages, currentPage, options) {
     let out = '';
     let invisibleDisplayedFlag = false;
-    let pageBtnVisible = function (page) {
-        let firstOrLast = page === 1 || page === totalPages;
-        let current = page === currentPage;
-        let leftBoundary = currentPage < 3 && (page === 2 || page === totalPages - 1);
-        let rightBoundary = currentPage >= totalPages - 2 && (page === 2 || page === totalPages - 1);
-        return firstOrLast || current || leftBoundary || rightBoundary;
-    };
 
     for (let i = 1; i < totalPages + 1; i++) {
-        let visible = pageBtnVisible(i);
+        let visible = _pageBtnVisible(i, currentPage, totalPages);
 
         let active = i === currentPage ? 'active' : '';
         out += `<li class=\"${active}\">`;
         if (visible) {
-            out += `<a href=\"#\" data-spec=\"page-button\" data-page-number=\"${i}\">${i}</a>`;
+            out += `<a href=\"javascript:void(0);\" data-spec=\"page-button\" data-page-number=\"${i}\">${i}</a>`;
             invisibleDisplayedFlag = false;
         }
         else if (!invisibleDisplayedFlag) {
-            out += '<a href="#">...</a>';
+            out += '<a href="javascript:void(0);">&hellip;</a>';
             invisibleDisplayedFlag = true;
         }
         out += "</li>";
-    };
+    }
 
     return out;
 });
+
+function _pageBtnVisible (page, currentPage, totalPages) {
+    /* Ensure that 7 pages buttons are visible when count is >= 7 */
+    let all = totalPages <= 7;
+    let firstOrLast = page === 1 || page === totalPages;
+    let beginOrEnd = page <= 5 && currentPage <= 4 || page >= totalPages - 4 && currentPage >= totalPages - 3;
+    let current = page === currentPage;
+    let closest = page >= currentPage - 1  && page <= currentPage + 1;
+    return all || firstOrLast || current || closest || beginOrEnd;
+}
 /*=================================*/
