@@ -45,14 +45,8 @@ let RecordsTabPanelView = TabPanelView.extend({
         'pageable:state:change': 'onCollectionStateChange',
     },
 
-    initialize: function() {
-        recordsChannel.on('model:save', (model) => {
-            this.collection.add(model, {at: 0, merge: true});
-        });
-
-        let queryArgs = this.model.get('queryArgs');
-        let page = parseInt(queryArgs.page) || 1;
-        this.collection.getPage(page);
+    modelEvents: {
+        'change:queryArgs': 'onQueryArgsChange',
     },
 
     ui: {
@@ -75,10 +69,24 @@ let RecordsTabPanelView = TabPanelView.extend({
         'selected:records:change': 'onSelectedRecordsChange',
     },
 
+    initialize: function() {
+        recordsChannel.on('model:save', (model) => {
+            this.collection.add(model, {at: 0, merge: true});
+        });
+
+        this.onQueryArgsChange();
+    },
+
     onRender: function() {
         this.showChildView('recordsTableRegion', new RecordsTableView({collection: this.collection})) ;
         this.showChildView('topPaginatorRegion', new PaginatorView({collection: this.collection}));
         this.showChildView('bottomPaginatorRegion', new PaginatorView({collection: this.collection}));
+    },
+
+    onQueryArgsChange: function(model, queryArgs=null) {
+        queryArgs = queryArgs || this.model.get('queryArgs');
+        let page = parseInt(queryArgs.page) || 1;
+        this.collection.getPage(page);
     },
 
     startNewRecord: function() {
@@ -114,12 +122,11 @@ let RecordsTabPanelView = TabPanelView.extend({
     },
 
     onChildviewPageChange: function(pageNumber) {
-        //         let queryArgs = {
-        //     page: newState.currentPage || 1
-        // };
+        let queryArgs = {
+            page: pageNumber
+        };
 
-        minicash.navigateTo('tab_records', {_queryArgs: queryArgs}, {trigger: false});
-        this.collection.getPage(pageNumber);
+        minicash.navigateTo('tab_records', {}, queryArgs);
     },
 
     onSelectedRecordsChange: function(selectedRecords) {

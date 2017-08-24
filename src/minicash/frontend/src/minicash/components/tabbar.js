@@ -13,24 +13,26 @@ import * as views from 'minicash/views';
 export let TabModel = Bb.Model.extend({
     initialize: function() {
         this.onRouteChange();
-        this.listenTo(this, 'route:change', this.onRouteChange);
+        this.listenTo(this, 'change:route', this.onRouteChange);
         return new Backbone.Choosy(this);
     },
 
     defaults: function() {
-        let route = Bb.history.getFragment();
-
         return {
-            route: route,
-            // a HTML `id` attribute-friendly formatted route
-            routeId: this._getRouteId(route),
-            // a dictionary with HTTP GET args passed in the route
-            // updated automatically when route is changed
-            queryArgs: {},
+            route: '/' + Bb.history.getFragment(),
 
-            title: 'New tab',
-            permanent: false,        // false - allow closing the tab
-            singleInstance: true,    // true - only one instance of this tab in tabbar
+            // HTML `id` attribute-friendly formatted route
+            routeId: null,
+            // Dictionary with HTTP GET args passed in the route
+            // updated automatically when route is changed
+            queryArgs: null,
+
+            // Tab title
+            title: '',
+            // Indicates whether tab is permanent (closing is allowed or not)
+            permanent: false,
+            // Indicates whether only a single instance of the tab is allowed
+            singleInstance: true,
             order: undefined,
             viewClass: null,
         };
@@ -43,12 +45,24 @@ export let TabModel = Bb.Model.extend({
         let [route, query] = _.split(this.get('route'), '?');
         let queryArgs = _.fromPairs([...new URLSearchParams(query)]);
         this.set('queryArgs', queryArgs);
+        this.set('route', route, {silent: true});
     },
 
     _getRouteId: function(route) {
         let routeId = _.replace(route, this.constructor._routeIdRegex, '_');
         return routeId;
     },
+
+    getFullRoute: function() {
+        let route = this.get('route');
+        let queryArgs = this.get('queryArgs');
+
+        if (!_.isEmpty(queryArgs)) {
+            route += '?' + $.param(queryArgs);
+        }
+        return route;
+    }
+
 }, {
     _routeIdRegex: new RegExp('[\/?=]', 'g')
 });
@@ -78,28 +92,35 @@ let TabNavView = Mn.View.extend({
     },
 
     events: {
+        'click @ui.a': 'onTabClick',
         'click @ui.closeTabButton': 'onCloseTabButtonClick',
     },
 
     modelEvents: {
         'model:chosen': 'onTabChosen',
-    },
-
-    onRender: function() {
-        let self = this;
-        this.getUI('a').on('shown.bs.tab', function() {
-            self.triggerMethod('tab:shown', self.model);
-        });
+        'change:route': 'onRouteChange',
     },
 
     onAttach: function() {
         this.getUI('a').tab();
     },
 
+    onTabClick: function(e) {
+        e.preventDefault();
+        let $target = $(e.target);
+        if ($target.attr('href')) {
+            minicash.navigate($target.attr('href'));
+        }
+    },
+
     onTabChosen: function() {
         let $a = this.getUI('a');
         $a.tab('show');
-        minicash.navigate($a.attr('href'), {trigger: false});
+    },
+
+    onRouteChange: function() {
+        let $a = this.getUI('a');
+        $a.attr('href', this.model.getFullRoute());
     },
 
     onCloseTabButtonClick: function() {
@@ -177,6 +198,8 @@ export let TabbarView = Mn.View.extend({
             if (existingTabModel) {
                 showTabModel = existingTabModel;
                 shouldAdd = false;
+
+                existingTabModel.set('route', tabModel.getFullRoute());
             }
         }
 
@@ -190,10 +213,6 @@ export let TabbarView = Mn.View.extend({
     },
 
     onModelDestroyed: function(model, collection, options) {
-        this.collection.choose(this.collection.at(-1));
-    },
-
-    onChildviewChildviewTabShown: function(model) {
-        this.collection.choose(model, {silent: true});
+        minicash.navigate(this.collection.at(-1).getFullRoute());
     },
 });

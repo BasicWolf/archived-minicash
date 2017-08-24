@@ -31,16 +31,8 @@ export default Mn.Application.extend({
     collections: null,      // placeholder for assets and tags collections
     CONTEXT: null,          // placeholder for server context
 
-    url: function(name, args={}) {
+    url: function(name, args={}, queryArgs={}) {
         let urls = this.CONTEXT.urls[name];
-
-        let query = '';
-        // find query arguments which are transformed to
-        // something like ?arg1=val1&arg2=val2...
-        if (args._queryArgs != null) {
-            query = $.param(args._queryArgs);
-            delete args._queryArgs;
-        }
 
         // find corresponding URL expression based on args
         let url = null;
@@ -53,8 +45,8 @@ export default Mn.Application.extend({
         }
 
         let route = sprintf(url, args);
-        if (query) {
-            route += '?' + query;
+        if (!_.isEmpty(queryArgs)) {
+            route += '?' + $.param(queryArgs);
         }
         return route;
     },
@@ -66,6 +58,8 @@ export default Mn.Application.extend({
     /* Routes and Navigation */
     /* ===================== */
     navigate: function(fragment, options) {
+        console.debug('Navigating to: ', fragment, options);
+
         if (fragment == null || !_.isString(fragment)) {
             console.warning('fragment is invalid: ', fragment);
             fragment = '';
@@ -75,8 +69,8 @@ export default Mn.Application.extend({
         return Bb.history.navigate(fragment, options);
     },
 
-    navigateTo: function(name, args={}, options={}) {
-        let route = this.url(name, args);
+    navigateTo: function(name, args={}, queryArgs={}, options={}) {
+        let route = this.url(name, args, queryArgs);
         if (!route) {
             console.error('Unable to find router for ', name, args);
             return;
@@ -144,6 +138,7 @@ export default Mn.Application.extend({
 
             for (let urlObject of urlObjects) {
                 tabRoutes[urlObject.bb_route] = name;
+                tabRoutes[urlObject.bb_route + '?(:query)'] = name;
             }
         }
 

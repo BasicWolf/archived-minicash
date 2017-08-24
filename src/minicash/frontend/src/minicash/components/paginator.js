@@ -66,7 +66,7 @@ Hb.registerHelper('paginator_buttons', function(totalPages, currentPage, options
         let active = i === currentPage ? 'active' : '';
         out += `<li class=\"${active}\">`;
         if (visible) {
-            let url = minicash.url('tab_records', {_queryArgs: {page: i}});
+            let url = minicash.url('tab_records', {}, {page: i});
             out += `<a href=\"${url}\" data-spec=\"page-button\" data-page-number=\"${i}\">${i}</a>`;
             invisibleDisplayedFlag = false;
         }
