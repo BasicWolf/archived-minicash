@@ -41,12 +41,12 @@ let RecordsTabPanelView = TabPanelView.extend({
         }
     }),
 
-    initialize: function() {
-        recordsChannel.on('model:save', (model) => {
-            this.collection.add(model, {at: 0, merge: true});
-        });
+    collectionEvents: {
+        'pageable:state:change': 'onCollectionStateChange',
+    },
 
-        this.collection.getPage(1);
+    modelEvents: {
+        'change:queryArgs': 'onQueryArgsChange',
     },
 
     ui: {
@@ -69,10 +69,24 @@ let RecordsTabPanelView = TabPanelView.extend({
         'selected:records:change': 'onSelectedRecordsChange',
     },
 
+    initialize: function() {
+        recordsChannel.on('model:save', (model) => {
+            this.collection.add(model, {at: 0, merge: true});
+        });
+
+        this.onQueryArgsChange();
+    },
+
     onRender: function() {
         this.showChildView('recordsTableRegion', new RecordsTableView({collection: this.collection})) ;
         this.showChildView('topPaginatorRegion', new PaginatorView({collection: this.collection}));
         this.showChildView('bottomPaginatorRegion', new PaginatorView({collection: this.collection}));
+    },
+
+    onQueryArgsChange: function(model, queryArgs=null) {
+        queryArgs = queryArgs || this.model.get('queryArgs');
+        let page = parseInt(queryArgs.page) || 1;
+        this.collection.getPage(page);
     },
 
     startNewRecord: function() {
@@ -108,7 +122,11 @@ let RecordsTabPanelView = TabPanelView.extend({
     },
 
     onChildviewPageChange: function(pageNumber) {
-        this.collection.getPage(pageNumber);
+        let queryArgs = {
+            page: pageNumber
+        };
+
+        minicash.navigateTo('tab_records', {}, queryArgs);
     },
 
     onSelectedRecordsChange: function(selectedRecords) {
@@ -123,7 +141,11 @@ let RecordsTabPanelView = TabPanelView.extend({
     getSelectedRecords: function() {
         let recordsTableView = this.getChildView('recordsTableRegion');
         return recordsTableView.getSelectedRecords();
-    }
+    },
+
+    onCollectionStateChange: function(newState={}) {
+
+    },
 });
 
 

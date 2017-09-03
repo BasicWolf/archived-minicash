@@ -1,5 +1,5 @@
 'use strict';
-/* global _,console,window */
+/* global _,$,console,window */
 
 // NOTE, these MUST be loaded before anything, because monkey-patching happens here
 import './defaults';
@@ -31,7 +31,7 @@ export default Mn.Application.extend({
     collections: null,      // placeholder for assets and tags collections
     CONTEXT: null,          // placeholder for server context
 
-    url: function(name, args={}) {
+    url: function(name, args={}, queryArgs={}) {
         let urls = this.CONTEXT.urls[name];
 
         // find corresponding URL expression based on args
@@ -43,7 +43,12 @@ export default Mn.Application.extend({
                 break;
             }
         }
-        return sprintf(url, args);
+
+        let route = sprintf(url, args);
+        if (!_.isEmpty(queryArgs)) {
+            route += '?' + $.param(queryArgs);
+        }
+        return route;
     },
 
     static: function (url) {
@@ -53,6 +58,8 @@ export default Mn.Application.extend({
     /* Routes and Navigation */
     /* ===================== */
     navigate: function(fragment, options) {
+        console.debug('Navigating to: ', fragment, options);
+
         if (fragment == null || !_.isString(fragment)) {
             console.warning('fragment is invalid: ', fragment);
             fragment = '';
@@ -62,10 +69,10 @@ export default Mn.Application.extend({
         return Bb.history.navigate(fragment, options);
     },
 
-    navigateTo: function(name, args, options) {
-        let route = this.url(name, args);
+    navigateTo: function(name, args={}, queryArgs={}, options={}) {
+        let route = this.url(name, args, queryArgs);
         if (!route) {
-            console.error('Unable to find router for ', name);
+            console.error('Unable to find router for ', name, args);
             return;
         } else {
             this.navigate(route, options);
@@ -131,6 +138,7 @@ export default Mn.Application.extend({
 
             for (let urlObject of urlObjects) {
                 tabRoutes[urlObject.bb_route] = name;
+                tabRoutes[urlObject.bb_route + '?(:query)'] = name;
             }
         }
 

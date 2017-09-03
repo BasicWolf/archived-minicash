@@ -1,5 +1,3 @@
-from moneyed import Money
-
 from behave import then, when
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
@@ -35,8 +33,13 @@ def fill_record_with_data(context):
     created_dt_el.send_keys(item['Date/Time'])
 
     # withdrawn from account
-    asset_from_el = Select(form.find_element_by_xpath('.//select[@name="asset_from"]'))
-    asset_from_el.select_by_value(item['From'])
+    if 'From' in item:
+        asset_from_el = Select(form.find_element_by_xpath('.//select[@name="asset_from"]'))
+        asset_from_el.select_by_value(item['From'])
+
+    if 'To' in item:
+        asset_to_el = Select(form.find_element_by_xpath('.//select[@name="asset_to"]'))
+        asset_to_el.select_by_value(item['To'])
 
     # expense
     expense_el = form.find_element_by_xpath('.//input[@name="delta"]')
@@ -69,16 +72,3 @@ def step_tab_is_activated(context, tab_title):
 def step_result_page_lands_on_tab(context, tab_title):
     context.jswait('minicash.started', True)
     step_tab_is_activated(context, tab_title)
-
-
-@then('record exist on the backend')
-def step_records_exists_on_backend(context):
-    test = context.test
-    item = context.item
-    record = Record.objects.get(description=item['description'])
-    test.assertEqual(getattr(Record, item['mode']), record.mode)
-    test.assertEqual(item['created_dt'],
-                     record.created_dt.strftime(context.user.profile.date_time_format))
-    currency = record.delta.currency
-    test.assertAlmostEqual(Money(item['delta'], currency), record.delta, places=2)
-    test.assertEqual(item['tags'], ' '.join(tag.name for tag in record.tags.all()))

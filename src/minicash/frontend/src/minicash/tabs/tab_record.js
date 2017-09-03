@@ -196,25 +196,29 @@ export let RecordTabPanelView = TabPanelView.extend({
         let $fromAssetSelect = this.getUI('fromAssetSelect');
         let $toAssetSelect = this.getUI('toAssetSelect');
 
+        $toAssetSelect.rules('remove', 'required');
+        $fromAssetSelect.rules('remove', 'required');
+
         switch (mode) {
         case RECORD_MODES.INCOME.value:
             showTo = true;
-            this.getUI('toAssetSelect').rules('add', 'required');
+            $toAssetSelect.rules('add', 'required');
             break;
         case RECORD_MODES.EXPENSE.value:
             showFrom = true;
-            this.getUI('fromAssetSelect').rules('add', 'required');
+            $fromAssetSelect.rules('add', 'required');
             break;
         case RECORD_MODES.TRANSFER.value:
             showTo = showFrom = true;
-            this.getUI('fromAssetSelect').rules('add', 'required');
-            this.getUI('toAssetSelect').rules('add', 'required');
+            $toAssetSelect.rules('add', 'required');
+            $fromAssetSelect.rules('add', 'required');
             break;
         default:
             throw 'Invalid record mode value';
         };
-        this.getUI('fromAssetSelect').parentsUntil('form', '.form-group').toggle(showFrom);
-        this.getUI('toAssetSelect').parentsUntil('form', '.form-group').toggle(showTo);
+
+        $fromAssetSelect.parentsUntil('form', '.form-group').toggle(showFrom);
+        $toAssetSelect.parentsUntil('form', '.form-group').toggle(showTo);
     },
 
 
@@ -248,6 +252,7 @@ export let RecordTabPanelView = TabPanelView.extend({
     },
 
     saveForm: function() {
+        debugger;
         let saveData = this._collectFormData();
         if (_.isEmpty(saveData)) {
             return utils.rejectedPromise();

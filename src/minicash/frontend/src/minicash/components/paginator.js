@@ -42,6 +42,7 @@ export let PaginatorView = Mn.View.extend({
     },
 
     onPageButtonClick: function (e) {
+        e.preventDefault();
         let $button = $(e.target);
 
         let pageNumberTxt = $button.attr('data-page-number');
@@ -65,7 +66,8 @@ Hb.registerHelper('paginator_buttons', function(totalPages, currentPage, options
         let active = i === currentPage ? 'active' : '';
         out += `<li class=\"${active}\">`;
         if (visible) {
-            out += `<a href=\"javascript:void(0);\" data-spec=\"page-button\" data-page-number=\"${i}\">${i}</a>`;
+            let url = minicash.url('tab_records', {}, {page: i});
+            out += `<a href=\"${url}\" data-spec=\"page-button\" data-page-number=\"${i}\">${i}</a>`;
             invisibleDisplayedFlag = false;
         }
         else if (!invisibleDisplayedFlag) {

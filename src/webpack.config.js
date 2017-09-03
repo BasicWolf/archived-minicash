@@ -135,7 +135,9 @@ if (process.env.NODE_ENV == 'production') {
         mangle: {
             except: ['$', '_', 'Backbone', 'exports', 'jQuery',
                      'minicash', 'moment', 'Mn', 'require', 'select2', 'tr']
-        }
+        },
+        drop_debugger: true,
+        drop_console: true,
     }));
 
     config.plugins.push(new OptimizeCssAssetsPlugin({
