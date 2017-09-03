@@ -271,9 +271,11 @@ class TagsAPITest(RESTTestCase):
         self.assert_deleted(res)
         self.assertEqual(4, Tag.objects.all().count())
 
-    # def test_mass_delete(self):
-    #     tags = TagFactory.create_batch(9, owner=self.owner)
-    #     tags_pks = [r.pk for r in tags[:5]]
-    #     res = self.jpost(reverse('tags-mass-delete'), {'pks': tags_pks})
-    #     self.assertEqual(tags_pks[:5], res.data['pks'])
-    #     self.assertEqual(4, Tag.objects.for_owner(self.owner).count())
+    def test_mass_delete(self):
+        TAGS_TO_DELETE = 3
+        tags = TagFactory.create_batch(10, owner=self.owner)
+        tags_pks = [r.pk for r in tags[:TAGS_TO_DELETE]]
+        res = self.jpost(reverse('tags-mass-delete'), {'pks': tags_pks})
+        self.assertEqual(tags_pks[:TAGS_TO_DELETE], res.data['pks'])
+        self.assertEqual(len(tags) - TAGS_TO_DELETE,
+                         Tag.objects.for_owner(self.owner).count())

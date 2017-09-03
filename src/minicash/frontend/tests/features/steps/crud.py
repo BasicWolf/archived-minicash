@@ -14,6 +14,13 @@ def create_assets(context):
         Asset.objects.create(**item)
 
 
+@given(u'tags')
+def create_assets(context):
+    for item in context.items:
+        item['owner'] = get_user_model().objects.get(pk=item['owner'])
+        Asset.objects.create(**item)
+
+
 @then('record exist on the backend')
 def step_records_exists_on_backend(context):
     test = context.test
