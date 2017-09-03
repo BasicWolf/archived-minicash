@@ -1,4 +1,4 @@
-from .base import *
+from .base import *  # noqa
 
 
 DEBUG = True
@@ -42,4 +42,4 @@ LOGGING = {
     },
 }
 
-MINICASH['PAGINATOR_DEFAULT_PAGE_SIZE'] = 2
+MINICASH['PAGINATOR_DEFAULT_PAGE_SIZE'] = 20
