@@ -4,7 +4,7 @@ from behave import given, then
 
 from django.contrib.auth import get_user_model
 
-from minicash.core.models import Asset, Record
+from minicash.core.models import Asset, Record, Tag
 
 
 @given(u'assets')
@@ -15,10 +15,10 @@ def create_assets(context):
 
 
 @given(u'tags')
-def create_assets(context):
+def create_tags(context):
     for item in context.items:
         item['owner'] = get_user_model().objects.get(pk=item['owner'])
-        Asset.objects.create(**item)
+        Tag.objects.create(**item)
 
 
 @then('record exist on the backend')
@@ -49,3 +49,21 @@ def step_asset_exists_on_backend(context):
     asset = Asset.objects.get(**q)
     currency = asset.balance.currency
     test.assertAlmostEqual(Money(item['balance'], currency), asset.balance, places=2)
+
+
+@then('tag exists on the backend')
+def step_tags_exists_on_backend(context):
+    test = context.test
+    item = context.item
+    if 'pk' in item:
+        q = {'pk': item['pk']}
+    else:
+        q = {'name': item['name'], 'owner': item['owner']}
+    test.assertTrue(Tag.objects.filter(**q).exists())
+
+
+@then('tags count on the backend is {tags_count}')
+def step_tags_count_on_backend(context, tags_count):
+    tags_count = int(tags_count)
+    test = context.test
+    test.assertEqual(tags_count, Tag.objects.all().count())

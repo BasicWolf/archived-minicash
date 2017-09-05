@@ -11,11 +11,10 @@ Feature: Tags management
       | 3020 |   200 | TAG3 |
 
     When I navigate to "tab_tags"
-    And I select 2 items
+    And I select 2 tags
     And I click "delete-tag" panel button
-    And I click "Yes" in modal dialog
-
-    Then tags count on the backend is "1"
-    And tags exist on the backend
-      |   pk | name |
-      | 3020 | TAG3 |
+    And I click "confirm" in modal dialog
+    Then tags count on the backend is 1
+    And tag exists on the backend
+      |   pk | owner | name |
+      | 3020 |   200 | TAG3 |

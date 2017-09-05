@@ -11,7 +11,7 @@ Feature: Records management
     And I fill record tab with data
       | Mode    | Date/Time        | From | Expense | Tags        | Description           |
       | EXPENSE | 07/08/2017 22:18 | 2000 |     111 | hello world | description for__2000 |
-    And I click Save button
+    And I click "save" panel button
     Then "Home" tab is activated
     And record exist on the backend
       | mode    | created_dt       | asset_from | delta | tags        | description           |
@@ -32,7 +32,7 @@ Feature: Records management
     And I fill record tab with data
       | Mode   | Date/Time        |   To | Expense | Tags        | Description           |
       | INCOME | 07/08/2017 22:18 | 2010 |     100 | hello world | description for__2010 |
-    And I click Save button
+    And I click "save" panel button
     Then "Home" tab is activated
     And record exist on the backend
       | mode   | created_dt       | asset_to | delta | tags        | description           |
