@@ -5,7 +5,7 @@ from selenium.webdriver.support.ui import Select
 from minicash.core.models import Record
 
 
-@when('I wait for "{timeout}" seconds')
+@when('I wait for {timeout} seconds')
 def step_wait(context, timeout):
     context.sleep(int(timeout))
 
@@ -57,10 +57,21 @@ def fill_record_with_data(context):
     description_el.send_keys(item['Description'])
 
 
-@when('I click save button')
-def step_click_button(context):
-    save_btn = context.minicash.get_active_tab().find_element_by_xpath('.//button[@data-spec="save"]')
-    save_btn.click()
+@when('I click "{button}" panel button')
+def step_click_button(context, button):
+    btn = context.minicash.get_active_tab().find_element_by_xpath(f'.//button[@data-spec="{button}"]')
+    btn.click()
+
+
+@when('I select {tags_count} tags')
+def step_select_tags(context, tags_count):
+    tags_count = int(tags_count)
+    test = context.test
+    checkboxes = context.minicash.get_active_tab().find_elements_by_xpath('.//input[@data-spec="select-tag"]')
+    test.assertEqual(3, len(checkboxes))
+
+    for i in range(tags_count):
+        checkboxes[i].click()
 
 
 @then('"{tab_title}" tab is activated')

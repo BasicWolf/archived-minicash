@@ -39,13 +39,17 @@ let SerializableCollectionMixin = {
 };
 
 let MassDeleteCollectionMixin = {
+    massDeleteUrl: function() { throw 'NotImplemented'; },
+
     delete: function(modelsOrPks=null) {
         let pks = modelsOrPks.map((modelOrPk) => {
             return modelOrPk instanceof Bb.Model ? modelOrPk.id : modelOrPk;
         });
 
+        let url = _.isFunction(this.massDeleteUrl) ? this.massDeleteUrl() : this.massDeleteUrl;
+
         let dfd = $.post({
-            url: minicash.url('records-mass-delete'),
+            url: url,
             data: JSON.stringify({'pks': pks}),
             contentType : 'application/json',
         });

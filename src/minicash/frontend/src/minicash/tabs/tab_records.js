@@ -118,7 +118,6 @@ let RecordsTabPanelView = TabPanelView.extend({
             let selectedRecords = this.getSelectedRecords();
             this.collection.delete(selectedRecords);
         });
-
     },
 
     onChildviewPageChange: function(pageNumber) {

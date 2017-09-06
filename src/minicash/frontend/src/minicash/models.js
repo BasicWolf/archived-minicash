@@ -26,6 +26,8 @@ export let Tags = base.BaseCollection.extend({
 
     url: function() { return minicash.url('tags-list'); },
 
+    massDeleteUrl: function() { return minicash.url('tags-mass-delete'); },
+
     comparator: 'name',
 
     updateFromRecord: function(record) {
@@ -83,6 +85,8 @@ export let Record = base.BaseModel.extend({
     idAttribute: 'pk',
 
     urlRoot: function() {return  minicash.url('records-list'); },
+
+    massDeleteUrl: function() { return minicash.url('records-mass-delete'); },
 
     serverAttributes: [
         'pk',
