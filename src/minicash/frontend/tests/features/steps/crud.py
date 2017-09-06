@@ -9,6 +9,7 @@ from minicash.core.models import Asset, Record, Tag
 
 @given(u'assets')
 def create_assets(context):
+    Asset.objects.all().delete()
     for item in context.items:
         item['owner'] = get_user_model().objects.get(pk=item['owner'])
         Asset.objects.create(**item)
@@ -16,6 +17,7 @@ def create_assets(context):
 
 @given(u'tags')
 def create_tags(context):
+    Tag.objects.all().delete()
     for item in context.items:
         item['owner'] = get_user_model().objects.get(pk=item['owner'])
         Tag.objects.create(**item)

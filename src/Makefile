@@ -98,7 +98,7 @@ django-collectstatic:
 	$(MANAGEPY_CMD) collectstatic --no-input
 
 
-heroku-deploy:
+heroku-deploy: check test test-behave
 	cd .. && git push heroku `git subtree split --prefix src master`:master --force
 
 heroku-migrate:
