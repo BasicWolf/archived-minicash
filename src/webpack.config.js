@@ -103,6 +103,7 @@ let config = {
     externals: {
         "jquery": "jQuery",
         "lodash": "_",
+        "underscore": "_",
         "backbone": "Backbone",
         "backbone.radio": "Backbone.Radio",
         "backbone.marionette": "Mn",
@@ -120,7 +121,8 @@ let config = {
         alias: {
             node_modules: nodeModulesDir,
             templates: path.join(srcDir, 'templates'),
-            img:path.join(srcDir, 'img'),
+            img: path.join(srcDir, 'img'),
+
 
             // import 'lib_name' aliases
             cocktail: 'backbone.cocktail/Cocktail.jsd',

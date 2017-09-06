@@ -33,6 +33,7 @@ localserver:
 shell:
 	$(MANAGEPY_CMD) shell_plus
 
+test-all: check test test-behave
 
 test:
 	$(TEST_ENV) $(MANAGEPY_CMD) test -v 2 $(TESTS) --settings $(MANAGEPY_TEST_SETTINGS) --noinput
@@ -98,7 +99,7 @@ django-collectstatic:
 	$(MANAGEPY_CMD) collectstatic --no-input
 
 
-heroku-deploy: check test test-behave
+heroku-deploy: 
 	cd .. && git push heroku `git subtree split --prefix src master`:master --force
 
 heroku-migrate:
