@@ -61,8 +61,6 @@ safety:
 pylizard:
 	lizard ./minicash -l python
 
-$(REQUIREMENTS_FILE):
-	pip freeze | grep -v 'pkg-resource=0.0.0' > requirements.txt
 
 # === Build and release === #
 # ========================= #

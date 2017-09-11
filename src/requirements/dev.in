@@ -1,4 +1,4 @@
--r base.txt
+-r base.in
 
 bpython
 behave-django  # requires phantomjs
@@ -11,11 +11,11 @@ gunicorn
 ipython
 lizard
 mypy
+pip-tools
 pudb
 pyflakes
 pylint
 pylint-django
 safety
 selenium
-splinter
 werkzeug
