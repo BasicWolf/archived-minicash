@@ -3,6 +3,7 @@ import time
 from functools import partial
 from typing import Any, Dict, List, Type
 
+from behave import register_type
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.support.ui import WebDriverWait
@@ -13,9 +14,13 @@ from django.contrib.auth.models import User
 from django.contrib.sessions.backends.db import SessionStore
 from django.urls import reverse
 
+
 logger = logging.getLogger(__name__)
 
 TIMEOUT = 5
+
+
+register_type(int=int)
 
 
 def before_all(context):

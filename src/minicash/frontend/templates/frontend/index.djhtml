@@ -69,5 +69,12 @@
 
       <!-- Tab panels -->
       <div id="tabview_panel_region"></div>
+    </div>
   </div>
+
+  <footer>
+    <div class="container text-center">
+      <p class="text-muted credit">&copy; 2017</p>
+    </div>
+  </footer>
 {% endblock %}

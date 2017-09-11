@@ -5,11 +5,16 @@ from behave import given, then
 from django.contrib.auth import get_user_model
 
 from minicash.core.models import Asset, Record, Tag
+from minicash.core.tests.factories import AssetFactory, RecordFactory
 
 
-@given(u'assets')
-def create_assets(context):
+@given('clear assets')
+def clear_assets(context):
     Asset.objects.all().delete()
+
+
+@given('assets')
+def create_assets(context):
     for item in context.items:
         item['owner'] = get_user_model().objects.get(pk=item['owner'])
         Asset.objects.create(**item)
@@ -17,10 +22,16 @@ def create_assets(context):
 
 @given(u'tags')
 def create_tags(context):
-    Tag.objects.all().delete()
     for item in context.items:
         item['owner'] = get_user_model().objects.get(pk=item['owner'])
         Tag.objects.create(**item)
+
+
+@given(u'{count:int} random records')
+def create_records(context, count):
+    user = get_user_model().objects.all()[0]
+    asset_from = AssetFactory()
+    RecordFactory.create_batch(count, owner=user, asset_from=asset_from)
 
 
 @then('record exist on the backend')

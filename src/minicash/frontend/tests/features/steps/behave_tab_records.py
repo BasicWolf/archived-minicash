@@ -1,19 +1,9 @@
-from behave import then, when
+from behave import when
+
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 
 from minicash.core.models import Record
-
-
-@when('I wait for {timeout} seconds')
-def step_wait(context, timeout):
-    context.sleep(int(timeout))
-
-
-@when('I navigate to "{route}"')
-def step_nagivate_to_tab(context, route):
-    br = context.browser
-    br.get(context.minicash.url_reverse(route))
 
 
 @when('I fill record tab with data')
@@ -55,31 +45,3 @@ def fill_record_with_data(context):
     # description
     description_el = form.find_element_by_xpath('.//textarea[@name="description"]')
     description_el.send_keys(item['Description'])
-
-
-@when('I click "{button}" panel button')
-def step_click_button(context, button):
-    btn = context.minicash.get_active_tab().find_element_by_xpath(f'.//button[@data-spec="{button}"]')
-    btn.click()
-
-
-@when('I select {tags_count} tags')
-def step_select_tags(context, tags_count):
-    tags_count = int(tags_count)
-    test = context.test
-    checkboxes = context.minicash.get_active_tab().find_elements_by_xpath('.//input[@data-spec="select-tag"]')
-    test.assertEqual(3, len(checkboxes))
-
-    for i in range(tags_count):
-        checkboxes[i].click()
-
-
-@then('"{tab_title}" tab is activated')
-def step_tab_is_activated(context, tab_title):
-    context.jswait('minicash.controllers.tabs.getActiveTab().get("title")', tab_title)
-
-
-@then('the result page lands on "{tab_title}" tab')
-def step_result_page_lands_on_tab(context, tab_title):
-    context.jswait('minicash.started', True)
-    step_tab_is_activated(context, tab_title)
