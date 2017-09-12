@@ -9,7 +9,7 @@ import Radio from 'backbone.radio';
 
 import * as models from 'minicash/models';
 import {PaginatorView} from 'minicash/components/paginator';
-import {RecordsFilter} from 'minicash/components/records_filter';
+import {RecordsFilterView} from 'minicash/components/records_filter';
 import {TabPanelView, TabModel} from 'minicash/components/tabbar';
 import {tr} from 'minicash/utils';
 import {RecordTab} from './tab_record';
@@ -31,8 +31,6 @@ export let RecordsTab = TabModel.extend({
 
 
 let RecordsTabPanelView = TabPanelView.extend({
-    behaviors: [RecordsFilter, ],
-
     template: require('templates/tab_records/tab_records.hbs'),
 
     collection: new models.PageableRecords([], {
@@ -52,17 +50,20 @@ let RecordsTabPanelView = TabPanelView.extend({
     ui: {
         newRecordBtn: 'button[data-spec="start-new-record"]',
         deleteRecordBtn: 'button[data-spec="delete-record"]',
+        toggleFilterBtn: 'button[data-spec="toggle-filter"]',
     },
 
     regions: {
         recordsTableRegion: {el: '[data-spec="records-table-region"]'},
         topPaginatorRegion: {el: '[data-spec="top-paginator-region"]'},
         bottomPaginatorRegion: {el: '[data-spec="bottom-paginator-region"]'},
+        recordsFilterRegion: {el: '[data-spec="records-filter-region"]'},
     },
 
     events: {
         'click @ui.newRecordBtn': 'startNewRecord',
         'click @ui.deleteRecordBtn': 'deleteSelectedRecords',
+        'click @ui.toggleFilterBtn': 'toggleFilter',
     },
 
     childViewEvents: {
@@ -81,6 +82,7 @@ let RecordsTabPanelView = TabPanelView.extend({
         this.showChildView('recordsTableRegion', new RecordsTableView({collection: this.collection})) ;
         this.showChildView('topPaginatorRegion', new PaginatorView({collection: this.collection}));
         this.showChildView('bottomPaginatorRegion', new PaginatorView({collection: this.collection}));
+        this.showChildView('recordsFilterRegion', new RecordsFilterView({collection: this.collection}));
     },
 
     onQueryArgsChange: function(model, queryArgs=null) {
@@ -120,6 +122,10 @@ let RecordsTabPanelView = TabPanelView.extend({
         });
     },
 
+    toggleFilter: function() {
+        this.getChildView('recordsFilterRegion').toggle();
+    },
+
     onChildviewPageChange: function(pageNumber) {
         let queryArgs = {
             page: pageNumber
@@ -132,7 +138,7 @@ let RecordsTabPanelView = TabPanelView.extend({
         this.uiEnable('deleteRecordBtn', !!selectedRecords.length);
     },
 
-    onFilterChange: function(queryArgs) {
+    onChildviewFilterChange: function(queryArgs) {
         this.collection.queryArgs = queryArgs;
         this.collection.getPage(1);
     },

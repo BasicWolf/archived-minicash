@@ -3,6 +3,7 @@
 /* global $,_,minicash, */
 
 import Bb from 'backbone';
+import PageableCollection from 'backbone.paginator';
 
 export let BaseModel = Bb.Model.extend({
     serverAttributes: null,
@@ -86,7 +87,7 @@ _.extend(
 );
 
 
-export let BasePageableCollection = Bb.PageableCollection.extend({
+export let BasePageableCollection = PageableCollection.extend({
     queryArgs: {},
 
     state: {

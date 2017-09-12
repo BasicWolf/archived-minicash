@@ -4,7 +4,6 @@
 
 import Decimal from 'decimal.js';
 import Mn from 'backbone.marionette';
-import PageableCollection from 'backbone.paginator';
 
 import 'moment/locale/fi';
 

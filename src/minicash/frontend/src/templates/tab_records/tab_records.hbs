@@ -10,8 +10,7 @@
       <span aria-label="Delete" class="glyphicon glyphicon-trash"></span>
     </button>
 
-    <button class="btn btn-default" type="button"
-            data-toggle="collapse" data-target="#filter_records_{{routeId}}">
+    <button data-spec="toggle-filter" class="btn btn-default" type="button">
       <span aria-label="refresh" class="glyphicon glyphicon-filter"></span>
     </button>
   </div>
@@ -30,7 +29,7 @@
 
 <br><br>
 
-{{> components/records_filter }}
+<div data-spec="records-filter-region"></div>
 
 <div class="panel panel-default"><div class="panel-body">
   <div data-spec="records-table-region"></div>

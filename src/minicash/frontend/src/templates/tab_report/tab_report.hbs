@@ -7,20 +7,18 @@
       <span aria-label="refresh" class="glyphicon glyphicon-refresh"></span>
     </button>
 
-    <button class="btn btn-default" type="button"
-            data-toggle="collapse" data-target="#filter_records_{{routeId}}"
-            aria-expanded="false" aria-controls="collapseExample">
+    <button data-spec="toggle-filter" class="btn btn-default" type="button">
       <span aria-label="refresh" class="glyphicon glyphicon-filter"></span>
     </button>
   </div> <!-- panel-buttons -->
 
-  <br><br>
+  <br>
 
-  {{> components/records_filter }}
+  <div data-spec="records-filter-region"></div>
 
   <div class="panel panel-default"><div class="panel-body">
 
-    <div data-spec="report_views_region">
+    <div data-spec="report-views-region">
       <div class="container-fluid">
         <div class="row">
           <div class="col-md-4" data-spec="tags-pie-region-1"></div>

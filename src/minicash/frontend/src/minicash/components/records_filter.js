@@ -1,14 +1,19 @@
 'use strict';
 
-/* global _,moment,minicash */
+/* global _,moment,minicash,require */
 
 import Mn from 'backbone.marionette';
 
 import * as views from 'minicash/views';
 import * as utils from 'minicash/utils';
 
-export let RecordsFilter = views.BaseBehavior.extend({
+
+export let RecordsFilterView = views.BaseView.extend({
+    className: 'collapse',
+
     behaviors: [views.TooltipBehavior, ],
+
+    template: require('templates/components/records_filter.hbs'),
 
     ui: {
         dtFrom: 'div[data-spec="dt_from"]',
@@ -28,11 +33,22 @@ export let RecordsFilter = views.BaseBehavior.extend({
         'click @ui.clearBtn': 'onClearBtnClick',
     },
 
+    toggle: function() {
+        this.$el.collapse('toggle');
+    },
+
     onRender: function() {
+        this.renderCollapse();
         this.renderDTInputs();
         this.renderTags();
         this.renderAssetsSelects();
         this.renderModeSelect();
+    },
+
+    renderCollapse: function() {
+        this.$el.collapse({
+            toggle: false
+        });
     },
 
     renderDTInputs: function() {
@@ -97,7 +113,7 @@ export let RecordsFilter = views.BaseBehavior.extend({
 
     applyFilter: function(queryArgs=null) {
         queryArgs = queryArgs || this._collectFormData();
-        this.view.triggerMethod('filter:change', queryArgs);
+        this.triggerMethod('filter:change', queryArgs);
     },
 
     _collectFormData: function() {

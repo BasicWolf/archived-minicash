@@ -31,7 +31,7 @@ class RecordsPagination(pagination.PageNumberPagination):
                 },
                 'count': self.page.paginator.count,
                 'num_pages': self.page.paginator.num_pages,
-                'page_size': self.page_size,
+                'page_size': self.get_page_size(self.request),
             },
             data
         ])
