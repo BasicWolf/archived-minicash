@@ -28,6 +28,7 @@ def step_result_page_lands_on_tab(context, tab_title):
     context.jswait('minicash.started', True)
     step_tab_is_activated(context, tab_title)
 
+
 @then('paginator has {count:int} pages')
 def step_paginator_has_pages(context, count):
     test = context.test
@@ -35,6 +36,7 @@ def step_paginator_has_pages(context, count):
     pages = paginator.find_elements_by_xpath('.//li')
     # count + "previous" and "next" buttons
     test.assertEqual(count + 2, len(pages))
+
 
 @then('paginator active page is "{number}"')
 def step_paginator_active_page_is(context, number):
