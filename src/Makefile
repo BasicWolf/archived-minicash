@@ -6,6 +6,7 @@ NODE_MODULES_DIR = ./node_modules
 FRONTEND_DIR = ./minicash/frontend
 FRONTEND_STATIC_DIR = $(FRONTEND_DIR)/static
 FRONTEND_STATIC_LIB_DIR = $(FRONTEND_STATIC_DIR)/lib
+FRONTEND_STATIC_IMG_DIR = $(FRONTEND_STATIC_DIR)/img
 BEHAVE_FEATURES_DIR = $(FRONTEND_DIR)/tests/features
 
 REQUIREMENTS_FILE = requirements.txt
@@ -70,7 +71,7 @@ frontend: $(NODE_MODULES_DIR) frontend-create-dev-symlinks
 $(NODE_MODULES_DIR):
 	npm install .
 
-frontend-create-dev-symlinks: ${FRONTEND_STATIC_LIB_DIR}
+frontend-create-dev-symlinks: ${FRONTEND_STATIC_IMG_DIR} ${FRONTEND_STATIC_LIB_DIR}
 	ln -sr -f ./node_modules/backbone/backbone.js ${FRONTEND_STATIC_LIB_DIR}
 	ln -sr -f ./node_modules/backbone.marionette/lib/backbone.marionette.js ${FRONTEND_STATIC_LIB_DIR}
 	ln -sr -f ./node_modules/backbone.radio/build/backbone.radio.js ${FRONTEND_STATIC_LIB_DIR}
@@ -90,6 +91,9 @@ frontend-create-dev-symlinks: ${FRONTEND_STATIC_LIB_DIR}
 ${FRONTEND_STATIC_LIB_DIR}:
 	mkdir -p ${FRONTEND_STATIC_LIB_DIR}
 
+${FRONTEND_STATIC_IMG_DIR}:
+	ln -sr -f ./${FRONTEND_DIR}/src/img ${FRONTEND_STATIC_DIR}/img
+
 build-release: django-collectstatic
 
 django-collectstatic:
@@ -97,7 +101,7 @@ django-collectstatic:
 	$(MANAGEPY_CMD) collectstatic --no-input
 
 
-heroku-deploy: 
+heroku-deploy:
 	cd .. && git push heroku `git subtree split --prefix src master`:master --force
 
 heroku-migrate:

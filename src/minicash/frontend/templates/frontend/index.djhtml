@@ -62,7 +62,7 @@
 
 {% block body %}
   {% include "frontend/navbar.inc.djhtml" %}
-  <div class="container">
+  <div id="main_container" class="container">
     <div id="tabview_container">
       <!-- Nav tabs -->
       <div id="tabview_nav_region"></div>
