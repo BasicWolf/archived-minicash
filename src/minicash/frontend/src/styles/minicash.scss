@@ -3,7 +3,7 @@
 @import '~node_modules/select2-bootstrap-theme/dist/select2-bootstrap.css';
 
 #main_container {
-    margin-top: 52px;
+    margin-top: 60px;
 }
 
 .minicash-status {
@@ -33,6 +33,13 @@
     }
 }
 
+/* ------ Helpers ------ */
+/* --------------------- */
+img.inverted {
+    -webkit-filter: invert(100%);
+    filter: invert(100%);
+}
+
 .input-container {
     position: relative; /* for absolute child element */
 }
@@ -46,6 +53,9 @@
     margin-bottom: 5px;
 }
 
+
+/* ----- Error box ----- */
+/* --------------------- */
 .critical-error-box {
     display: none;
     position: absolute;

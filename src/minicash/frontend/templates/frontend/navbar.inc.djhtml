@@ -13,20 +13,27 @@
 <nav class="navbar navbar-inverse navbar-fixed-top">
   <div class="container">
     <div class="navbar-header">
+
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar_collapsable_items" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
       </button>
+
       <a class="navbar-brand" href="{% url "index" %}" onclick="minicash.navigateTo('index'); return false;">
         Minicash / Pre-Alpha
       </a>
-    </div>
-    
-    <div id="navbar_collapsable_items" class="navbar-collapse collapse">
+
       <form class="navbar-left">
         <button type="button" class="btn btn-success navbar-btn" onclick="minicash.navigateTo('tab_new_record');">
-          New record
+          <img class="inverted hidden-md hidden-lg" src="{% static '/img/iconmonstr-pencil-6.svg' %}" style="width:16px;">
+          <span class="hidden-xs">New record</span>
         </button>
       </form>
+    </div>
 
+    <div id="navbar_collapsable_items" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li><a href="{% url "tab_records" %}" onclick="minicash.navigateTo('tab_records'); return false;">
           Records

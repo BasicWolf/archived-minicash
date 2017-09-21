@@ -37,7 +37,7 @@ export let RecordTabPanelView = TabPanelView.extend({
     uiInitialized: false,
     validator: null,
 
-    template: require('templates/tab_records/tab_record.hbs'),
+    template: require('templates/tab_record/tab_record.hbs'),
 
     ui: {
         saveBtn: 'button[data-spec="save"]',
@@ -165,7 +165,7 @@ export let RecordTabPanelView = TabPanelView.extend({
         if (!isNaN(newDeltaTxt)) {
             // if result is number format it to 3-point decimal
             this.previousDeltaTxt = deltaTxt;
-            let formattedDeltaTxt = Decimal(newDeltaTxt).toFixed(3).toString();
+            let formattedDeltaTxt = new Decimal(newDeltaTxt).toFixed(3).toString();
             newDeltaTxt = formattedDeltaTxt;
         }
 
@@ -215,7 +215,7 @@ export let RecordTabPanelView = TabPanelView.extend({
             break;
         default:
             throw 'Invalid record mode value';
-        };
+        }
 
         $fromAssetSelect.parentsUntil('form', '.form-group').toggle(showFrom);
         $toAssetSelect.parentsUntil('form', '.form-group').toggle(showTo);
@@ -252,7 +252,6 @@ export let RecordTabPanelView = TabPanelView.extend({
     },
 
     saveForm: function() {
-        debugger;
         let saveData = this._collectFormData();
         if (_.isEmpty(saveData)) {
             return utils.rejectedPromise();
@@ -302,7 +301,7 @@ export let RecordTabPanelView = TabPanelView.extend({
         case RECORD_MODES.EXPENSE.value: formData.asset_to = null; break;
         case RECORD_MODES.TRANSFER.value: break; // both assets are used
         default: throw 'Invalid record mode';
-        };
+        }
         formData.mode = mode;
         return formData;
     },
