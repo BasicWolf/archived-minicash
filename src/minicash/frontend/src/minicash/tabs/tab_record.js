@@ -5,9 +5,11 @@
 import 'corejs-typeahead';
 import Decimal from 'decimal.js';
 import Radio from 'backbone.radio';
+import Mn from 'backbone.marionette';
 
 import * as models from 'minicash/models';
 import * as utils from 'minicash/utils';
+import * as views from 'minicash/views';
 import {tr} from 'minicash/utils';
 import {TabPanelView, TabModel} from 'components/tabbar';
 
@@ -44,13 +46,10 @@ export let RecordTabPanelView = TabPanelView.extend({
         saveAddSimilarBtn: 'a[data-spec="save-add-similar"]',
         saveAddAnotherBtn: 'a[data-spec="save-add-another"]',
         cancelBtn: 'button[data-spec="cancel"]',
-        modeSelect: 'select[name="mode"]',
-        dtStampInput: 'input[name="created_dt"]',
-        deltaInput: 'input[name="delta"]',
-        tagsSelect: 'select[name="tags"]',
-        toAssetSelect: 'select[name="asset_to"]',
-        fromAssetSelect: 'select[name="asset_from"]',
-        form: 'form',
+    },
+
+    regions: {
+        entriesRegion: {el: '[data-spec="entries-region"]'},
     },
 
     events: {
@@ -58,8 +57,6 @@ export let RecordTabPanelView = TabPanelView.extend({
         'click @ui.saveAddSimilarBtn': 'onSaveAddSimilarBtnClick',
         'click @ui.saveAddAnotherBtn': 'onSaveAddAnotherBtnClick',
         'click @ui.cancelBtn': 'onCancelBtnClick',
-        'change @ui.modeSelect': 'onModeChange',
-        'keydown @ui.deltaInput': 'onDeltaInputKeyDown',
     },
 
     modelEvents: {
@@ -76,6 +73,92 @@ export let RecordTabPanelView = TabPanelView.extend({
         } else {
             this.model.set('record', new models.Record());
         }
+    },
+
+    onRender: function() {
+        this.showChildView('entriesRegion',
+                           new SingleRecordFormView({model: this.model}));
+    },
+
+    onSaveBtnClick: function() {
+        this.saveForm().then(() => {
+            this.model.destroy();
+        });
+    },
+
+    onSaveAddSimilarBtnClick: function() {
+        this.saveForm().done(() => {
+            this._renderNewRecordSimilarToOld();
+        });
+    },
+
+    _renderNewRecordSimilarToOld: function() {
+        let newRecord = this.model.get('record').clone();
+        newRecord.unset(newRecord.idAttribute, {silent: true});
+        newRecord.unset('delta', {silent: true});
+        this.model.set('record', newRecord);
+    },
+
+    onSaveAddAnotherBtnClick: function() {
+        this.saveForm().done(() => {
+            this.model.unset('record');
+        });
+    },
+
+    onCancelBtnClick: function() {
+        this.model.destroy();
+    },
+
+    saveForm: function() {
+        let dfd = this.getChildView('entriesRegion').saveForm();
+
+        if (dfd.state() == 'rejected') {
+            return dfd;
+        }
+
+        minicash.status.show(tr('Saving record'));
+        this.lockControls();
+
+        dfd.fail((response) => {
+            this.unlockControls();
+        }).always(() => {
+            minicash.status.hide();
+        });
+
+        return dfd;
+    },
+
+    lockControls: function() {
+        return this.uiDisable(['saveBtn', 'cancelBtn']);
+    },
+
+    unlockControls: function() {
+        return this.uiEnable(['saveBtn', 'cancelBtn']);
+    },
+}); // RecordTabPanelView
+
+
+
+let SingleRecordFormView = views.BaseView.extend({
+    template: require('templates/tab_record/single_record_form.hbs'),
+
+    ui: {
+        modeSelect: 'select[name="mode"]',
+        dtStampInput: 'input[name="created_dt"]',
+        deltaInput: 'input[name="delta"]',
+        tagsSelect: 'select[name="tags"]',
+        toAssetSelect: 'select[name="asset_to"]',
+        fromAssetSelect: 'select[name="asset_from"]',
+        form: 'form',
+    },
+
+    events: {
+        'change @ui.modeSelect': 'onModeChange',
+        'keydown @ui.deltaInput': 'onDeltaInputKeyDown',
+    },
+
+    modelEvents: {
+        'change:record': 'render'
     },
 
     serializeModel: function() {
@@ -99,6 +182,21 @@ export let RecordTabPanelView = TabPanelView.extend({
         this.renderDateTimePicker();
         this.renderTagsSelect();
         this.renderModeSelectState();
+    },
+
+    initializeValidator: function() {
+        let RECORD_MODES = minicash.CONTEXT.RECORD_MODES;
+
+        this.validator = this.getUI('form').validate({
+            rules: {
+                dtStamp: {required: true},
+                delta: {number: true, required: true},
+            },
+            messages: {
+                dtStamp: tr("Please enter a valid date/time"),
+                delta: tr("Please enter a valid expense value"),
+            },
+        });
     },
 
     renderDateTimePicker: function() {
@@ -128,21 +226,6 @@ export let RecordTabPanelView = TabPanelView.extend({
         };
 
         this.getUI('tagsSelect').select2(opts);
-    },
-
-    initializeValidator: function() {
-        let RECORD_MODES = minicash.CONTEXT.RECORD_MODES;
-
-        this.validator = this.getUI('form').validate({
-            rules: {
-                dtStamp: {required: true},
-                delta: {number: true, required: true},
-            },
-            messages: {
-                dtStamp: tr("Please enter a valid date/time"),
-                delta: tr("Please enter a valid expense value"),
-            },
-        });
     },
 
     onDeltaInputKeyDown: function(e) {
@@ -221,66 +304,6 @@ export let RecordTabPanelView = TabPanelView.extend({
         $toAssetSelect.parentsUntil('form', '.form-group').toggle(showTo);
     },
 
-
-    onSaveBtnClick: function() {
-        this.saveForm().then(() => {
-            this.model.destroy();
-        });
-    },
-
-    onSaveAddSimilarBtnClick: function() {
-        this.saveForm().done(() => {
-            this._renderNewRecordSimilarToOld();
-        });
-    },
-
-    _renderNewRecordSimilarToOld: function() {
-        let newRecord = this.model.get('record').clone();
-        newRecord.unset(newRecord.idAttribute, {silent: true});
-        newRecord.unset('delta', {silent: true});
-        this.model.set('record', newRecord);
-    },
-
-    onSaveAddAnotherBtnClick: function() {
-        this.saveForm().done(() => {
-            this.model.unset('record');
-        });
-    },
-
-    onCancelBtnClick: function() {
-        this.model.destroy();
-    },
-
-    saveForm: function() {
-        let saveData = this._collectFormData();
-        if (_.isEmpty(saveData)) {
-            return utils.rejectedPromise();
-        }
-
-        minicash.status.show(tr('Saving record'));
-        this.lockControls();
-
-        let opts = {wait: true};
-        let record = this.model.get('record');
-        if (record.id) {
-            opts = _.extend(opts, {patch: true});
-        }
-
-        let saveDfd = record.save(saveData, opts);
-
-        saveDfd.done(() => {
-            // this.model.set('record', record);
-            recordsChannel.trigger('model:save', record);
-        }).fail((response) => {
-            this.validator.showErrors(response.responseJSON);
-            this.unlockControls();
-        }).always(() => {
-            minicash.status.hide();
-        });
-
-        return saveDfd.promise();
-    },
-
     _collectFormData: function() {
         let NO_DATA = {};
         let RECORD_MODES = minicash.CONTEXT.RECORD_MODES;
@@ -306,11 +329,62 @@ export let RecordTabPanelView = TabPanelView.extend({
         return formData;
     },
 
-    lockControls: function() {
-        return this.uiDisable(['saveBtn', 'cancelBtn']);
+    saveForm: function() {
+        let saveData = this._collectFormData();
+        if (_.isEmpty(saveData)) {
+            return utils.rejectedPromise();
+        }
+
+        let opts = {wait: true};
+        let record = this.model.get('record');
+        if (record.id) {
+            opts = _.extend(opts, {patch: true});
+        }
+
+        let saveDfd = record.save(saveData, opts);
+
+        saveDfd.done(() => {
+            // this.model.set('record', record);
+            recordsChannel.trigger('model:save', record);
+        }).fail((response) => {
+            this.validator.showErrors(response.responseJSON);
+        });
+
+        return saveDfd.promise();
+    },
+});
+
+
+let RecordEntryRowView = Mn.View.extend({
+    tagName: 'tr',
+    template: require('templates/tab_record/multi_entry_tr.hbs'),
+});
+
+
+let EntriesTableView = Mn.NextCollectionView.extend({
+    tagName: 'table',
+    className: 'table table-striped',
+
+    attributes: {
+        "data-spec": "records-table",
+        "cellspacing": "0",
     },
 
-    unlockControls: function() {
-        return this.uiEnable(['saveBtn', 'cancelBtn']);
+    childView: RecordEntryRowView,
+
+    onRender: function() {
+        let template = require('templates/tab_record/multi_entry_thead.hbs');
+        let $tableHead = $(template());
+        this.$el.prepend($tableHead);
     },
-}); // RecordTabPanelView
+
+    onChildviewRecordSelectedChange: function(childView, e) {
+        this.triggerMethod('selected:records:change', this.getSelectedRecords());
+    },
+
+    getSelectedRecords: function() {
+        let selectedRecords = this.children.filter((c) => c.isSelected());
+        let selectedRecordModels = _.map(selectedRecords, 'model');
+        return selectedRecordModels;
+    },
+});

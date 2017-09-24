@@ -79,7 +79,7 @@ let RecordsTabPanelView = TabPanelView.extend({
     },
 
     onRender: function() {
-        this.showChildView('recordsTableRegion', new RecordsTableView({collection: this.collection})) ;
+        this.showChildView('recordsTableRegion', new RecordsTableView({collection: this.collection}));
         this.showChildView('topPaginatorRegion', new PaginatorView({collection: this.collection}));
         this.showChildView('bottomPaginatorRegion', new PaginatorView({collection: this.collection}));
         this.showChildView('recordsFilterRegion', new RecordsFilterView({collection: this.collection}));
@@ -161,13 +161,12 @@ let RecordsTableView = Mn.NextCollectionView.extend({
     attributes: {
         "data-spec": "records-table",
         "cellspacing": "0",
-        "width": "100%",
     },
 
     childView: () => RecordRowView,
 
     onRender: function() {
-        let template = require('templates/tab_records/records_table_head.hbs');
+        let template = require('templates/tab_records/records_thead.hbs');
         let $tableHead = $(template());
         this.$el.prepend($tableHead);
     },
@@ -187,7 +186,7 @@ let RecordsTableView = Mn.NextCollectionView.extend({
 
 let RecordRowView = Mn.View.extend({
     tagName: 'tbody',
-    template: require('templates/tab_records/record_row.hbs'),
+    template: require('templates/tab_records/record_tr.hbs'),
 
     ui: {
         activeRowArea: 'td[role="button"]',

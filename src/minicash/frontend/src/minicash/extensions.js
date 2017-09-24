@@ -25,6 +25,10 @@ Hb.registerPartial(
 
 
 /* ---------- Helpers ------------ */
+Hb.registerHelper('log', function(v) {
+    console.log(v);
+});
+
 Hb.registerHelper('ifnot', function(v, options) {
     return v? options.inverse(this) : options.fn(this);
 });
@@ -163,12 +167,15 @@ function handleAjaxError(xhr, status) {
     case 'error':
         console.debug(`AJAX Error: ${xhr.responseText}`);
 
-        if (xhr.status == HTTP_500_INTERNAL_SERVER_ERROR) {
+        if (xhr.status === HTTP_500_INTERNAL_SERVER_ERROR) {
             let errorMessage = tr('Unfortunately an application error has happened. <br>Please try again later.');
             if (xhr.responseJSON && xhr.responseJSON.detail) {
                 errorMessage = xhr.responseJSON.detail;
             }
 
+            minicash.notify.error(errorMessage);
+        } else if (xhr.status === 0) {
+            let errorMessage = tr('Error connecting to server');
             minicash.notify.error(errorMessage);
         }
 
