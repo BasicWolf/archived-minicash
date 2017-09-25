@@ -3,6 +3,7 @@
 /* global $,_,moment,minicash,require */
 
 import 'corejs-typeahead';
+import 'bootstrap-switch';
 import Decimal from 'decimal.js';
 import Radio from 'backbone.radio';
 import Mn from 'backbone.marionette';
@@ -46,6 +47,7 @@ export let RecordTabPanelView = TabPanelView.extend({
         saveAddSimilarBtn: 'a[data-spec="save-add-similar"]',
         saveAddAnotherBtn: 'a[data-spec="save-add-another"]',
         cancelBtn: 'button[data-spec="cancel"]',
+        singleMultiChk: 'input[data-spec="single-multi"]',
     },
 
     regions: {
@@ -78,6 +80,10 @@ export let RecordTabPanelView = TabPanelView.extend({
     onRender: function() {
         this.showChildView('entriesRegion',
                            new SingleRecordFormView({model: this.model}));
+
+        this.getUI('singleMultiChk').bootstrapSwitch({
+            onSwitchChange: this.onSingleMultiToggle
+        });
     },
 
     onSaveBtnClick: function() {
@@ -126,6 +132,10 @@ export let RecordTabPanelView = TabPanelView.extend({
         });
 
         return dfd;
+    },
+
+    onSingleMultiToggle: function(evt, state) {
+
     },
 
     lockControls: function() {
