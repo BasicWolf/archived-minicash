@@ -152,12 +152,16 @@ table[data-spec="records-table"] {
 
 
 table[data-spec="record-multi-entries-table"] {
+    th.buttons,td.buttons {
+        width:10%;
+    }
+
     th.delta,td.delta {
         width:16%;
     }
 
     th.tags,th.description,td.tags,td.description {
-        width:42%;
+        width:32%;
     }
 }
 

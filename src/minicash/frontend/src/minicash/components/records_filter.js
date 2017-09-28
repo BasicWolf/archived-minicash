@@ -8,7 +8,7 @@ import * as views from 'minicash/views';
 import * as utils from 'minicash/utils';
 
 
-export let RecordsFilterView = views.BaseView.extend({
+export let RecordsFilterView = views.MinicashView.extend({
     className: 'collapse',
 
     behaviors: [views.TooltipBehavior, ],

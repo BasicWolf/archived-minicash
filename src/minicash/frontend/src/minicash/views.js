@@ -45,12 +45,12 @@ export let UIEnableDisableMixin = {
 };
 
 
-export let BaseView = Mn.View.extend({});
-_.extend(BaseView.prototype, UIEnableDisableMixin);
+export let MinicashView = Mn.View.extend({});
+_.extend(MinicashView.prototype, UIEnableDisableMixin);
 
 
-export let BaseBehavior = Mn.Behavior.extend({});
-_.extend(BaseBehavior.prototype, UIEnableDisableMixin);
+export let MinicashBehavior = Mn.Behavior.extend({});
+_.extend(MinicashBehavior.prototype, UIEnableDisableMixin);
 
 
 export let TooltipBehavior = Mn.Behavior.extend({

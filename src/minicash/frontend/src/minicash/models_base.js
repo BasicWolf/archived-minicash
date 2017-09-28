@@ -5,7 +5,7 @@
 import Bb from 'backbone';
 import PageableCollection from 'backbone.paginator';
 
-export let BaseModel = Bb.Model.extend({
+export let MinicashModel = Bb.Model.extend({
     serverAttributes: null,
 
     save(attrs, options) {
@@ -31,7 +31,7 @@ export let BaseModel = Bb.Model.extend({
 let SerializableCollectionMixin = {
     serialize() {
 	    return this.map( (model) => {
-            if (model instanceof BaseModel)
+            if (model instanceof MinicashModel)
                 return model.serialize();
             else
                 return _.clone(model.attributes);
@@ -65,7 +65,38 @@ let MassDeleteCollectionMixin = {
 };
 
 
-export let BaseCollection = Bb.Collection.extend({
+let SaveCollectionMixin = {
+    save: function( options ) {
+        var success = options.success;
+        var error = options.error;
+        var complete = options.complete;
+
+        options.success = (response, status, xhr) => {
+            this.trigger('sync', this, response, options);
+            if (success) {
+                success.apply(this, arguments);
+            }
+        };
+
+        options.error = (response, status, xhr) => {
+            this.trigger('error', this, response, options);
+            if (error) {
+                error.apply(this, arguments);
+            }
+        };
+
+        options.complete = (response, status, xhr) => {
+            if (complete) {
+                complete.apply(this, arguments);
+            }
+        };
+
+        return Bb.sync('create', this, options);
+    }
+};
+
+
+export let MinicashCollection = Bb.Collection.extend({
     queryArgs: {},
 
     search: function(searchArgs, options) {
@@ -81,13 +112,14 @@ export let BaseCollection = Bb.Collection.extend({
     },
 });
 _.extend(
-    BaseCollection.prototype,
+    MinicashCollection.prototype,
     SerializableCollectionMixin,
-    MassDeleteCollectionMixin
+    MassDeleteCollectionMixin,
+    SaveCollectionMixin
 );
 
 
-export let BasePageableCollection = PageableCollection.extend({
+export let MinicashPageableCollection = PageableCollection.extend({
     queryArgs: {},
 
     state: {
@@ -140,7 +172,8 @@ export let BasePageableCollection = PageableCollection.extend({
     }
 });
 _.extend(
-    BasePageableCollection.prototype,
+    MinicashPageableCollection.prototype,
     SerializableCollectionMixin,
-    MassDeleteCollectionMixin
+    MassDeleteCollectionMixin,
+    SaveCollectionMixin
 );

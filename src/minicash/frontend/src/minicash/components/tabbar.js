@@ -139,7 +139,7 @@ let TabsNavsView = Mn.NextCollectionView.extend({
 });
 
 
-export let TabPanelView = views.BaseView.extend({
+export let TabPanelView = views.MinicashView.extend({
     tagName: 'div',
     className: 'tab-pane',
     attributes: {

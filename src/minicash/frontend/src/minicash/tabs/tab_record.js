@@ -171,7 +171,7 @@ export let RecordTabPanelView = TabPanelView.extend({
 }); // RecordTabPanelView
 
 
-let SingleEntryFormView = views.BaseView.extend({
+let SingleEntryFormView = views.MinicashView.extend({
     template: require('templates/tab_record/single_entry_form.hbs'),
 
     ui: {
@@ -217,18 +217,7 @@ let SingleEntryFormView = views.BaseView.extend({
     },
 
     initializeValidator: function() {
-        let RECORD_MODES = minicash.CONTEXT.RECORD_MODES;
-
-        this.validator = this.getUI('form').validate({
-            rules: {
-                dtStamp: {required: true},
-                delta: {number: true, required: true},
-            },
-            messages: {
-                dtStamp: tr("Please enter a valid date/time"),
-                delta: tr("Please enter a valid expense value"),
-            },
-        });
+        this.validator = this.getUI('form').validate();
     },
 
     renderDateTimePicker: function() {
@@ -387,18 +376,23 @@ let SingleEntryFormView = views.BaseView.extend({
 });
 
 
-let MultiEntryFormView = views.BaseView.extend({
+let MultiEntryFormView = views.MinicashView.extend({
     collection: null,
+
+    collectionEvents: {
+        'change': 'updateValidator'
+    },
 
     template: require('templates/tab_record/multi_entry_form.hbs'),
 
     ui: {
         addEntryBtn: 'button[data-spec="add-entry"]',
+        form: 'form',
     },
 
     regions: {
-        entriesContainer: {
-            el: 'div[data-spec="entries-container"]',
+        entriesTBody: {
+            el: 'tbody[data-spec="record-multi-entries-tbody"]',
             replaceElement: true,
         }
     },
@@ -416,23 +410,32 @@ let MultiEntryFormView = views.BaseView.extend({
     },
 
     onRender: function() {
-        this.showChildView('entriesContainer', new EntriesContainerView({
+        this.showChildView('entriesTBody', new EntriesTBodyView({
             collection: this.collection,
         }));
 
-        this.collection.add({});
-    }
+        this.collection.add([{}, ]);
+        this.updateValidator();
+    },
+
+    updateValidator: function() {
+        this.validator = this.getUI('form').validate();
+    },
+
 });
 
 
-let RecordEntryRowView = Mn.View.extend({
-    tagName: 'div',
-    className: 'form-group',
+let RecordEntryRowView = views.MinicashView.extend({
+    tagName: 'tr',
 
     template: require('templates/tab_record/multi_entry_row.hbs'),
 
+    collectionEvents: {
+        //'change': 'initializeValidator'
+    },
+
     ui: {
-        tagsSelect: 'select[data-spec="tags-select"]'
+        tagsSelect: 'select[data-spec="tags-select"]',
     },
 
     onRender: function() {
@@ -455,10 +458,18 @@ let RecordEntryRowView = Mn.View.extend({
         this.getUI('tagsSelect').select2(opts);
     },
 
+    serializeModel: function() {
+        let recordData = views.MinicashView.prototype.serializeModel.apply(this, arguments);
+        recordData._cid = this.model.cid;
+        return recordData;
+    },
+
 });
 
 
-let EntriesContainerView = Mn.NextCollectionView.extend({
+let EntriesTBodyView = Mn.NextCollectionView.extend({
+    tagName: 'tbody',
+
     childView: RecordEntryRowView,
 
     onChildviewRecordSelectedChange: function(childView, e) {
