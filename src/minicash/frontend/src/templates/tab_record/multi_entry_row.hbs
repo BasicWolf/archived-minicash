@@ -1,0 +1,27 @@
+<div class="col-sm-2 control-label">
+  <button data-spec="delete-entry" type="button" class="btn btn-danger btn-sm">
+    <span class="glyphicon glyphicon-trash"></span>
+  </button>
+</div>
+
+<div class="col-sm-10">
+  <table data-spec="record-multi-entries-table"
+         class="table">
+    <tr>
+      <td class="delta" data-spec="delta">
+        <input name="delta_{{record.cid}}" data-spec="delta-input" type="text" class="form-control"
+               autofocus>
+      </td>
+
+      <td class="tags" data-spec="tags">
+        <select name="tags_{{record.cid}}" data-spec="tags-select" multiple class="form-control" style="width:100%">
+        </select>
+      </td>
+
+      <td class="description" data-spec="description">
+        <input name="description_{{record.cid}}" data-spec="description-input" type="text" class="form-control">
+      </td>
+    </tr>
+  </table>
+</div>
+

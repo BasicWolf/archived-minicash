@@ -1,0 +1,86 @@
+<div class="panel panel-default"><div class="panel-body">
+  <form autocomplete="off" class="form-horizontal">
+
+    <div class="form-group">
+      <label class="col-sm-2 control-label">Type</label>
+      <div class="col-sm-10">
+        <select name="mode"
+                class="form-control"
+                {{#ifdef record.pk}}disabled{{/ifdef}}>
+          {{#each (context 'RECORD_MODES') }}
+            <option value="{{this.value}}"
+                    {{#ifeq ../record.mode this.value}}selected{{/ifeq}}
+            >{{this.label}}</option>
+          {{/each}}
+        </select>
+      </div>
+    </div>
+
+
+    <div class="form-group">
+      <label class="col-sm-2 control-label">Date/Time</label>
+      <div class="col-sm-10">
+        <div class='input-group date'>
+          <input name="created_dt" type="text" class="form-control"
+                 placeholder="Date and time", value="{{record.created_dt}}">
+          <span class="input-group-addon">
+            <span class="glyphicon glyphicon-calendar"></span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="form-group">
+      <label class="col-sm-2 control-label">Withdrawn from</label>
+      <div class="col-sm-10">
+        <select name="asset_from" class="form-control">
+          <option value="" {{#ifnot record.asset_from}}selected{{/ifnot}}>Select account...</option>
+          {{#each assets}}
+            <option value="{{id}}" {{#ifeq ../record.asset_from id}}selected{{/ifeq}}>{{name}}</option>
+          {{/each}}
+        </select>
+      </div>
+    </div>
+
+
+    <div class="form-group">
+      <label class="col-sm-2 control-label">Deposited to</label>
+      <div class="col-sm-10">
+        <select name="asset_to" class="form-control">
+          <option value="" {{#ifnot record.asset_to}}selected{{/ifnot}}>Select account...</option>
+          {{#each assets}}
+            <option value="{{id}}" {{#ifeq ../record.asset_to id}}selected{{/ifeq}}>{{name}}</option>
+          {{/each}}
+        </select>
+      </div>
+    </div>
+
+
+    <div class="form-group">
+      <label class="col-sm-2 control-label">Entries</label>
+
+      <div class="col-sm-10">
+        <table data-spec="record-multi-entries-table"
+               class="table">
+          <thead>
+            <tr>
+              <th class="delta">Expense</th>
+              <th class="tags">Tags</th>
+              <th class="description">Description</th>
+            </tr>
+          </thead>
+        </table>
+
+        <!-- <div class="btn-group">
+             <button data-spec="add-entry" type="button" class="btn btn-primary btn-sm">Add</button>
+             </div> -->
+      </div>
+    </div>
+
+    <div data-spec="entries-container">
+    </div>
+
+    {{> components/non_field_errors }}
+  </form>
+</div></div>

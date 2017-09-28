@@ -190,7 +190,7 @@ let RecordRowView = Mn.View.extend({
 
     ui: {
         activeRowArea: 'td[role="button"]',
-        chkRecord: 'input[data-spec="select-record"]',
+        recordChk: 'input[data-spec="select-record"]',
     },
 
     events: {
@@ -202,7 +202,7 @@ let RecordRowView = Mn.View.extend({
     },
 
     triggers: {
-        'change @ui.chkRecord': 'record:selected:change',
+        'change @ui.recordChk': 'record:selected:change',
     },
 
     regions: {
@@ -213,7 +213,7 @@ let RecordRowView = Mn.View.extend({
     },
 
     isSelected: function() {
-        return this.getUI('chkRecord').is(':checked');
+        return this.getUI('recordChk').is(':checked');
     },
 
     editRecord: function() {

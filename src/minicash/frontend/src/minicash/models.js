@@ -109,13 +109,15 @@ export let Record = base.BaseModel.extend({
 });
 
 
-export let RecordsBase = {
+export let RecordsMixin = {
     model: Record,
 
     url: function() { return minicash.url('records-list'); },
 };
 
-export let PageableRecords = base.BasePageableCollection.extend(RecordsBase);
+export let Records = base.BaseCollection.extend(RecordsMixin);
+
+export let PageableRecords = base.BasePageableCollection.extend(RecordsMixin);
 
 
 export let ReportWidget = base.BaseModel.extend({

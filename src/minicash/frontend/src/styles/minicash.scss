@@ -134,6 +134,7 @@ table[data-spec="records-table"] {
         $width: 80px;
         max-width: $width;
         width: $width;
+        text-align: right;
     }
 
     th.account {
@@ -147,12 +148,18 @@ table[data-spec="records-table"] {
         max-width: $width;
         width: $width;
     }
-
-    td.delta {
-        text-align: right;
-    }
 }
 
+
+table[data-spec="record-multi-entries-table"] {
+    th.delta,td.delta {
+        width:16%;
+    }
+
+    th.tags,th.description,td.tags,td.description {
+        width:42%;
+    }
+}
 
 
 /* ====== Overrides ====== */

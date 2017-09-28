@@ -17,6 +17,10 @@ import {TabPanelView, TabModel} from 'components/tabbar';
 
 let recordsChannel = Radio.channel('records');
 
+let VIEW_MODE = {
+    SINGLE: 1,
+    MULTI: 2,
+};
 
 export let RecordTab = TabModel.extend({
     defaults: function() {
@@ -25,6 +29,7 @@ export let RecordTab = TabModel.extend({
         return _.extend(parentDefaults, {
             viewClass: RecordTabPanelView,
             recordId: null,
+            viewMode: VIEW_MODE.MULTI,
         });
     },
 
@@ -37,7 +42,6 @@ export let RecordTab = TabModel.extend({
 
 
 export let RecordTabPanelView = TabPanelView.extend({
-    uiInitialized: false,
     validator: null,
 
     template: require('templates/tab_record/tab_record.hbs'),
@@ -59,10 +63,12 @@ export let RecordTabPanelView = TabPanelView.extend({
         'click @ui.saveAddSimilarBtn': 'onSaveAddSimilarBtnClick',
         'click @ui.saveAddAnotherBtn': 'onSaveAddAnotherBtnClick',
         'click @ui.cancelBtn': 'onCancelBtnClick',
+        'switchChange.bootstrapSwitch @ui.singleMultiChk': 'onSingleMultiChkChange',
     },
 
     modelEvents: {
-        'change:record': 'render'
+        'change:record': 'render',
+        'change:viewMode': 'renderEntriesFormView',
     },
 
     initialize: function() {
@@ -78,12 +84,29 @@ export let RecordTabPanelView = TabPanelView.extend({
     },
 
     onRender: function() {
-        this.showChildView('entriesRegion',
-                           new SingleRecordFormView({model: this.model}));
+        this.renderEntriesFormView();
+        this.renderSingleMultiSwitch();
+    },
 
+    renderEntriesFormView: function() {
+        if (this.model.get('viewMode') === VIEW_MODE.SINGLE) {
+            this.showChildView('entriesRegion',
+                               new SingleEntryFormView({model: this.model}));
+        } else {
+            this.showChildView('entriesRegion',
+                               new MultiEntryFormView({model: this.model}));
+        }
+    },
+
+    renderSingleMultiSwitch: function() {
         this.getUI('singleMultiChk').bootstrapSwitch({
-            onSwitchChange: this.onSingleMultiToggle
+            onSwitchChange: this.onSingleMultiToggle,
+            state: this.model.get('viewMode') == VIEW_MODE.SINGLE,
         });
+    },
+
+    onSingleMultiChkChange: function(e, state) {
+        this.model.set('viewMode', state ? VIEW_MODE.SINGLE: VIEW_MODE.MULTI);
     },
 
     onSaveBtnClick: function() {
@@ -148,9 +171,8 @@ export let RecordTabPanelView = TabPanelView.extend({
 }); // RecordTabPanelView
 
 
-
-let SingleRecordFormView = views.BaseView.extend({
-    template: require('templates/tab_record/single_record_form.hbs'),
+let SingleEntryFormView = views.BaseView.extend({
+    template: require('templates/tab_record/single_entry_form.hbs'),
 
     ui: {
         modeSelect: 'select[name="mode"]',
@@ -365,28 +387,79 @@ let SingleRecordFormView = views.BaseView.extend({
 });
 
 
-let RecordEntryRowView = Mn.View.extend({
-    tagName: 'tr',
-    template: require('templates/tab_record/multi_entry_tr.hbs'),
+let MultiEntryFormView = views.BaseView.extend({
+    collection: null,
+
+    template: require('templates/tab_record/multi_entry_form.hbs'),
+
+    ui: {
+        addEntryBtn: 'button[data-spec="add-entry"]',
+    },
+
+    regions: {
+        entriesContainer: {
+            el: 'div[data-spec="entries-container"]',
+            replaceElement: true,
+        }
+    },
+
+    events: {
+        'click @ui.addEntryBtn': 'onAddEntryBtnClick',
+    },
+
+    initialize: function() {
+        this.collection = new models.Records();
+    },
+
+    onAddEntryBtnClick: function() {
+        this.collection.add({});
+    },
+
+    onRender: function() {
+        this.showChildView('entriesContainer', new EntriesContainerView({
+            collection: this.collection,
+        }));
+
+        this.collection.add({});
+    }
 });
 
 
-let EntriesTableView = Mn.NextCollectionView.extend({
-    tagName: 'table',
-    className: 'table table-striped',
+let RecordEntryRowView = Mn.View.extend({
+    tagName: 'div',
+    className: 'form-group',
 
-    attributes: {
-        "data-spec": "records-table",
-        "cellspacing": "0",
+    template: require('templates/tab_record/multi_entry_row.hbs'),
+
+    ui: {
+        tagsSelect: 'select[data-spec="tags-select"]'
     },
-
-    childView: RecordEntryRowView,
 
     onRender: function() {
-        let template = require('templates/tab_record/multi_entry_thead.hbs');
-        let $tableHead = $(template());
-        this.$el.prepend($tableHead);
+        this.renderTagsSelect();
     },
+
+    renderTagsSelect: function() {
+        let data = minicash.collections.tags.map((it) => {
+            let name = it.get('name');
+            return {id: name, text: name};
+        });
+
+        let opts = {
+            data: data,
+            allowClear: true,
+            placeholder: '',
+            tags: true,
+        };
+
+        this.getUI('tagsSelect').select2(opts);
+    },
+
+});
+
+
+let EntriesContainerView = Mn.NextCollectionView.extend({
+    childView: RecordEntryRowView,
 
     onChildviewRecordSelectedChange: function(childView, e) {
         this.triggerMethod('selected:records:change', this.getSelectedRecords());
