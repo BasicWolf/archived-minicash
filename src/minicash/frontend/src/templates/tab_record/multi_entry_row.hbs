@@ -1,7 +1,9 @@
 <td>
-  <button data-spec="delete-entry" type="button" class="btn btn-danger btn-sm">
-    <span class="glyphicon glyphicon-trash"></span>
+  {{#ifneq _index 0}}
+  <button data-spec="remove-entry" type="button" class="btn btn-danger btn-sm">
+    <span class="glyphicon glyphicon-minus"></span>
   </button>
+  {{/ifneq}}
 </td>
 
 <td class="delta" data-spec="delta">

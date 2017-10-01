@@ -171,6 +171,63 @@ export let RecordTabPanelView = TabPanelView.extend({
 }); // RecordTabPanelView
 
 
+let CommonFormViewBase = {
+    renderModeSelectState: function(mode) {
+        mode = mode || this.getUI('modeSelect').val();
+        mode = parseInt(mode);
+
+        let RECORD_MODES = minicash.CONTEXT.RECORD_MODES;
+
+        let showTo = false;
+        let showFrom = false;
+
+        let $fromAssetSelect = this.getUI('fromAssetSelect');
+        let $toAssetSelect = this.getUI('toAssetSelect');
+
+        $toAssetSelect.rules('remove', 'required');
+        $fromAssetSelect.rules('remove', 'required');
+
+        switch (mode) {
+        case RECORD_MODES.INCOME.value:
+            showTo = true;
+            $toAssetSelect.rules('add', 'required');
+            break;
+        case RECORD_MODES.EXPENSE.value:
+            showFrom = true;
+            $fromAssetSelect.rules('add', 'required');
+            break;
+        case RECORD_MODES.TRANSFER.value:
+            showTo = showFrom = true;
+            $toAssetSelect.rules('add', 'required');
+            $fromAssetSelect.rules('add', 'required');
+            break;
+        default:
+            throw 'Invalid record mode value';
+        }
+
+        $fromAssetSelect.parentsUntil('form', '.form-group').toggle(showFrom);
+        $toAssetSelect.parentsUntil('form', '.form-group').toggle(showTo);
+    },
+
+    renderDateTimePicker: function() {
+        let options = {
+            showTodayButton: true,
+            allowInputToggle: true,
+            format: minicash.CONTEXT.user.dtFormat,
+            locale: utils.getLocale(),
+        };
+
+        let $dtInput = this.getUI('dtStampInput');
+        let dtStampInputWrapper = $dtInput.parent();
+        dtStampInputWrapper.datetimepicker(options);
+    },
+
+    onModeChange: function(e) {
+        this.renderModeSelectState($(e.target).val());
+    },
+};
+
+
 let SingleEntryFormView = views.MinicashView.extend({
     template: require('templates/tab_record/single_entry_form.hbs'),
 
@@ -195,7 +252,7 @@ let SingleEntryFormView = views.MinicashView.extend({
 
     serializeModel: function() {
         let renderData = TabPanelView.prototype.serializeModel.apply(this, arguments);
-        renderData.record = renderData.record ?
+        renderData.record = !renderData.record.isEmpty() ?
             renderData.record.serialize() :
             this._buildNewRecordRenderData();
         renderData.assets = minicash.collections.assets.serialize();
@@ -218,19 +275,6 @@ let SingleEntryFormView = views.MinicashView.extend({
 
     initializeValidator: function() {
         this.validator = this.getUI('form').validate();
-    },
-
-    renderDateTimePicker: function() {
-        let options = {
-            showTodayButton: true,
-            allowInputToggle: true,
-            format: minicash.CONTEXT.user.dtFormat,
-            locale: utils.getLocale(),
-        };
-
-        let $dtInput = this.getUI('dtStampInput');
-        let dtStampInputWrapper = $dtInput.parent();
-        dtStampInputWrapper.datetimepicker(options);
     },
 
     renderTagsSelect: function() {
@@ -284,47 +328,6 @@ let SingleEntryFormView = views.MinicashView.extend({
         }
     },
 
-    onModeChange: function(e) {
-        this.renderModeSelectState($(e.target).val());
-    },
-
-    renderModeSelectState: function(mode) {
-        mode = mode || this.getUI('modeSelect').val();
-        mode = parseInt(mode);
-
-        let RECORD_MODES = minicash.CONTEXT.RECORD_MODES;
-
-        let showTo = false;
-        let showFrom = false;
-
-        let $fromAssetSelect = this.getUI('fromAssetSelect');
-        let $toAssetSelect = this.getUI('toAssetSelect');
-
-        $toAssetSelect.rules('remove', 'required');
-        $fromAssetSelect.rules('remove', 'required');
-
-        switch (mode) {
-        case RECORD_MODES.INCOME.value:
-            showTo = true;
-            $toAssetSelect.rules('add', 'required');
-            break;
-        case RECORD_MODES.EXPENSE.value:
-            showFrom = true;
-            $fromAssetSelect.rules('add', 'required');
-            break;
-        case RECORD_MODES.TRANSFER.value:
-            showTo = showFrom = true;
-            $toAssetSelect.rules('add', 'required');
-            $fromAssetSelect.rules('add', 'required');
-            break;
-        default:
-            throw 'Invalid record mode value';
-        }
-
-        $fromAssetSelect.parentsUntil('form', '.form-group').toggle(showFrom);
-        $toAssetSelect.parentsUntil('form', '.form-group').toggle(showTo);
-    },
-
     _collectFormData: function() {
         let NO_DATA = {};
         let RECORD_MODES = minicash.CONTEXT.RECORD_MODES;
@@ -374,6 +377,7 @@ let SingleEntryFormView = views.MinicashView.extend({
         return saveDfd.promise();
     },
 });
+_.extend(SingleEntryFormView.prototype, CommonFormViewBase);
 
 
 let MultiEntryFormView = views.MinicashView.extend({
@@ -386,6 +390,10 @@ let MultiEntryFormView = views.MinicashView.extend({
     template: require('templates/tab_record/multi_entry_form.hbs'),
 
     ui: {
+        modeSelect: 'select[name="mode"]',
+        dtStampInput: 'input[name="created_dt"]',
+        toAssetSelect: 'select[name="asset_to"]',
+        fromAssetSelect: 'select[name="asset_from"]',
         addEntryBtn: 'button[data-spec="add-entry"]',
         form: 'form',
     },
@@ -398,6 +406,7 @@ let MultiEntryFormView = views.MinicashView.extend({
     },
 
     events: {
+        'change @ui.modeSelect': 'onModeChange',
         'click @ui.addEntryBtn': 'onAddEntryBtnClick',
     },
 
@@ -416,13 +425,32 @@ let MultiEntryFormView = views.MinicashView.extend({
 
         this.collection.add([{}, ]);
         this.updateValidator();
+
+        this.renderDateTimePicker();
+        this.renderModeSelectState();
     },
 
     updateValidator: function() {
         this.validator = this.getUI('form').validate();
     },
 
+    serializeModel: function() {
+        let renderData = TabPanelView.prototype.serializeModel.apply(this, arguments);
+        renderData.record = !renderData.record.isEmpty() ?
+            renderData.record.serialize() :
+            this._buildNewRecordRenderData();
+        renderData.assets = minicash.collections.assets.serialize();
+        return renderData;
+    },
+
+    _buildNewRecordRenderData: function() {
+        let nowStr = moment().format(minicash.CONTEXT.user.dtFormat);
+        return {
+            'created_dt': nowStr
+        };
+    },
 });
+_.extend(MultiEntryFormView.prototype, CommonFormViewBase);
 
 
 let RecordEntryRowView = views.MinicashView.extend({
@@ -436,6 +464,11 @@ let RecordEntryRowView = views.MinicashView.extend({
 
     ui: {
         tagsSelect: 'select[data-spec="tags-select"]',
+        removeEntryBtn: 'button[data-spec="remove-entry"]',
+    },
+
+    events: {
+        'click @ui.removeEntryBtn': 'onRemoveEntryBtnClick'
     },
 
     onRender: function() {
@@ -461,9 +494,13 @@ let RecordEntryRowView = views.MinicashView.extend({
     serializeModel: function() {
         let recordData = views.MinicashView.prototype.serializeModel.apply(this, arguments);
         recordData._cid = this.model.cid;
+        recordData._index = this.model.collection.indexOf(this.model);
         return recordData;
     },
 
+    onRemoveEntryBtnClick: function() {
+        this.model.collection.remove(this.model);
+    },
 });
 
 
