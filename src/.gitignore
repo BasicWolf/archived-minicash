@@ -2,6 +2,7 @@
 pylint.out
 ghostdriver.log
 geckodriver.log
+npm-debug.log
 webpack.config.release.js
 
 node_modules/

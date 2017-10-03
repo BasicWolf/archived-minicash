@@ -1,9 +1,8 @@
 <td>
-  {{#ifneq _index 0}}
-  <button data-spec="remove-entry" type="button" class="btn btn-danger btn-sm">
+  <button data-spec="remove-entry" type="button" class="btn btn-danger btn-sm"
+          {{#ifeq _index 0}}disabled{{/ifeq}}>
     <span class="glyphicon glyphicon-minus"></span>
   </button>
-  {{/ifneq}}
 </td>
 
 <td class="delta" data-spec="delta">

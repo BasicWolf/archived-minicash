@@ -1,5 +1,6 @@
 django==1.11.*
 djangorestframework==3.6.*
+djangorestframework-bulk
 django-jsonfield==1.0.*
 django-money==0.11.*
 django-settings-export

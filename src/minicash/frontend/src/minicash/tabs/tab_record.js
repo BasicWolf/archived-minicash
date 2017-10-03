@@ -328,6 +328,30 @@ let SingleEntryFormView = views.MinicashView.extend({
         }
     },
 
+    saveForm: function() {
+        let saveData = this._collectFormData();
+        if (_.isEmpty(saveData)) {
+            return utils.rejectedPromise();
+        }
+
+        let opts = {wait: true};
+        let record = this.model.get('record');
+        if (record.id) {
+            opts = _.extend(opts, {patch: true});
+        }
+
+        let saveDfd = record.save(saveData, opts);
+
+        saveDfd.done(() => {
+            // this.model.set('record', record);
+            recordsChannel.trigger('model:save', record);
+        }).fail((response) => {
+            this.validator.showErrors(response.responseJSON);
+        });
+
+        return saveDfd.promise();
+    },
+
     _collectFormData: function() {
         let NO_DATA = {};
         let RECORD_MODES = minicash.CONTEXT.RECORD_MODES;
@@ -351,30 +375,6 @@ let SingleEntryFormView = views.MinicashView.extend({
         }
         formData.mode = mode;
         return formData;
-    },
-
-    saveForm: function() {
-        let saveData = this._collectFormData();
-        if (_.isEmpty(saveData)) {
-            return utils.rejectedPromise();
-        }
-
-        let opts = {wait: true};
-        let record = this.model.get('record');
-        if (record.id) {
-            opts = _.extend(opts, {patch: true});
-        }
-
-        let saveDfd = record.save(saveData, opts);
-
-        saveDfd.done(() => {
-            // this.model.set('record', record);
-            recordsChannel.trigger('model:save', record);
-        }).fail((response) => {
-            this.validator.showErrors(response.responseJSON);
-        });
-
-        return saveDfd.promise();
     },
 });
 _.extend(SingleEntryFormView.prototype, CommonFormViewBase);
@@ -448,6 +448,55 @@ let MultiEntryFormView = views.MinicashView.extend({
         return {
             'created_dt': nowStr
         };
+    },
+
+    saveForm: function() {
+        let saveData = this._collectFormData();
+        if (_.isEmpty(saveData)) {
+            return utils.rejectedPromise();
+        }
+
+        let opts = {wait: true};
+        let record = this.model.get('record');
+        if (record.id) {
+            opts = _.extend(opts, {patch: true});
+        }
+
+        let saveDfd = record.save(saveData, opts);
+
+        saveDfd.done(() => {
+            // this.model.set('record', record);
+            recordsChannel.trigger('model:save', record);
+        }).fail((response) => {
+            this.validator.showErrors(response.responseJSON);
+        });
+
+        return saveDfd.promise();
+    },
+
+    _collectFormData: function() {
+        let NO_DATA = {};
+        let RECORD_MODES = minicash.CONTEXT.RECORD_MODES;
+
+        if (!this.validator.form()) {
+            return NO_DATA;
+        }
+
+        let formData = this.getUI('form').serializeForm();
+        formData.tags = [];
+        formData.tags_names = this.getUI('tagsSelect').select2().val();
+
+        // mode either from Form Data, or if not available (control disabled, i.e. editing)
+        // - from existing record which is being edited
+        let mode = formData.mode || this.model.get('record').get('mode');
+        switch(parseInt(mode)) {
+        case RECORD_MODES.INCOME.value: formData.asset_from = null; break;
+        case RECORD_MODES.EXPENSE.value: formData.asset_to = null; break;
+        case RECORD_MODES.TRANSFER.value: break; // both assets are used
+        default: throw 'Invalid record mode';
+        }
+        formData.mode = mode;
+        return formData;
     },
 });
 _.extend(MultiEntryFormView.prototype, CommonFormViewBase);
