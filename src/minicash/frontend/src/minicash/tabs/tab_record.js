@@ -343,7 +343,6 @@ let SingleEntryFormView = views.MinicashView.extend({
         let saveDfd = record.save(saveData, opts);
 
         saveDfd.done(() => {
-            // this.model.set('record', record);
             recordsChannel.trigger('model:save', record);
         }).fail((response) => {
             this.validator.showErrors(response.responseJSON);
@@ -456,22 +455,17 @@ let MultiEntryFormView = views.MinicashView.extend({
             return utils.rejectedPromise();
         }
 
-        let opts = {wait: true};
-        let record = this.model.get('record');
-        if (record.id) {
-            opts = _.extend(opts, {patch: true});
-        }
+        // let record = this.model.get('record');
+        // let opts = {wait: true};
+        // let saveDfd = record.save(saveData, opts);
 
-        let saveDfd = record.save(saveData, opts);
+        // saveDfd.done(() => {
 
-        saveDfd.done(() => {
-            // this.model.set('record', record);
-            recordsChannel.trigger('model:save', record);
-        }).fail((response) => {
-            this.validator.showErrors(response.responseJSON);
-        });
+        // }).fail((response) => {
+        //     this.validator.showErrors(response.responseJSON);
+        // });
 
-        return saveDfd.promise();
+        // return saveDfd.promise();
     },
 
     _collectFormData: function() {
@@ -483,6 +477,8 @@ let MultiEntryFormView = views.MinicashView.extend({
         }
 
         let formData = this.getUI('form').serializeForm();
+        let commonData = _.pick(formData, ['asset_from', 'asset_to', 'created_dt', 'mode']);
+
         formData.tags = [];
         formData.tags_names = this.getUI('tagsSelect').select2().val();
 

@@ -8,6 +8,9 @@ from jsonfield import JSONField
 from minicash.core.settings import minicash_settings
 from minicash.utils.models import MinicashModelManager
 
+MAX_DIGITS = 13
+DECIMAL_PLACES = 3
+
 
 class Record(models.Model):
     objects = MinicashModelManager()
@@ -40,10 +43,9 @@ class Record(models.Model):
     )
     created_dt = models.DateTimeField('Created', db_index=True)
     delta = MoneyField(
-        max_digits=10,
-        decimal_places=3,
-        default=Decimal('0.0'),
-        default_currency=minicash_settings.DEFAULT_CURRENCY
+        max_digits=MAX_DIGITS,
+        decimal_places=DECIMAL_PLACES,
+        default_currency=minicash_settings.DEFAULT_CURRENCY,
     )
     description = models.TextField(blank=True)
     extra = JSONField(default={})
@@ -145,14 +147,14 @@ class Asset(models.Model):
     description = models.TextField(blank=True, default='')
     owner = models.ForeignKey(User, related_name='assets')
     balance = MoneyField(
-        max_digits=10,
-        decimal_places=2,
+        max_digits=MAX_DIGITS,
+        decimal_places=DECIMAL_PLACES,
         default=Decimal('0.0'),
         default_currency=minicash_settings.DEFAULT_CURRENCY
     )
     initial_balance = MoneyField(
-        max_digits=10,
-        decimal_places=2,
+        max_digits=MAX_DIGITS,
+        decimal_places=DECIMAL_PLACES,
         default=Decimal('0.0'),
         default_currency=minicash_settings.DEFAULT_CURRENCY,
     )

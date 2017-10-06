@@ -1,5 +1,5 @@
-VERIFY-0001: Either of the assets and mode must be defined in a record
-VERIFY-0002: Invalid mode or assets data
-VERIFY-0003: Invalid tag name: {}
+VALIDATE-0001: Either of the assets and mode must be defined in a record
+VALIDATE-0002: Invalid mode or assets data
+VALIDATE-0003: Invalid tag name: {}
 
 CHECK-E0001: Setting is not found in settings.

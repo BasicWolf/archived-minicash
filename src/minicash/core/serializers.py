@@ -1,6 +1,7 @@
+from djmoney.contrib.django_rest_framework.fields import MoneyField
 from django.utils.translation import ugettext as _
-
 from rest_framework import serializers
+from rest_framework_bulk import BulkListSerializer, BulkSerializerMixin
 
 from minicash.utils.serializers import (
     ModelSerializer,
@@ -8,7 +9,7 @@ from minicash.utils.serializers import (
     CreatableUserSlugRelatedField,
 )
 from minicash.auth.serializers import UserDateTimeField
-from .models import Record, Tag, Asset
+from .models import Record, Tag, Asset, MAX_DIGITS, DECIMAL_PLACES
 
 
 class ReadRecordSerializer(ModelSerializer):
@@ -54,6 +55,12 @@ class ReadRecordSerializer(ModelSerializer):
         allow_null=True,
     )
 
+    delta = MoneyField(
+        required=True,
+        decimal_places=DECIMAL_PLACES,
+        max_digits=MAX_DIGITS,
+    )
+
     def validate(self, attrs):
         return self._validate_assets(attrs)
 
@@ -62,16 +69,17 @@ class ReadRecordSerializer(ModelSerializer):
 
         try:
             if attrs['mode'] != self.VALID_MODES_MAPPING[to_from_mode]:
-                raise serializers.ValidationError(_('VERIFY-0002: Invalid mode or assets data'))
+                raise serializers.ValidationError(_('VALIDATE-0002: Invalid mode or assets data'))
         except KeyError as e:
-            raise serializers.ValidationError(_('VERIFY-0001: Either of the assets and mode must be defined in a record')) from e
+            raise serializers.ValidationError(_('VALIDATE-0001: Either of the assets and mode must be defined in a record')) from e
 
         return attrs
 
 
-class CreateRecordSerializer(ReadRecordSerializer):
+class CreateRecordSerializer(BulkSerializerMixin, ReadRecordSerializer):
     class Meta(ReadRecordSerializer.Meta):
         fields = ReadRecordSerializer.Meta.fields + ['tags_names']
+        list_serializer_class = BulkListSerializer
 
     tags_names = CreatableUserSlugRelatedField(
         source='tags',
@@ -109,7 +117,7 @@ class TagSerializer(ModelSerializer):
 
         # check that name contains no commas
         if ',' in name:
-            raise serializers.ValidationError(_('VERIFY-0003: Invalid tag name: {}'.format(name)))
+            raise serializers.ValidationError(_('VALIDATE-0003: Invalid tag name: {}'.format(name)))
 
         return attrs
 

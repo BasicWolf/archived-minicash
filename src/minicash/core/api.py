@@ -2,6 +2,7 @@ from django.db import transaction
 from rest_framework import viewsets, pagination, response
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
+from rest_framework_bulk import generics
 
 from minicash.core.settings import minicash_settings
 from minicash.utils.views import MassDeleteView
@@ -37,7 +38,7 @@ class RecordsPagination(pagination.PageNumberPagination):
         ])
 
 
-class RecordsView(viewsets.ModelViewSet):
+class RecordsView(generics.BulkModelViewSet):
     authentication_classes = (SessionAuthentication, BasicAuthentication)
     permission_classes = (IsAuthenticated,)
     filter_class = RecordFilter
@@ -55,7 +56,8 @@ class RecordsView(viewsets.ModelViewSet):
     @transaction.atomic
     def perform_create(self, serializer):
         super().perform_create(serializer)
-        serializer.instance.update_assets_after_create()
+        for instance in self._get_serializer_instances(serializer):
+            instance.update_assets_after_create()
 
     @transaction.atomic
     def perform_update(self, serializer):
@@ -71,6 +73,14 @@ class RecordsView(viewsets.ModelViewSet):
     def perform_destroy(self, instance):
         instance.update_assets_before_destroy()
         super().perform_destroy(instance)
+
+    def _get_serializer_instances(self, serializer):
+        if not serializer.instance:
+            return []
+        elif isinstance(serializer.instance, list):
+            return serializer.instance
+        else:
+            return [serializer.instance]
 
 
 class RecordsDeleteView(MassDeleteView):

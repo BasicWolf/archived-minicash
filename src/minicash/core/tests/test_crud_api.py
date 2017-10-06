@@ -1,3 +1,4 @@
+import copy
 import random
 
 from moneyed import Money
@@ -18,7 +19,35 @@ from minicash.utils.testing import RESTTestCase
 from .factories import AssetFactory, RecordFactory, TagFactory
 
 
-class RecordsAPICRUDTest(RESTTestCase):
+class RecordsDataValidatorMixin:
+    def _compare_records_data(self, data_in, data_out):
+        self.assertIsNotNone(data_in)
+        self.assertIsNotNone(data_out)
+        dt_in, dt_out = dict(data_in), dict(data_out)
+
+        # pk's are not equal (None vs. PK from database)
+        data_in_pk, data_out_pk = dt_in.pop('pk'), dt_out.pop('pk')
+        self.assertNotEqual(data_in_pk, data_out_pk)
+
+        if dt_in.get('tags_names', []) != []:
+            dt_in.pop('tags')
+            dt_out.pop('tags')
+
+        self.assertEqual(dt_in, dt_out)
+
+        # ensure internal structure via ORM
+        rec_internal = Record.objects.get(pk=data_out_pk)
+
+        # test versus Record Read/List serializer
+        ser_internal = ReadRecordSerializer(rec_internal)
+        data_internal = ser_internal.data
+
+        dt_out = data_out.copy()
+        dt_out.pop('tags_names')
+        self.assertEqual(dt_out, data_internal)
+
+
+class RecordsAPICRUDTest(RecordsDataValidatorMixin, RESTTestCase):
     def test_smoke(self):
         pass
 
@@ -77,7 +106,7 @@ class RecordsAPICRUDTest(RESTTestCase):
         # add a list of tags
         tags = TagFactory.build_batch(3)
         data_in = serializer.data
-        data_in['tags_names'] = [tag.name for tag in tags]
+        data_in['tags_names'] = list(set(tag.name for tag in tags))
 
         res = self.jpost(reverse('records-list'), data_in)
         self.assert_created(res)
@@ -127,35 +156,51 @@ class RecordsAPICRUDTest(RESTTestCase):
         res = self.jpost(reverse('records-list'), CreateRecordSerializer(record).data)
         self.assert_bad(res)
 
-    def _compare_records_data(self, data_in, data_out):
-        dt_in, dt_out = data_in.copy(), data_out.copy()
-
-        # pk's are not equal (None vs. PK from database)
-        data_in_pk, data_out_pk = dt_in.pop('pk'), dt_out.pop('pk')
-        self.assertNotEqual(data_in_pk, data_out_pk)
-
-        if dt_in.get('tags_names', []) != []:
-            dt_in.pop('tags')
-            dt_out.pop('tags')
-
-        self.assertEqual(dt_in, dt_out)
-
-        # ensure internal structure via ORM
-        rec_internal = Record.objects.get(pk=data_out_pk)
-
-        # test versus Record Read/List serializer
-        ser_internal = ReadRecordSerializer(rec_internal)
-        data_internal = ser_internal.data
-
-        dt_out = data_out.copy()
-        dt_out.pop('tags_names')
-        self.assertEqual(dt_out, data_internal)
-
     def test_delete(self):
         records = RecordFactory.create_batch(5, owner=self.owner)
         res = self.delete(reverse('records-detail', args=[records[0].pk]))
         self.assert_deleted(res)
         self.assertEqual(4, Record.objects.all().count())
+
+
+class RecordAPIBulkCRUDTest(RecordsDataValidatorMixin, RESTTestCase):
+    def test_mass_create(self):
+        asset_to = AssetFactory.create(owner=self.owner)
+        asset_from = AssetFactory.create(owner=self.owner)
+        record = RecordFactory.build(asset_to=asset_to, asset_from=asset_from, owner=self.owner)
+        serializer = CreateRecordSerializer(record)
+
+        # add a list of tags
+        tags = TagFactory.build_batch(3)
+        data_in_1 = serializer.data
+        data_in_1['tags_names'] = [tag.name for tag in tags]
+
+        data_in_2 = copy.deepcopy(data_in_1)
+        data_in_2['delta'] = '200.000'
+
+        res = self.jpost(reverse('records-list'), [data_in_1, data_in_2])
+        self.assert_created(res)
+        self._compare_records_data(data_in_1, res.data[0])
+        self._compare_records_data(data_in_2, res.data[1])
+
+    def test_mass_create_one_invalid(self):
+        asset_to = AssetFactory.create(owner=self.owner)
+        asset_from = AssetFactory.create(owner=self.owner)
+        record = RecordFactory.build(asset_to=asset_to, asset_from=asset_from, owner=self.owner)
+        serializer = CreateRecordSerializer(record)
+
+        # add a list of tags
+        tags = TagFactory.build_batch(3)
+        data_in_1 = serializer.data
+        data_in_1['tags_names'] = [tag.name for tag in tags]
+
+        data_in_2 = copy.deepcopy(data_in_1)
+        del data_in_2['delta']
+
+        res = self.jpost(reverse('records-list'), [data_in_1, data_in_2])
+        self.assert_bad(res)
+        self.assertEqual({}, res.data[0])
+        self.assertEqual(['delta'], list(res.data[1].keys()))
 
     def test_mass_delete(self):
         records = RecordFactory.create_batch(9, owner=self.owner)
@@ -273,9 +318,11 @@ class TagsAPITest(RESTTestCase):
 
     def test_mass_delete(self):
         TAGS_TO_DELETE = 3
-        tags = TagFactory.create_batch(10, owner=self.owner)
-        tags_pks = [r.pk for r in tags[:TAGS_TO_DELETE]]
+        TagFactory.create_batch(10, owner=self.owner)
+        tags_count = Tag.objects.for_owner(self.owner).count()
+        tags_pks = Tag.objects.for_owner(self.owner).values_list('pk', flat=True)[:TAGS_TO_DELETE]
+
         res = self.jpost(reverse('tags-mass-delete'), {'pks': tags_pks})
         self.assertEqual(tags_pks[:TAGS_TO_DELETE], res.data['pks'])
-        self.assertEqual(len(tags) - TAGS_TO_DELETE,
+        self.assertEqual(tags_count - TAGS_TO_DELETE,
                          Tag.objects.for_owner(self.owner).count())
