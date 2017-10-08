@@ -450,25 +450,22 @@ let MultiEntryFormView = views.MinicashView.extend({
     },
 
     saveForm: function() {
-        let saveData = this._collectFormData();
-        if (_.isEmpty(saveData)) {
-            return utils.rejectedPromise();
-        }
+        this._collectAndSetRecordsData();
 
-        // let record = this.model.get('record');
-        // let opts = {wait: true};
-        // let saveDfd = record.save(saveData, opts);
+        let opts = {wait: true};
+        let saveDfd = this.collection.save(opts);
 
-        // saveDfd.done(() => {
+        saveDfd.done(() => {
+            debugger;
+        }).fail((response) => {
+            debugger;
+            this.validator.showErrors(response.responseJSON);
+        });
 
-        // }).fail((response) => {
-        //     this.validator.showErrors(response.responseJSON);
-        // });
-
-        // return saveDfd.promise();
+        return saveDfd.promise();
     },
 
-    _collectFormData: function() {
+    _collectAndSetRecordsData: function() {
         let NO_DATA = {};
         let RECORD_MODES = minicash.CONTEXT.RECORD_MODES;
 
@@ -479,20 +476,23 @@ let MultiEntryFormView = views.MinicashView.extend({
         let formData = this.getUI('form').serializeForm();
         let commonData = _.pick(formData, ['asset_from', 'asset_to', 'created_dt', 'mode']);
 
-        formData.tags = [];
-        formData.tags_names = this.getUI('tagsSelect').select2().val();
-
         // mode either from Form Data, or if not available (control disabled, i.e. editing)
         // - from existing record which is being edited
-        let mode = formData.mode || this.model.get('record').get('mode');
+        let mode = commonData.mode || this.model.get('record').get('mode');
         switch(parseInt(mode)) {
-        case RECORD_MODES.INCOME.value: formData.asset_from = null; break;
-        case RECORD_MODES.EXPENSE.value: formData.asset_to = null; break;
+        case RECORD_MODES.INCOME.value: commonData.asset_from = null; break;
+        case RECORD_MODES.EXPENSE.value: commonData.asset_to = null; break;
         case RECORD_MODES.TRANSFER.value: break; // both assets are used
         default: throw 'Invalid record mode';
         }
-        formData.mode = mode;
-        return formData;
+        commonData.mode = mode;
+
+        let tbodyView = this.getRegion('entriesTBody').currentView;
+        this.collection.forEach((rec) => {
+            let entryRowView = tbodyView.children.findByModelCid(rec.cid);
+            let recordData = _.assign({}, commonData, entryRowView.getFormData());
+            rec.set(recordData);
+        });
     },
 });
 _.extend(MultiEntryFormView.prototype, CommonFormViewBase);
@@ -509,6 +509,8 @@ let RecordEntryRowView = views.MinicashView.extend({
 
     ui: {
         tagsSelect: 'select[data-spec="tags-select"]',
+        deltaInput: 'input[data-spec="delta-input"]',
+        descriptionInput: 'input[data-spec="description-input"]',
         removeEntryBtn: 'button[data-spec="remove-entry"]',
     },
 
@@ -545,6 +547,15 @@ let RecordEntryRowView = views.MinicashView.extend({
 
     onRemoveEntryBtnClick: function() {
         this.model.collection.remove(this.model);
+    },
+
+    getFormData: function() {
+        return {
+            tags: [],
+            tags_names: this.getUI('tagsSelect').select2().val(),
+            delta: this.getUI('deltaInput').val(),
+            description: this.getUI('descriptionInput').val(),
+        };
     },
 });
 

@@ -66,7 +66,7 @@ let MassDeleteCollectionMixin = {
 
 
 let SaveCollectionMixin = {
-    save: function( options ) {
+    save: function(options) {
         var success = options.success;
         var error = options.error;
         var complete = options.complete;

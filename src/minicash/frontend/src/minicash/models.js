@@ -86,8 +86,6 @@ export let Record = base.MinicashModel.extend({
 
     urlRoot: function() {return  minicash.url('records-list'); },
 
-    massDeleteUrl: function() { return minicash.url('records-mass-delete'); },
-
     serverAttributes: [
         'pk',
         'asset_from',
@@ -113,6 +111,8 @@ export let RecordsMixin = {
     model: Record,
 
     url: function() { return minicash.url('records-list'); },
+
+    massDeleteUrl: function() { return minicash.url('records-mass-delete'); },
 };
 
 export let Records = base.MinicashCollection.extend(RecordsMixin);
