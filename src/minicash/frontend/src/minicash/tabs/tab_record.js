@@ -450,6 +450,10 @@ let MultiEntryFormView = views.MinicashView.extend({
     },
 
     saveForm: function() {
+        if (!this.validator.form()) {
+            return utils.rejectedPromise();
+        }
+
         this._collectAndSetRecordsData();
 
         let opts = {wait: true};
@@ -458,20 +462,14 @@ let MultiEntryFormView = views.MinicashView.extend({
         saveDfd.done(() => {
             debugger;
         }).fail((response) => {
-            debugger;
-            this.validator.showErrors(response.responseJSON);
+            this._showErrors(response.responseJSON);
         });
 
         return saveDfd.promise();
     },
 
     _collectAndSetRecordsData: function() {
-        let NO_DATA = {};
         let RECORD_MODES = minicash.CONTEXT.RECORD_MODES;
-
-        if (!this.validator.form()) {
-            return NO_DATA;
-        }
 
         let formData = this.getUI('form').serializeForm();
         let commonData = _.pick(formData, ['asset_from', 'asset_to', 'created_dt', 'mode']);
@@ -494,6 +492,28 @@ let MultiEntryFormView = views.MinicashView.extend({
             rec.set(recordData);
         });
     },
+
+    _showErrors: function(errorData) {
+        if (!_.isArray(errorData)) {
+            return;
+        }
+
+        if (errorData.length == 1 && errorData[0].non_field_errors) {
+            this.validator.showErrors(errorData[0]);
+            return;
+        }
+
+        let fieldsErrors = {};
+        for (let recordErrors of _.zip(this.collection.models, errorData)) {
+            let [record, errors] = recordErrors;
+            for (let field in errors) {
+                let errName = `${field}_${record.cid}`;
+                fieldsErrors[errName] = errors[field];
+            }
+        }
+
+        this.validator.showErrors(fieldsErrors);
+    }
 });
 _.extend(MultiEntryFormView.prototype, CommonFormViewBase);
 
