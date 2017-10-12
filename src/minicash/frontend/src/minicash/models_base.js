@@ -71,21 +71,25 @@ let SaveCollectionMixin = {
         var error = options.error;
         var complete = options.complete;
 
-        options.success = (response, status, xhr) => {
-            this.trigger('sync', this, response, options);
+        options.success = (resp, status, xhr) => {
+            var method = options.reset ? 'reset' : 'set';
+            this[method](resp, options);
+
             if (success) {
                 success.apply(this, arguments);
             }
+
+            this.trigger('sync', this, resp, options);
         };
 
-        options.error = (response, status, xhr) => {
-            this.trigger('error', this, response, options);
+        options.error = (resp, status, xhr) => {
+            this.trigger('error', this, resp, options);
             if (error) {
                 error.apply(this, arguments);
             }
         };
 
-        options.complete = (response, status, xhr) => {
+        options.complete = (resp, status, xhr) => {
             if (complete) {
                 complete.apply(this, arguments);
             }

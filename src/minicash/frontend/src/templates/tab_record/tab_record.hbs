@@ -16,11 +16,12 @@
 
   <button data-spec="cancel" type="button" class="btn btn-default">Cancel</button>
 
+  {{#ifndef recordId}}
   <input data-spec="single-multi" type="checkbox" data-on-color="default" data-off-color="default"
          data-on-text="Single"
-         data-off-text="Multi"
-         checked>
+         data-off-text="Multi">
+  {{/ifndef}}
 </div> <!-- panel-buttons -->
 
 
-<div data-spec="entries-region"></div>
+<div data-spec="panel-content"></div>

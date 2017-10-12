@@ -29,13 +29,18 @@ export let RecordTab = TabModel.extend({
         return _.extend(parentDefaults, {
             viewClass: RecordTabPanelView,
             recordId: null,
-            viewMode: VIEW_MODE.MULTI,
+            viewMode: VIEW_MODE.SINGLE,
         });
     },
 
     initialize: function() {
-        let title = this.get('recordId') ? tr('Edit record') : tr('New record');
-        this.set('title', title);
+        if (this.get('recordId')) {
+            this.set('title', tr('Edit record'));
+            this.set('viewMode', VIEW_MODE.SINGLE);
+        } else {
+            this.set('title', tr('New record'));
+        }
+
         TabModel.prototype.initialize.apply(this, arguments);
     },
 });
@@ -55,7 +60,7 @@ export let RecordTabPanelView = TabPanelView.extend({
     },
 
     regions: {
-        entriesRegion: {el: '[data-spec="entries-region"]'},
+        panelContent: {el: '[data-spec="panel-content"]'},
     },
 
     events: {
@@ -90,10 +95,10 @@ export let RecordTabPanelView = TabPanelView.extend({
 
     renderEntriesFormView: function() {
         if (this.model.get('viewMode') === VIEW_MODE.SINGLE) {
-            this.showChildView('entriesRegion',
+            this.showChildView('panelContent',
                                new SingleEntryFormView({model: this.model}));
         } else {
-            this.showChildView('entriesRegion',
+            this.showChildView('panelContent',
                                new MultiEntryFormView({model: this.model}));
         }
     },
@@ -139,7 +144,7 @@ export let RecordTabPanelView = TabPanelView.extend({
     },
 
     saveForm: function() {
-        let dfd = this.getChildView('entriesRegion').saveForm();
+        let dfd = this.getChildView('panelContent').saveForm();
 
         if (dfd.state() == 'rejected') {
             return dfd;
@@ -252,7 +257,7 @@ let SingleEntryFormView = views.MinicashView.extend({
 
     serializeModel: function() {
         let renderData = TabPanelView.prototype.serializeModel.apply(this, arguments);
-        renderData.record = !renderData.record.isEmpty() ?
+        renderData.record = !_.isEmpty(renderData.record) && !renderData.record.isEmpty() ?
             renderData.record.serialize() :
             this._buildNewRecordRenderData();
         renderData.assets = minicash.collections.assets.serialize();
@@ -460,7 +465,9 @@ let MultiEntryFormView = views.MinicashView.extend({
         let saveDfd = this.collection.save(opts);
 
         saveDfd.done(() => {
-            debugger;
+            this.collection.forEach((record) => {
+                recordsChannel.trigger('model:save', record);
+            });
         }).fail((response) => {
             this._showErrors(response.responseJSON);
         });

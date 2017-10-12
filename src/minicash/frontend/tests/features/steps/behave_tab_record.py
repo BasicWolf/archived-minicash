@@ -45,3 +45,9 @@ def fill_record_with_data(context):
     # description
     description_el = form.find_element_by_xpath('.//textarea[@name="description"]')
     description_el.send_keys(item['Description'])
+
+
+@when('I switch to multi-entries mode')
+def switch_to_multi_entries_mode(context):
+    switch = context.minicash.get_active_tab().find_element_by_xpath('.//input[@data-spec="single-multi"]/preceding-sibling::span[@class="bootstrap-switch-label"]')
+    switch.click()

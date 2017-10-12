@@ -12,7 +12,7 @@ BEHAVE_FEATURES_DIR = $(FRONTEND_DIR)/tests/features
 REQUIREMENTS_FILE = requirements.txt
 
 TESTS := minicash.app minicash.utils minicash.core minicash.auth minicash.frontend
-BEHAVE_FEATURES :=  #$(BEHAVE_FEATURES_DIR)/tab_records.feature
+BEHAVE_FEATURES :=  $(BEHAVE_FEATURES_DIR)/tab_record.feature
 TEST_ENV := REQUIREMENTS_PATH=$(realpath $(REQUIREMENTS_FILE))
 
 all:
