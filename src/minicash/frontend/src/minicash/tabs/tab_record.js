@@ -46,6 +46,58 @@ export let RecordTab = TabModel.extend({
 });
 
 
+export let DeltaEntryCalculatorBehavior = views.MinicashBehavior.extend({
+    ui: {
+        deltaInput: 'input[data-spec="delta-input"]',
+    },
+
+    events: {
+        'keydown @ui.deltaInput': 'onDeltaInputKeyDown',
+    },
+
+    onDeltaInputKeyDown: function(e) {
+        switch (e.keyCode) {
+        case utils.KEYS.ENTER: this.calculateDelta(); break;
+        case utils.KEYS.ESCAPE: this.restoreCalculatedDelta(); break;
+        }
+    },
+
+    calculateDelta: function() {
+        let $deltaInput = this.getUI('deltaInput');
+        let deltaTxt = $deltaInput.val();
+        let newDeltaTxt = deltaTxt;
+
+        try {
+            newDeltaTxt = eval(deltaTxt);
+        } catch (err) {
+
+        }
+
+        if (!isNaN(newDeltaTxt)) {
+            // if result is number format it to 3-point decimal
+            this.previousDeltaTxt = deltaTxt;
+            let formattedDeltaTxt = new Decimal(newDeltaTxt).toFixed(3).toString();
+            newDeltaTxt = formattedDeltaTxt;
+        }
+
+        $deltaInput.val(newDeltaTxt);
+        $deltaInput.trigger("input");
+    },
+
+    restoreCalculatedDelta: function() {
+        if (this.previousDeltaTxt != null) {
+            let $deltaInput = this.getUI('deltaInput');
+
+            let currentDeltaTxt = $deltaInput.val();
+            $deltaInput.val(this.previousDeltaTxt);
+            $deltaInput.trigger("input");
+
+            this.previousDeltaTxt = currentDeltaTxt;
+        }
+    },
+});
+
+
 export let RecordTabPanelView = TabPanelView.extend({
     validator: null,
 
@@ -234,6 +286,8 @@ let CommonFormViewBase = {
 
 
 let SingleEntryFormView = views.MinicashView.extend({
+    behaviors: [DeltaEntryCalculatorBehavior],
+
     template: require('templates/tab_record/single_entry_form.hbs'),
 
     ui: {
@@ -248,7 +302,6 @@ let SingleEntryFormView = views.MinicashView.extend({
 
     events: {
         'change @ui.modeSelect': 'onModeChange',
-        'keydown @ui.deltaInput': 'onDeltaInputKeyDown',
     },
 
     modelEvents: {
@@ -296,41 +349,6 @@ let SingleEntryFormView = views.MinicashView.extend({
         };
 
         this.getUI('tagsSelect').select2(opts);
-    },
-
-    onDeltaInputKeyDown: function(e) {
-        switch (e.keyCode) {
-        case utils.KEYS.ENTER: this.calculateDelta(); break;
-        case utils.KEYS.ESCAPE: this.restoreCalculatedDelta(); break;
-        }
-    },
-
-    calculateDelta: function() {
-        let deltaTxt = this.getUI('deltaInput').val();
-        let newDeltaTxt = deltaTxt;
-
-        try {
-            newDeltaTxt = eval(deltaTxt);
-        } catch (err) {
-
-        }
-
-        if (!isNaN(newDeltaTxt)) {
-            // if result is number format it to 3-point decimal
-            this.previousDeltaTxt = deltaTxt;
-            let formattedDeltaTxt = new Decimal(newDeltaTxt).toFixed(3).toString();
-            newDeltaTxt = formattedDeltaTxt;
-        }
-
-        this.getUI('deltaInput').val(newDeltaTxt);
-    },
-
-    restoreCalculatedDelta: function() {
-        if (this.previousDeltaTxt != null) {
-            let currentDeltaTxt = this.getUI('deltaInput').val();
-            this.getUI('deltaInput').val(this.previousDeltaTxt);
-            this.previousDeltaTxt = currentDeltaTxt;
-        }
     },
 
     saveForm: function() {
@@ -388,7 +406,7 @@ let MultiEntryFormView = views.MinicashView.extend({
     collection: null,
 
     collectionEvents: {
-        'change': 'updateValidator'
+        update: 'updateTotalDelta'
     },
 
     template: require('templates/tab_record/multi_entry_form.hbs'),
@@ -400,6 +418,7 @@ let MultiEntryFormView = views.MinicashView.extend({
         fromAssetSelect: 'select[name="asset_from"]',
         addEntryBtn: 'button[data-spec="add-entry"]',
         form: 'form',
+        totalDelta: 'span[data-spec="total-delta"]',
     },
 
     regions: {
@@ -520,19 +539,42 @@ let MultiEntryFormView = views.MinicashView.extend({
         }
 
         this.validator.showErrors(fieldsErrors);
-    }
+    },
+
+
+    onChildviewChildviewDeltaChange: function() {
+        this.updateTotalDelta();
+    },
+
+    updateTotalDelta: function() {
+        let tbodyView = this.getRegion('entriesTBody').currentView;
+
+        let totalDeltaTxt = '';
+        try {
+            let totalDelta =  this.collection.reduce((memo, rec) => {
+                let entryRowView = tbodyView.children.findByModelCid(rec.cid);
+                let deltaTxt = entryRowView.getDeltaInputText();
+                let delta = new Decimal(deltaTxt).toFixed(3);
+                return memo.add(delta);
+            }, new Decimal(0));
+
+            totalDeltaTxt = totalDelta.toString();
+        } catch (e) {
+
+        }
+
+        this.getUI('totalDelta').text(totalDeltaTxt);
+    },
 });
 _.extend(MultiEntryFormView.prototype, CommonFormViewBase);
 
 
 let RecordEntryRowView = views.MinicashView.extend({
+    behaviors: [DeltaEntryCalculatorBehavior],
+
     tagName: 'tr',
 
     template: require('templates/tab_record/multi_entry_row.hbs'),
-
-    collectionEvents: {
-        //'change': 'initializeValidator'
-    },
 
     ui: {
         tagsSelect: 'select[data-spec="tags-select"]',
@@ -543,6 +585,10 @@ let RecordEntryRowView = views.MinicashView.extend({
 
     events: {
         'click @ui.removeEntryBtn': 'onRemoveEntryBtnClick'
+    },
+
+    triggers: {
+        'input @ui.deltaInput': 'deltaChange',
     },
 
     onRender: function() {
@@ -580,10 +626,14 @@ let RecordEntryRowView = views.MinicashView.extend({
         return {
             tags: [],
             tags_names: this.getUI('tagsSelect').select2().val(),
-            delta: this.getUI('deltaInput').val(),
+            delta: this.getDeltaInputText(),
             description: this.getUI('descriptionInput').val(),
         };
     },
+
+    getDeltaInputText: function() {
+        return this.getUI('deltaInput').val();
+    }
 });
 
 
@@ -591,14 +641,4 @@ let EntriesTBodyView = Mn.NextCollectionView.extend({
     tagName: 'tbody',
 
     childView: RecordEntryRowView,
-
-    onChildviewRecordSelectedChange: function(childView, e) {
-        this.triggerMethod('selected:records:change', this.getSelectedRecords());
-    },
-
-    getSelectedRecords: function() {
-        let selectedRecords = this.children.filter((c) => c.isSelected());
-        let selectedRecordModels = _.map(selectedRecords, 'model');
-        return selectedRecordModels;
-    },
 });
