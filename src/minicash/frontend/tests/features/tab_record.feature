@@ -50,10 +50,12 @@ Feature: Records management
       | 2000 |   200 | CA   |    1200 |            1200 |
     When I navigate to "tab_new_record"
     And I switch to multi-entries mode
-
-    # And I fill record tab with data
-    #   | Mode    | Date/Time        | From | Expense | Tags        | Description           |
-    #   | EXPENSE | 07/08/2017 22:18 | 2000 |     111 | hello world | description for__2000 |
+    And I fill record tab with data
+      | Mode    | Date/Time        | From |
+      | EXPENSE | 07/08/2017 22:18 | 2000 |
+    And I fill last multi-entry row with data
+      | delta | tags        | description           |
+      |   111 | hello world | description for__2000 |
     # And I click "save" panel button
     # Then "Home" tab is activated
     # And record exist on the backend
