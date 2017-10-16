@@ -423,7 +423,7 @@ let MultiEntryFormView = views.MinicashView.extend({
 
     regions: {
         entriesTBody: {
-            el: 'tbody[data-spec="record-multi-entries-tbody"]',
+            el: 'tbody[data-spec="multi-entries-tbody"]',
             replaceElement: true,
         }
     },
@@ -639,6 +639,10 @@ let RecordEntryRowView = views.MinicashView.extend({
 
 let EntriesTBodyView = Mn.NextCollectionView.extend({
     tagName: 'tbody',
+
+    attributes: {
+        'data-spec': 'multi-entries-tbody'
+    },
 
     childView: RecordEntryRowView,
 });
