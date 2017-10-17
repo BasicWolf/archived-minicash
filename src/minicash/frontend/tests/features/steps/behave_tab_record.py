@@ -54,6 +54,14 @@ def switch_to_multi_entries_mode(context):
     switch.click()
 
 
+@when('I click on "Add new entry"')
+def click_add_new_entry(context):
+    tab_el = context.minicash.get_active_tab()
+    add_entry_btn = tab_el.find_element_by_xpath(
+        './/button[@data-spec="add-entry"]')
+    add_entry_btn.click()
+
+
 @when('I fill last multi-entry row with data')
 def fill_multi_entry_row_with_data(context):
     item = context.item

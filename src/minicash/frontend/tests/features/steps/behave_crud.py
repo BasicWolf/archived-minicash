@@ -47,7 +47,7 @@ def step_records_exists_on_backend(context):
     test.assertEqual(item['created_dt'],
                      record.created_dt.strftime(context.user.profile.date_time_format))
     currency = record.delta.currency
-    test.assertAlmostEqual(Money(item['delta'], currency), record.delta, places=2)
+    test.assertEqual(Money(item['delta'], currency), record.delta)
     test.assertEqual(item['tags'], ' '.join(tag.name for tag in record.tags.all()))
 
 
@@ -61,7 +61,7 @@ def step_asset_exists_on_backend(context):
         q = {'description': item['description']}
     asset = Asset.objects.get(**q)
     currency = asset.balance.currency
-    test.assertAlmostEqual(Money(item['balance'], currency), asset.balance, places=2)
+    test.assertEqual(Money(item['balance'], currency), asset.balance)
 
 
 @then('tag exists on the backend')

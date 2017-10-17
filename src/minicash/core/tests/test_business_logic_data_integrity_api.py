@@ -1,3 +1,4 @@
+import copy
 import random
 
 from rest_framework.reverse import reverse
@@ -253,3 +254,21 @@ class RecordAPIAssetDataIntegrityTest(RESTTestCase):
         new_asset_balance = asset_from.balance
 
         self.assertEqual(new_asset_balance, old_asset_balance + old_records_delta)
+
+
+class RecordBulkAPIAssetDataIntegrityTest(RESTTestCase):
+    def test_mass_expnese_record_created_asset_updated(self):
+        asset_from = AssetFactory.create(owner=self.owner)
+        old_asset_balance = asset_from.balance
+        record = RecordFactory.build(asset_from=asset_from, asset_to=None, owner=self.owner)
+        serializer = CreateRecordSerializer(record)
+
+        data_in_1 = serializer.data
+        data_in_2 = copy.deepcopy(data_in_1)
+
+        self.jpost(reverse('records-list'), [data_in_1, data_in_2])
+
+        asset_from.refresh_from_db()
+        new_asset_balance = asset_from.balance
+        self.assertEqual(new_asset_balance,
+                         old_asset_balance - 2*record.delta)
