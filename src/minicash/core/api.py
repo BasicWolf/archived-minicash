@@ -1,8 +1,10 @@
 from django.db import transaction
-from rest_framework import viewsets, pagination, response
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
-from rest_framework_bulk import generics
+from rest_framework.response import Response
+from rest_framework.viewsets import ModelViewSet
+from rest_framework_bulk.mixins import BulkCreateModelMixin
 
 from minicash.core.settings import minicash_settings
 from minicash.utils.views import MassDeleteView
@@ -19,12 +21,12 @@ from .serializers import (
 )
 
 
-class RecordsPagination(pagination.PageNumberPagination):
+class RecordsPagination(PageNumberPagination):
     page_size = minicash_settings.PAGINATOR_DEFAULT_PAGE_SIZE
     page_size_query_param = 'page_size'
 
     def get_paginated_response(self, data):
-        return response.Response([
+        return Response([
             {
                 'links': {
                     'next': self.get_next_link(),
@@ -38,7 +40,7 @@ class RecordsPagination(pagination.PageNumberPagination):
         ])
 
 
-class RecordsView(generics.BulkModelViewSet):
+class RecordsView(BulkCreateModelMixin, ModelViewSet):
     authentication_classes = (SessionAuthentication, BasicAuthentication)
     permission_classes = (IsAuthenticated,)
     filter_class = RecordFilter
@@ -56,8 +58,11 @@ class RecordsView(generics.BulkModelViewSet):
     @transaction.atomic
     def perform_create(self, serializer):
         super().perform_create(serializer)
-        for instance in self._get_serializer_instances(serializer):
-            instance.update_assets_after_create()
+        instances = self._get_serializer_instances(serializer)
+        # assets on instances have to be refreshed when bulk-updates are performed
+        refresh_assets = len(instances) > 1
+        for instance in instances:
+            instance.update_assets_after_create(refresh_assets=refresh_assets)
 
     @transaction.atomic
     def perform_update(self, serializer):
@@ -96,7 +101,7 @@ class PaginatedRecordsView(RecordsView):
     pagination_class = RecordsPagination
 
 
-class AssetsView(viewsets.ModelViewSet):
+class AssetsView(ModelViewSet):
     authentication_classes = (SessionAuthentication, BasicAuthentication)
     permission_classes = (IsAuthenticated, IsAssetRemovable,)
 
@@ -112,7 +117,7 @@ class AssetsView(viewsets.ModelViewSet):
             return AssetSerializer
 
 
-class TagsView(viewsets.ModelViewSet):
+class TagsView(ModelViewSet):
     authentication_classes = (SessionAuthentication, BasicAuthentication)
     permission_classes = (IsAuthenticated,)
     serializer_class = TagSerializer

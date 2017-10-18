@@ -11,9 +11,9 @@ BEHAVE_FEATURES_DIR = $(FRONTEND_DIR)/tests/features
 
 REQUIREMENTS_FILE = requirements.txt
 
-TESTS := minicash.app minicash.utils minicash.core minicash.auth minicash.frontend
-TESTS := minicash.core.tests.test_business_logic_data_integrity_api.RecordBulkAPIAssetDataIntegrityTest
-BEHAVE_FEATURES :=  $(BEHAVE_FEATURES_DIR)/tab_record.feature
+PYLINT_APPS := minicash.utils minicash.core minicash.auth minicash.frontend
+TEST_APPS := minicash.app minicash.utils minicash.core minicash.auth minicash.frontend
+BEHAVE_FEATURES :=  # $(BEHAVE_FEATURES_DIR)/tab_record.feature
 TEST_ENV := REQUIREMENTS_PATH=$(realpath $(REQUIREMENTS_FILE))
 
 all:
@@ -38,7 +38,7 @@ shell:
 test-all: check test test-behave
 
 test:
-	$(TEST_ENV) $(MANAGEPY_CMD) test -v 2 $(TESTS) --settings $(MANAGEPY_TEST_SETTINGS) --noinput
+	$(TEST_ENV) $(MANAGEPY_CMD) test -v 2 $(TEST_APPS) --settings $(MANAGEPY_TEST_SETTINGS) --noinput
 
 test-behave:
 	$(MANAGEPY_CMD) behave --settings $(MANAGEPY_TEST_SETTINGS) $(BEHAVE_FEATURES)
@@ -52,7 +52,7 @@ flake8:
 	flake8 --config=.flake8rc .
 
 pylint:
-	pylint --rcfile=.pylintrc minicash.core minicash.auth minicash.frontend > pylint.out
+	pylint --rcfile=.pylintrc ${PYLINT_APPS} > pylint.out
 
 mypy:
 	mypy . --ignore-missing-imports --follow-imports=skip

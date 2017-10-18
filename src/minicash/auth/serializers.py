@@ -2,11 +2,11 @@ from rest_framework import serializers
 from rest_framework.settings import api_settings
 
 from minicash.core.settings import minicash_settings
-from minicash.utils.serializers import UserRelatedFieldBase
+from minicash.utils.serializers import UserRelatedFieldMixin
 from .models import DT_FORMATS
 
 
-class UserDateTimeField(serializers.DateTimeField, UserRelatedFieldBase):
+class UserDateTimeField(UserRelatedFieldMixin, serializers.DateTimeField):
     # pylint: disable=redefined-builtin
     def __init__(self, *args, user_field_name, format=None, input_formats=None, **kwargs):
         assert format is None, '`format` should now be supplied explicitly in {}'.format(self.__class__.__name__)
@@ -15,8 +15,7 @@ class UserDateTimeField(serializers.DateTimeField, UserRelatedFieldBase):
         self.__format = None
         self.__input_formats = api_settings.DATETIME_INPUT_FORMATS
 
-        UserRelatedFieldBase.__init__(self, user_field_name=user_field_name,
-                                      *args, **kwargs)
+        UserRelatedFieldMixin.__init__(self, user_field_name)
         serializers.DateTimeField.__init__(self, *args, **kwargs)
 
     @property

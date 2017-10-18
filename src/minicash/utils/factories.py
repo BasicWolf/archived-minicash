@@ -6,14 +6,17 @@ from factory import fuzzy
 
 
 class FuzzyFactorySequence(fuzzy.FuzzyAttribute):
-    def __init__(self, sub_factory, min_count=0, max_count=10, *args, **kwargs):
-        self.sub_factory = sub_factory
-        self.count = factory.random.randgen.randint(min_count, max_count)
-        self._args = args
-        self._kwargs = kwargs
+    def __init__(self, sub_factory, min_count=1, max_count=10, f_args=None, f_kwargs=None, **kwargs):  # pylint: disable=too-many-arguments
+        f_args = f_args or {}
+        f_kwargs = f_kwargs or {}
 
-    def fuzzer(self):
-        return list({self.sub_factory(*self._args, **self._kwargs)})
+        sub_factory = sub_factory
+        count = factory.random.randgen.randint(min_count, max_count)
+
+        def fuzzer():
+            return sub_factory.create_batch(count, **f_args, **f_kwargs)
+
+        super().__init__(fuzzer, **kwargs)
 
 
 class FuzzyDateTime(fuzzy.FuzzyDateTime):

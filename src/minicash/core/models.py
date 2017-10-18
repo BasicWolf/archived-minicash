@@ -53,7 +53,12 @@ class Record(models.Model):
     owner = models.ForeignKey(User, related_name='records')
     tags = models.ManyToManyField('Tag', blank=True, related_name='records')
 
-    def update_assets_after_create(self):
+    def update_assets_after_create(self, refresh_assets=False):
+        if refresh_assets:
+            if self.asset_to is not None:
+                self.asset_to.refresh_from_db()
+            if self.asset_from is not None:
+                self.asset_from.refresh_from_db()
         self._update_assets_on_change(old_delta=0)
 
     def update_assets_after_update(self, old_delta, old_asset_to, old_asset_from):
@@ -163,4 +168,4 @@ class Asset(models.Model):
         unique_together = (('name', 'owner'))
 
     def __str__(self):
-        return self.name
+        return f'{self.name}: {self.balance}'

@@ -11,7 +11,7 @@ from .factories import AssetFactory, RecordFactory
 
 
 class RecordAPIAssetDataIntegrityTest(RESTTestCase):
-    def test_expnese_record_created_asset_updated(self):
+    def test_expense_record_created_asset_updated(self):
         asset_from = AssetFactory.create(owner=self.owner)
         old_asset_balance = asset_from.balance
         record = RecordFactory.build(asset_from=asset_from, asset_to=None, owner=self.owner)
@@ -257,7 +257,20 @@ class RecordAPIAssetDataIntegrityTest(RESTTestCase):
 
 
 class RecordBulkAPIAssetDataIntegrityTest(RESTTestCase):
-    def test_mass_expnese_record_created_asset_updated(self):
+    def test_bulk_expense_single_record_created_asset_updated(self):
+        asset_from = AssetFactory.create(owner=self.owner)
+        old_asset_balance = asset_from.balance
+        record = RecordFactory.build(asset_from=asset_from, asset_to=None, owner=self.owner)
+        serializer = CreateRecordSerializer(record)
+
+        self.jpost(reverse('records-list'), [serializer.data])
+
+        asset_from.refresh_from_db()
+        new_asset_balance = asset_from.balance
+        self.assertEqual(new_asset_balance,
+                         old_asset_balance - record.delta)
+
+    def test_bulk_expense_records_created_asset_updated(self):
         asset_from = AssetFactory.create(owner=self.owner)
         old_asset_balance = asset_from.balance
         record = RecordFactory.build(asset_from=asset_from, asset_to=None, owner=self.owner)
@@ -271,4 +284,4 @@ class RecordBulkAPIAssetDataIntegrityTest(RESTTestCase):
         asset_from.refresh_from_db()
         new_asset_balance = asset_from.balance
         self.assertEqual(new_asset_balance,
-                         old_asset_balance - 2*record.delta)
+                         old_asset_balance - 2 * record.delta)

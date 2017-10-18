@@ -17,8 +17,8 @@ class requires_minicash_settings:
     '''A decorator which checks for required Minicash settings
        and yields Error CheckMessages if settings are not found.'''
 
-    def __init__(self, settings_list=[]):
-        self.settings_list = settings_list
+    def __init__(self, settings_list=None):
+        self.settings_list = settings_list or []
 
     def __call__(self, f):
         @wraps(f)

@@ -25,8 +25,8 @@ class ModelSerializer(JSONSerializerMixin, serializers.ModelSerializer):
     pass
 
 
-class UserRelatedFieldBase:
-    def __init__(self, *args, user_field_name, **kwargs):
+class UserRelatedFieldMixin:
+    def __init__(self, user_field_name):
         self._user_field_name = user_field_name
 
     def get_queryset(self):
@@ -44,18 +44,16 @@ class UserRelatedFieldBase:
         return request.user
 
 
-class UserPrimaryKeyRelatedField(UserRelatedFieldBase,
+class UserPrimaryKeyRelatedField(UserRelatedFieldMixin,
                                  serializers.PrimaryKeyRelatedField):
     def __init__(self, *args, user_field_name, **kwargs):
-        UserRelatedFieldBase.__init__(self, user_field_name=user_field_name,
-                                      *args, **kwargs)
+        UserRelatedFieldMixin.__init__(self, user_field_name)
         serializers.PrimaryKeyRelatedField.__init__(self, *args, **kwargs)
 
 
-class UserSlugRelatedField(UserRelatedFieldBase, serializers.SlugRelatedField):
+class UserSlugRelatedField(UserRelatedFieldMixin, serializers.SlugRelatedField):
     def __init__(self, *args, user_field_name, **kwargs):
-        UserRelatedFieldBase.__init__(self, user_field_name=user_field_name,
-                                      *args, **kwargs)
+        UserRelatedFieldMixin.__init__(self, user_field_name)
         serializers.SlugRelatedField.__init__(self, *args, **kwargs)
 
 

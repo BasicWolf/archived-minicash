@@ -553,7 +553,11 @@ let MultiEntryFormView = views.MinicashView.extend({
         try {
             let totalDelta =  this.collection.reduce((memo, rec) => {
                 let entryRowView = tbodyView.children.findByModelCid(rec.cid);
-                let deltaTxt = entryRowView.getDeltaInputText();
+                if (!entryRowView) {
+                    return memo;
+                }
+
+                let deltaTxt = entryRowView.getDeltaInputText() || "0";
                 let delta = new Decimal(deltaTxt).toFixed(3);
                 return memo.add(delta);
             }, new Decimal(0));

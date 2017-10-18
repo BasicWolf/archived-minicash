@@ -42,7 +42,10 @@ class RecordFactory(DjangoModelFactory):
             return
 
         if extracted is None:
-            tags = factories.FuzzyFactorySequence(TagFactory, owner=self.owner).fuzzer()
+            tags = factories.FuzzyFactorySequence(
+                TagFactory,
+                f_kwargs={'owner': self.owner}
+            ).fuzz()
         else:
             tags = extracted
 

@@ -4,7 +4,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 
 
 class JSONEncoder(DjangoJSONEncoder):
-    def default(self, obj):
+    def default(self, obj):  # pylint: disable=arguments-differ,method-hidden; -- false positives
         # Encode lazy translations properly
         if isinstance(obj, Promise):
             return force_text(obj)

@@ -74,7 +74,7 @@ LOGIN_URL = 'login'
 
 LOGOUT_REDIRECT_URL = '/'
 
-MIDDLEWARE = [
+MIDDLEWARE: List[str] = [
     'django.middleware.security.SecurityMiddleware',
 
     'whitenoise.middleware.WhiteNoiseMiddleware',
