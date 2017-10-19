@@ -2,7 +2,6 @@
 
 /* global _,$,console,document,jQuery,minicash,require */
 
-import Bb from 'backbone';
 import Decimal from 'decimal.js';
 import Hb from 'handlebars/runtime';
 import {tr} from 'minicash/utils';
@@ -45,6 +44,10 @@ Hb.registerHelper('ifeq', function(v, v2, options) {
     return v === v2 ? options.fn(this) : options.inverse(this);
 });
 
+Hb.registerHelper('ifeq-ns', function(v, v2, options) {
+    return v == v2 ? options.fn(this) : options.inverse(this);
+});
+
 Hb.registerHelper('ifneq', function(v, v2, options) {
     return v !== v2 ? options.fn(this) : options.inverse(this);
 });
@@ -52,7 +55,6 @@ Hb.registerHelper('ifneq', function(v, v2, options) {
 Hb.registerHelper('iflte', function(v, v2, options) {
     return v <= v2 ? options.fn(this) : options.inverse(this);
 });
-
 
 Hb.registerHelper('decimal', function(options) {
     let val = new Decimal(options.fn(this));

@@ -1,5 +1,7 @@
 'use strict';
 
+/* global document,window */
+
 import App from 'minicash/app';
 import './styles/minicash.scss';
 

@@ -50,6 +50,8 @@
     "file-loader": "^0.11.1",
     "handlebars-loader": "^1.5.0",
     "handlebars-template-loader": "^0.7.1",
+    "jshint": "^2.9.5",
+    "jshint-loader": "^0.8.4",
     "node-sass": "^4.5.3",
     "optimize-css-assets-webpack-plugin": "^2.0.0",
     "sass-loader": "^6.0.5",

@@ -1,6 +1,6 @@
 'use strict';
 
-/* global _,$,require */
+/* global _,$,minicash,require */
 
 import Bb from 'backbone';
 import Hb from 'handlebars/runtime';

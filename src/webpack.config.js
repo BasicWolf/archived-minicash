@@ -38,16 +38,23 @@ let config = {
             {
                 test: /\.js?$/,
                 exclude: /node_modules/,
-                loader: 'babel-loader',
-                query: {
-                    presets: ['es2015'],
-                    plugins: [
-                        // use with es2015 preset
-                        ["transform-es2015-modules-commonjs", {
-                            "allowTopLevelThis": false
-                        }],
-                    ]
-                }
+                use: [
+                    {
+                        loader: 'babel-loader',
+                        query: {
+                            presets: ['es2015'],
+                            plugins: [
+                                // use with es2015 preset
+                                ["transform-es2015-modules-commonjs", {
+                                    "allowTopLevelThis": false
+                                }],
+                            ]
+                        }
+                    },
+                    {
+                        loader: 'jshint-loader',
+                    }
+                ]
             },
 
             /* Handlebars */

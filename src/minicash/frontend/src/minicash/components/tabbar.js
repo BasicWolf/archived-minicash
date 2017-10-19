@@ -1,6 +1,6 @@
 'use strict';
 
-/* global _,$,Backbone,minicash,require */
+/* global _,$,Backbone,minicash,require,URLSearchParams */
 
 import Bb from 'backbone';
 import Mn from 'backbone.marionette';

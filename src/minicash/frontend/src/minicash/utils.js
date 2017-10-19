@@ -1,6 +1,6 @@
 'use strict';
 
-/* global $,_,minicash */
+/* global $,_,navigator,minicash,window */
 
 import Decimal from 'decimal.js';
 import Mn from 'backbone.marionette';
@@ -113,7 +113,7 @@ export function rejectedPromise() {
     let emptyDfd = $.Deferred();
     emptyDfd.reject.apply(null, arguments);
     return emptyDfd.promise();
-};
+}
 
 export function getLocale() {
     let supported = ['en'];

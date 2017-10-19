@@ -9,7 +9,7 @@
                 {{#ifdef record.pk}}disabled{{/ifdef}}>
           {{#each (context 'RECORD_MODES') }}
             <option value="{{this.value}}"
-                    {{#ifeq ../record.mode this.value}}selected{{/ifeq}}
+                    {{#ifeq-ns ../record.mode this.value}}selected{{/ifeq-ns}}
             >{{this.label}}</option>
           {{/each}}
         </select>
@@ -38,7 +38,7 @@
         <select name="asset_from" class="form-control">
           <option value="" {{#ifnot record.asset_from}}selected{{/ifnot}}>Select account...</option>
           {{#each assets}}
-            <option value="{{id}}" {{#ifeq ../record.asset_from id}}selected{{/ifeq}}>{{name}}</option>
+            <option value="{{id}}" {{#ifeq-ns ../record.asset_from id}}selected{{/ifeq-ns}}>{{name}}</option>
           {{/each}}
         </select>
       </div>
@@ -51,7 +51,7 @@
         <select name="asset_to" class="form-control">
           <option value="" {{#ifnot record.asset_to}}selected{{/ifnot}}>Select account...</option>
           {{#each assets}}
-            <option value="{{id}}" {{#ifeq ../record.asset_to id}}selected{{/ifeq}}>{{name}}</option>
+            <option value="{{id}}" {{#ifeq-ns ../record.asset_to id}}selected{{/ifeq-ns}}>{{name}}</option>
           {{/each}}
         </select>
       </div>
