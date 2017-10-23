@@ -312,9 +312,10 @@ class TagsAPITest(RESTTestCase):
 
     def test_delete(self):
         tags = TagFactory.create_batch(5, owner=self.owner)
+        tags_count = Tag.objects.for_owner(self.owner).count()
         res = self.delete(reverse('tags-detail', args=[tags[0].pk]))
         self.assert_deleted(res)
-        self.assertEqual(4, Tag.objects.all().count())
+        self.assertEqual(tags_count - 1, Tag.objects.all().count())
 
     def test_mass_delete(self):
         TAGS_TO_DELETE = 3

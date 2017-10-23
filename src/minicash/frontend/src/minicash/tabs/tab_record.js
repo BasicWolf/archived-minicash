@@ -467,6 +467,10 @@ let MultiEntryFormView = views.MinicashView.extend({
         this.collection = new models.Records();
     },
 
+    onAttach: function() {
+        this.defaultFocus();
+    },
+
     onAddEntryBtnClick: function() {
         this.collection.add({});
     },
@@ -560,7 +564,6 @@ let MultiEntryFormView = views.MinicashView.extend({
         this.validator.showErrors(fieldsErrors);
     },
 
-
     onChildviewChildviewDeltaChange: function() {
         this.updateTotalDelta();
     },
@@ -587,6 +590,11 @@ let MultiEntryFormView = views.MinicashView.extend({
         }
 
         this.getUI('totalDelta').text(totalDeltaTxt);
+    },
+
+    defaultFocus: function() {
+        let entriesTBody = this.getChildView('entriesTBody');
+        entriesTBody.focusLastChild();
     },
 });
 _.extend(MultiEntryFormView.prototype, CommonFormViewBase);
@@ -616,10 +624,6 @@ let RecordEntryRowView = views.MinicashView.extend({
 
     onRender: function() {
         this.renderTagsSelect();
-    },
-
-    onDomRefresh: function() {
-        this.getUI('deltaInput').focus();
     },
 
     renderTagsSelect: function() {
@@ -660,7 +664,11 @@ let RecordEntryRowView = views.MinicashView.extend({
 
     getDeltaInputText: function() {
         return this.getUI('deltaInput').val();
-    }
+    },
+
+    focusDeltaInput: function() {
+        this.getUI('deltaInput').focus();
+    },
 });
 
 
@@ -672,4 +680,12 @@ let EntriesTBodyView = Mn.NextCollectionView.extend({
     },
 
     childView: RecordEntryRowView,
+
+    onRenderChildren: function() {
+        this.focusLastChild();
+    },
+
+    focusLastChild: function() {
+        this.children.last().focusDeltaInput();
+    },
 });
