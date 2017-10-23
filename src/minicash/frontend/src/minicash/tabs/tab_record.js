@@ -126,6 +126,12 @@ export let RecordTabPanelView = TabPanelView.extend({
     modelEvents: {
         'change:record': 'render',
         'change:viewMode': 'renderEntriesFormView',
+        'tab:shown': 'onTabShown',
+    },
+
+    onTabShown: function() {
+        let currentEntriesView = this.getRegion('panelContent').currentView;
+        currentEntriesView.defaultFocus();
     },
 
     initialize: function() {
@@ -357,6 +363,10 @@ let SingleEntryFormView = views.MinicashView.extend({
         this.renderModeSelectState();
     },
 
+    onAttach: function() {
+        this.defaultFocus();
+    },
+
     initializeValidator: function() {
         this.validator = this.getUI('form').validate();
     },
@@ -414,6 +424,10 @@ let SingleEntryFormView = views.MinicashView.extend({
         formData = this._updateFormDataMode(formData);
         return formData;
     },
+
+    defaultFocus: function() {
+        this.getUI('deltaInput').focus();
+    }
 });
 _.extend(SingleEntryFormView.prototype, CommonFormViewBase);
 
@@ -602,6 +616,10 @@ let RecordEntryRowView = views.MinicashView.extend({
 
     onRender: function() {
         this.renderTagsSelect();
+    },
+
+    onDomRefresh: function() {
+        this.getUI('deltaInput').focus();
     },
 
     renderTagsSelect: function() {

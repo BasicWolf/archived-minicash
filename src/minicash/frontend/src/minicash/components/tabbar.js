@@ -18,8 +18,18 @@ export let TabModel = Bb.Model.extend({
     },
 
     defaults: function() {
+        let route = '/';
+
+        try {
+            route += Bb.history.getFragment();
+        } catch (e) {
+            if (!_.isUndefined(Bb.history.root)) {
+                throw e;
+            }
+        }
+
         return {
-            route: '/' + Bb.history.getFragment(),
+            route: route,
 
             // HTML `id` attribute-friendly formatted route
             routeId: null,
@@ -99,6 +109,12 @@ let TabNavView = Mn.View.extend({
     modelEvents: {
         'model:chosen': 'onTabChosen',
         'change:route': 'onRouteChange',
+    },
+
+    onRender: function() {
+        this.getUI('a').on('shown.bs.tab', () => {
+            this.model.trigger('tab:shown');
+        });
     },
 
     onAttach: function() {

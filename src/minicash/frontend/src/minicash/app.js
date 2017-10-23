@@ -155,9 +155,7 @@ export default Mn.Application.extend({
     },
 
     _startNavigation: function() {
-        Bb.history.start({pushState: true});
-
-        // ensure that HomeTab is always loaded as the first tab
         this.controllers.tabs.index({show: false});
+        Bb.history.start({pushState: true});
     }
 });
