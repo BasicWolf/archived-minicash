@@ -154,36 +154,6 @@ let RecordsTabPanelView = TabPanelView.extend({
 });
 
 
-let RecordsTableView = Mn.NextCollectionView.extend({
-    tagName: 'table',
-    className: 'table table-striped',
-
-    attributes: {
-        "data-spec": "records-table",
-        "cellspacing": "0",
-    },
-
-    childView: () => RecordRowView,
-
-    onRender: function() {
-        let template = require('templates/tab_records/records_thead.hbs');
-        let $tableHead = $(template());
-        this.$el.prepend($tableHead);
-    },
-
-    onChildviewRecordSelectedChange: function(childView, e) {
-        this.triggerMethod('selected:records:change', this.getSelectedRecords());
-    },
-
-
-    getSelectedRecords: function() {
-        let selectedRecords = this.children.filter((c) => c.isSelected());
-        let selectedRecordModels = _.map(selectedRecords, 'model');
-        return selectedRecordModels;
-    },
-});
-
-
 let RecordRowView = Mn.View.extend({
     tagName: 'tbody',
     template: require('templates/tab_records/record_tr.hbs'),
@@ -205,13 +175,6 @@ let RecordRowView = Mn.View.extend({
         'change @ui.recordChk': 'record:selected:change',
     },
 
-    regions: {
-        recordDataRegion: {
-            el: '[data-spec="record-data-region"]',
-            replaceElement: true,
-        }
-    },
-
     isSelected: function() {
         return this.getUI('recordChk').is(':checked');
     },
@@ -219,8 +182,119 @@ let RecordRowView = Mn.View.extend({
     editRecord: function() {
         minicash.navigateTo('tab_record', {id: this.model.id});
     },
+
+    onRender() {
+        debugger;
+    },
 });
 
+
+let RecordsTableView = Mn.NextCollectionView.extend({
+    tagName: 'table',
+    className: 'table table-striped',
+
+    attributes: {
+        "cellspacing": "0",
+    },
+
+    childView: () => RecordRowView,
+
+    onRender: function() {
+        let theadTemplate = require('templates/tab_records/records_thead.hbs');
+        let $tableHead = $(theadTemplate());
+        this.$el.prepend($tableHead);
+    },
+
+    onChildviewRecordSelectedChange: function(childView, e) {
+        this.triggerMethod('selected:records:change', this.getSelectedRecords());
+    },
+
+    getSelectedRecords: function() {
+        let selectedRecords = this.children.filter((c) => c.isSelected());
+        let selectedRecordModels = _.map(selectedRecords, 'model');
+        return selectedRecordModels;
+    },
+});
+
+
+/* ---- Grouped records views ---- */
+/* =============================== */
+
+
+let GroupedRecordUnifiedRowView = Mn.View.extend({
+    tagName: 'tr',
+    template: require('templates/tab_records/grouped_records_unified_row.hbs')
+
+    // ui:
+    //     toggleSubRecordsBtn: 'button[data-spec="toggle-sub-records"]'
+
+    // events:
+    //     'click @ui.toggleSubRecordsBtn': 'toggleSubRecord'
+
+    // toggleSubRecord: ->
+    //     toggleSubRecordsBtnIcon = @getUI('toggleSubRecordsBtn').children('span')
+
+    //     @_subRecordsOpen = not @_subRecordsOpen
+    //     toggleSubRecordsBtnIcon.toggleClass('glyphicon-plus', not @_subRecordsOpen)
+    //     toggleSubRecordsBtnIcon.toggleClass('glyphicon-minus', @_subRecordsOpen)
+
+    //     @triggerMethod('toggleSubRecord', @_subRecordsOpen)
+});
+
+
+let GroupedRecordsRowView = Mn.View.extend({
+    tagName: 'tbody',
+    template: require('templates/tab_records/grouped_records_row.hbs'),
+
+    ui: {
+        activeRowArea: 'td[role="button"]',
+        recordChk: 'input[data-spec="select-record"]',
+    },
+
+    regions: {
+        groupedRecordsUnifiedRowRegion: {
+            el: '[data-spec="grouped-records-unified-row-region"]',
+            replaceElement: true,
+        },
+
+        groupedRecordsRegion: {
+            el: '[data-spec="grouped-records-region"]',
+            replaceElement: true,
+        }
+    },
+
+    events: {
+        'click @ui.activeRowArea': 'editRecord',
+    },
+
+    modelEvents: {
+        'change': 'render',
+    },
+
+
+    onRender: function() {
+        this.showChildView('groupedRecordsUnifiedRowRegion', new GroupedRecordUnifiedRowView({model: this.model}));
+    }
+
+});
+
+
+let GroupedRecordsTableView = Mn.NextCollectionView.extend({
+    tagName: 'table',
+    className: 'table table-striped',
+
+    attributes: {
+        "cellspacing": "0",
+    },
+
+    childView: () => GroupedRecordsRowView,
+
+    onRender: function() {
+        let theadTemplate = require('templates/tab_records/grouped_records_thead.hbs');
+        let $tableHead = $(theadTemplate());
+        this.$el.prepend($tableHead);
+    },
+});
 
 
 Hb.registerHelper('record_account', (assetFrom, assetTo, options) => {

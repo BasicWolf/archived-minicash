@@ -23,7 +23,7 @@ let VIEW_MODE = {
 };
 
 export let RecordTab = TabModel.extend({
-    defaults: function() {
+    defaults() {
         let parentDefaults = TabModel.prototype.defaults.apply(this, arguments);
 
         return _.extend(parentDefaults, {
@@ -33,7 +33,7 @@ export let RecordTab = TabModel.extend({
         });
     },
 
-    initialize: function() {
+    initialize() {
         if (this.get('recordId')) {
             this.set('title', tr('Edit record'));
             this.set('viewMode', VIEW_MODE.SINGLE);
@@ -62,7 +62,7 @@ export let DeltaEntryCalculatorBehavior = views.MinicashBehavior.extend({
         }
     },
 
-    calculateDelta: function() {
+    calculateDelta() {
         let $deltaInput = this.getUI('deltaInput');
         let deltaTxt = $deltaInput.val();
         let newDeltaTxt = deltaTxt;
@@ -84,7 +84,7 @@ export let DeltaEntryCalculatorBehavior = views.MinicashBehavior.extend({
         $deltaInput.trigger("input");
     },
 
-    restoreCalculatedDelta: function() {
+    restoreCalculatedDelta() {
         if (this.previousDeltaTxt != null) {
             let $deltaInput = this.getUI('deltaInput');
 
@@ -129,12 +129,12 @@ export let RecordTabPanelView = TabPanelView.extend({
         'tab:shown': 'onTabShown',
     },
 
-    onTabShown: function() {
+    onTabShown() {
         let currentEntriesView = this.getRegion('panelContent').currentView;
         currentEntriesView.defaultFocus();
     },
 
-    initialize: function() {
+    initialize() {
         // load bound record
         if (this.model.get('recordId')) {
             let record = new models.Record({pk: this.model.get('recordId')});
@@ -146,12 +146,12 @@ export let RecordTabPanelView = TabPanelView.extend({
         }
     },
 
-    onRender: function() {
+    onRender() {
         this.renderEntriesFormView();
         this.renderSingleMultiSwitch();
     },
 
-    renderEntriesFormView: function() {
+    renderEntriesFormView() {
         if (this.model.get('viewMode') === VIEW_MODE.SINGLE) {
             this.showChildView('panelContent',
                                new SingleEntryFormView({model: this.model}));
@@ -161,7 +161,7 @@ export let RecordTabPanelView = TabPanelView.extend({
         }
     },
 
-    renderSingleMultiSwitch: function() {
+    renderSingleMultiSwitch() {
         this.getUI('singleMultiChk').bootstrapSwitch({
             onSwitchChange: this.onSingleMultiToggle,
             state: this.model.get('viewMode') == VIEW_MODE.SINGLE,
@@ -175,36 +175,36 @@ export let RecordTabPanelView = TabPanelView.extend({
         this.model.set('viewMode', state ? VIEW_MODE.SINGLE: VIEW_MODE.MULTI);
     },
 
-    onSaveBtnClick: function() {
+    onSaveBtnClick() {
         this.saveForm().then(() => {
             this.model.destroy();
         });
     },
 
-    onSaveAddSimilarBtnClick: function() {
+    onSaveAddSimilarBtnClick() {
         this.saveForm().done(() => {
             this._renderNewRecordSimilarToOld();
         });
     },
 
-    _renderNewRecordSimilarToOld: function() {
+    _renderNewRecordSimilarToOld() {
         let newRecord = this.model.get('record').clone();
         newRecord.unset(newRecord.idAttribute, {silent: true});
         newRecord.unset('delta', {silent: true});
         this.model.set('record', newRecord);
     },
 
-    onSaveAddAnotherBtnClick: function() {
+    onSaveAddAnotherBtnClick() {
         this.saveForm().done(() => {
             this.model.unset('record');
         });
     },
 
-    onCancelBtnClick: function() {
+    onCancelBtnClick() {
         this.model.destroy();
     },
 
-    saveForm: function() {
+    saveForm() {
         let dfd = this.getChildView('panelContent').saveForm();
 
         if (dfd.state() == 'rejected') {
@@ -227,11 +227,11 @@ export let RecordTabPanelView = TabPanelView.extend({
 
     },
 
-    lockControls: function() {
+    lockControls() {
         return this.uiDisable(['saveBtn', 'cancelBtn']);
     },
 
-    unlockControls: function() {
+    unlockControls() {
         return this.uiEnable(['saveBtn', 'cancelBtn']);
     },
 }); // RecordTabPanelView
@@ -275,7 +275,7 @@ let CommonFormViewBase = {
         $toAssetSelect.parentsUntil('form', '.form-group').toggle(showTo);
     },
 
-    renderDateTimePicker: function() {
+    renderDateTimePicker() {
         let options = {
             showTodayButton: true,
             allowInputToggle: true,
@@ -288,7 +288,7 @@ let CommonFormViewBase = {
         dtStampInputWrapper.datetimepicker(options);
     },
 
-    getCommonViewData: function() {
+    getCommonViewData() {
         let formData = this.getUI('form').serializeForm();
         formData = this._updateFormDataMode(formData);
         let commonData = _.pick(formData, ['asset_from', 'asset_to', 'created_dt', 'mode']);
@@ -340,7 +340,7 @@ let SingleEntryFormView = views.MinicashView.extend({
         'change:record': 'render'
     },
 
-    serializeModel: function() {
+    serializeModel() {
         let renderData = TabPanelView.prototype.serializeModel.apply(this, arguments);
         renderData.record = !_.isEmpty(renderData.record) && !renderData.record.isEmpty() ?
             renderData.record.serialize() :
@@ -349,29 +349,29 @@ let SingleEntryFormView = views.MinicashView.extend({
         return renderData;
     },
 
-    _buildNewRecordRenderData: function() {
+    _buildNewRecordRenderData() {
         let nowStr = moment().format(minicash.CONTEXT.user.dtFormat);
         return {
             'created_dt': nowStr
         };
     },
 
-    onRender: function() {
+    onRender() {
         this.initializeValidator();
         this.renderDateTimePicker();
         this.renderTagsSelect();
         this.renderModeSelectState();
     },
 
-    onAttach: function() {
+    onAttach() {
         this.defaultFocus();
     },
 
-    initializeValidator: function() {
+    initializeValidator() {
         this.validator = this.getUI('form').validate();
     },
 
-    renderTagsSelect: function() {
+    renderTagsSelect() {
         let data = minicash.collections.tags.map((it) => {
             let name = it.get('name');
             return {id: name, text: name};
@@ -387,7 +387,7 @@ let SingleEntryFormView = views.MinicashView.extend({
         this.getUI('tagsSelect').select2(opts);
     },
 
-    saveForm: function() {
+    saveForm() {
         let saveData = this._collectFormData();
         if (_.isEmpty(saveData)) {
             return utils.rejectedPromise();
@@ -410,7 +410,7 @@ let SingleEntryFormView = views.MinicashView.extend({
         return saveDfd.promise();
     },
 
-    _collectFormData: function() {
+    _collectFormData() {
         let NO_DATA = {};
 
         if (!this.validator.form()) {
@@ -425,7 +425,7 @@ let SingleEntryFormView = views.MinicashView.extend({
         return formData;
     },
 
-    defaultFocus: function() {
+    defaultFocus() {
         this.getUI('deltaInput').focus();
     }
 });
@@ -463,19 +463,19 @@ let MultiEntryFormView = views.MinicashView.extend({
         'click @ui.addEntryBtn': 'onAddEntryBtnClick',
     },
 
-    initialize: function() {
+    initialize() {
         this.collection = new models.Records();
     },
 
-    onAttach: function() {
+    onAttach() {
         this.defaultFocus();
     },
 
-    onAddEntryBtnClick: function() {
+    onAddEntryBtnClick() {
         this.collection.add({});
     },
 
-    onRender: function() {
+    onRender() {
         this.showChildView('entriesTBody', new EntriesTBodyView({
             collection: this.collection,
         }));
@@ -487,11 +487,11 @@ let MultiEntryFormView = views.MinicashView.extend({
         this.renderModeSelectState();
     },
 
-    updateValidator: function() {
+    updateValidator() {
         this.validator = this.getUI('form').validate();
     },
 
-    serializeModel: function() {
+    serializeModel() {
         let renderData = TabPanelView.prototype.serializeModel.apply(this, arguments);
         renderData.record = !renderData.record.isEmpty() ?
             renderData.record.serialize() :
@@ -500,14 +500,14 @@ let MultiEntryFormView = views.MinicashView.extend({
         return renderData;
     },
 
-    _buildNewRecordRenderData: function() {
+    _buildNewRecordRenderData() {
         let nowStr = moment().format(minicash.CONTEXT.user.dtFormat);
         return {
             'created_dt': nowStr
         };
     },
 
-    saveForm: function() {
+    saveForm() {
         if (!this.validator.form()) {
             return utils.rejectedPromise();
         }
@@ -528,7 +528,7 @@ let MultiEntryFormView = views.MinicashView.extend({
         return saveDfd.promise();
     },
 
-    _collectAndSetRecordsData: function() {
+    _collectAndSetRecordsData() {
         let RECORD_MODES = minicash.CONTEXT.RECORD_MODES;
 
         let formData = this.getUI('form').serializeForm();
@@ -564,11 +564,11 @@ let MultiEntryFormView = views.MinicashView.extend({
         this.validator.showErrors(fieldsErrors);
     },
 
-    onChildviewChildviewDeltaChange: function() {
+    onChildviewChildviewDeltaChange() {
         this.updateTotalDelta();
     },
 
-    updateTotalDelta: function() {
+    updateTotalDelta() {
         let tbodyView = this.getRegion('entriesTBody').currentView;
 
         let totalDeltaTxt = '';
@@ -592,7 +592,7 @@ let MultiEntryFormView = views.MinicashView.extend({
         this.getUI('totalDelta').text(totalDeltaTxt);
     },
 
-    defaultFocus: function() {
+    defaultFocus() {
         let entriesTBody = this.getChildView('entriesTBody');
         entriesTBody.focusLastChild();
     },
@@ -622,11 +622,11 @@ let RecordEntryRowView = views.MinicashView.extend({
         'input @ui.deltaInput': 'deltaChange',
     },
 
-    onRender: function() {
+    onRender() {
         this.renderTagsSelect();
     },
 
-    renderTagsSelect: function() {
+    renderTagsSelect() {
         let data = minicash.collections.tags.map((it) => {
             let name = it.get('name');
             return {id: name, text: name};
@@ -642,18 +642,18 @@ let RecordEntryRowView = views.MinicashView.extend({
         this.getUI('tagsSelect').select2(opts);
     },
 
-    serializeModel: function() {
+    serializeModel() {
         let recordData = views.MinicashView.prototype.serializeModel.apply(this, arguments);
         recordData._cid = this.model.cid;
         recordData._index = this.model.collection.indexOf(this.model);
         return recordData;
     },
 
-    onRemoveEntryBtnClick: function() {
+    onRemoveEntryBtnClick() {
         this.model.collection.remove(this.model);
     },
 
-    getFormData: function() {
+    getFormData() {
         return {
             tags: [],
             tags_names: this.getUI('tagsSelect').select2().val(),
@@ -662,11 +662,11 @@ let RecordEntryRowView = views.MinicashView.extend({
         };
     },
 
-    getDeltaInputText: function() {
+    getDeltaInputText() {
         return this.getUI('deltaInput').val();
     },
 
-    focusDeltaInput: function() {
+    focusDeltaInput() {
         this.getUI('deltaInput').focus();
     },
 });
@@ -681,11 +681,11 @@ let EntriesTBodyView = Mn.NextCollectionView.extend({
 
     childView: RecordEntryRowView,
 
-    onRenderChildren: function() {
+    onRenderChildren() {
         this.focusLastChild();
     },
 
-    focusLastChild: function() {
+    focusLastChild() {
         this.children.last().focusDeltaInput();
     },
 });

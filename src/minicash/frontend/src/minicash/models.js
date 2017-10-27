@@ -115,7 +115,10 @@ export let RecordsMixin = {
     massDeleteUrl: function() { return minicash.url('records-mass-delete'); },
 };
 
-export let Records = base.MinicashCollection.extend(RecordsMixin);
+export let Records = base.MinicashCollection.extend({
+
+});
+_.extend(Records.prototype, RecordsMixin);
 
 export let PageableRecords = base.MinicashPageableCollection.extend(RecordsMixin);
 
