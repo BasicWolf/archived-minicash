@@ -115,12 +115,30 @@ export let RecordsMixin = {
     massDeleteUrl: function() { return minicash.url('records-mass-delete'); },
 };
 
-export let Records = base.MinicashCollection.extend({
-
-});
+export let Records = base.MinicashCollection.extend({});
 _.extend(Records.prototype, RecordsMixin);
 
 export let PageableRecords = base.MinicashPageableCollection.extend(RecordsMixin);
+
+export let GroupedRecords = base.MinicashModel.extend({
+
+});
+
+export let GroupedRecordsCollection = base.MinicashCollection.extend({
+    model: GroupedRecords,
+
+    initialize(recordsCollection) {
+        this.recordsCollection = recordsCollection;
+        this.listenTo(this.recordsCollection, 'update', this.onRecordsUpdate);
+        let data = recordsCollection.groupBy((rec) => rec.get('created_dt').format());
+        debugger;
+    },
+
+    onRecordsUpdate() {
+
+    }
+});
+
 
 export let ReportWidget = base.MinicashModel.extend({
 

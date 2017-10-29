@@ -79,6 +79,8 @@ let RecordsTabPanelView = TabPanelView.extend({
     },
 
     onRender: function() {
+        let _debug_m = new models.GroupedRecordsCollection(this.collection);
+
         this.showChildView('recordsTableRegion', new RecordsTableView({collection: this.collection}));
         this.showChildView('topPaginatorRegion', new PaginatorView({collection: this.collection}));
         this.showChildView('bottomPaginatorRegion', new PaginatorView({collection: this.collection}));
@@ -184,7 +186,7 @@ let RecordRowView = Mn.View.extend({
     },
 
     onRender() {
-        debugger;
+
     },
 });
 
@@ -283,13 +285,17 @@ let GroupedRecordsTableView = Mn.NextCollectionView.extend({
     tagName: 'table',
     className: 'table table-striped',
 
+    initialize() {
+
+    },
+
     attributes: {
         "cellspacing": "0",
     },
 
     childView: () => GroupedRecordsRowView,
 
-    onRender: function() {
+    onRender() {
         let theadTemplate = require('templates/tab_records/grouped_records_thead.hbs');
         let $tableHead = $(theadTemplate());
         this.$el.prepend($tableHead);
