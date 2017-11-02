@@ -8,6 +8,7 @@ import Mn from 'backbone.marionette';
 import Radio from 'backbone.radio';
 
 import * as models from 'minicash/models';
+import * as views from 'minicash/views';
 import {PaginatorView} from 'minicash/components/paginator';
 import {RecordsFilterView} from 'minicash/components/records_filter';
 import {TabPanelView, TabModel} from 'minicash/components/tabbar';
@@ -18,7 +19,7 @@ let recordsChannel = Radio.channel('records');
 
 
 export let RecordsTab = TabModel.extend({
-    defaults: function() {
+    defaults() {
         let parentDefaults = TabModel.prototype.defaults.apply(this, arguments);
 
         return _.extend(parentDefaults, {
@@ -70,7 +71,7 @@ let RecordsTabPanelView = TabPanelView.extend({
         'selected:records:change': 'onSelectedRecordsChange',
     },
 
-    initialize: function() {
+    initialize() {
         recordsChannel.on('model:save', (model) => {
             this.collection.add(model, {at: 0, merge: true});
         });
@@ -78,10 +79,9 @@ let RecordsTabPanelView = TabPanelView.extend({
         this.onQueryArgsChange();
     },
 
-    onRender: function() {
-        let _debug_m = new models.GroupedRecordsCollection(this.collection);
-
-        this.showChildView('recordsTableRegion', new RecordsTableView({collection: this.collection}));
+    onRender() {
+        this.showChildView('recordsTableRegion', new FlatRecordsTableView({collection: this.collection}));
+        //this.showChildView('recordsTableRegion', new GroupedRecordsTableView(this.collection));
         this.showChildView('topPaginatorRegion', new PaginatorView({collection: this.collection}));
         this.showChildView('bottomPaginatorRegion', new PaginatorView({collection: this.collection}));
         this.showChildView('recordsFilterRegion', new RecordsFilterView({collection: this.collection}));
@@ -93,11 +93,11 @@ let RecordsTabPanelView = TabPanelView.extend({
         this.collection.getPage(page);
     },
 
-    startNewRecord: function() {
+    startNewRecord() {
         minicash.navigateTo('tab_new_record');
     },
 
-    deleteSelectedRecords: function() {
+    deleteSelectedRecords() {
         let dfdDoDelete = $.Deferred();
 
         let box = bootbox.confirm({
@@ -124,7 +124,7 @@ let RecordsTabPanelView = TabPanelView.extend({
         });
     },
 
-    toggleFilter: function() {
+    toggleFilter() {
         this.getChildView('recordsFilterRegion').toggle();
     },
 
@@ -145,7 +145,7 @@ let RecordsTabPanelView = TabPanelView.extend({
         this.collection.getPage(1);
     },
 
-    getSelectedRecords: function() {
+    getSelectedRecords() {
         let recordsTableView = this.getChildView('recordsTableRegion');
         return recordsTableView.getSelectedRecords();
     },
@@ -156,8 +156,53 @@ let RecordsTabPanelView = TabPanelView.extend({
 });
 
 
-let RecordRowView = Mn.View.extend({
+let FlatRecordsTableView = views.MinicashView.extend({
+    tagName: 'table',
+    className: 'table table-striped',
+    template: require('templates/tab_records/flat_records_table.hbs'),
+
+    attributes: {
+        'cellspacing': '0',
+        'data-spec': 'records-table',
+    },
+
+    regions: {
+        body: {
+            el: 'tbody',
+            replaceElement: true
+        }
+    },
+
+    childViewTriggers: {
+        'selected:records:change': 'selected:records:change',
+    },
+
+    onRender() {
+        this.showChildView('body', new FlatRecordsTbody({
+            collection: this.collection
+        }));
+    },
+});
+
+
+let FlatRecordsTbody = Mn.NextCollectionView.extend({
     tagName: 'tbody',
+    childView: () => RecordRowView,
+
+    onChildviewRecordSelectedChange: function(childView, e) {
+        this.triggerMethod('selected:records:change', this.getSelectedRecords());
+    },
+
+    getSelectedRecords() {
+        let selectedRecords = this.children.filter((c) => c.isSelected());
+        let selectedRecordModels = _.map(selectedRecords, 'model');
+        return selectedRecordModels;
+    },
+});
+
+
+let RecordRowView = Mn.View.extend({
+    tagName: 'tr',
     template: require('templates/tab_records/record_tr.hbs'),
 
     ui: {
@@ -177,44 +222,16 @@ let RecordRowView = Mn.View.extend({
         'change @ui.recordChk': 'record:selected:change',
     },
 
-    isSelected: function() {
+    isSelected() {
         return this.getUI('recordChk').is(':checked');
     },
 
-    editRecord: function() {
+    editRecord() {
         minicash.navigateTo('tab_record', {id: this.model.id});
     },
 
     onRender() {
 
-    },
-});
-
-
-let RecordsTableView = Mn.NextCollectionView.extend({
-    tagName: 'table',
-    className: 'table table-striped',
-
-    attributes: {
-        "cellspacing": "0",
-    },
-
-    childView: () => RecordRowView,
-
-    onRender: function() {
-        let theadTemplate = require('templates/tab_records/records_thead.hbs');
-        let $tableHead = $(theadTemplate());
-        this.$el.prepend($tableHead);
-    },
-
-    onChildviewRecordSelectedChange: function(childView, e) {
-        this.triggerMethod('selected:records:change', this.getSelectedRecords());
-    },
-
-    getSelectedRecords: function() {
-        let selectedRecords = this.children.filter((c) => c.isSelected());
-        let selectedRecordModels = _.map(selectedRecords, 'model');
-        return selectedRecordModels;
     },
 });
 
@@ -273,8 +290,7 @@ let GroupedRecordsRowView = Mn.View.extend({
         'change': 'render',
     },
 
-
-    onRender: function() {
+    onRender() {
         this.showChildView('groupedRecordsUnifiedRowRegion', new GroupedRecordUnifiedRowView({model: this.model}));
     }
 
@@ -285,15 +301,13 @@ let GroupedRecordsTableView = Mn.NextCollectionView.extend({
     tagName: 'table',
     className: 'table table-striped',
 
-    initialize() {
-
-    },
-
     attributes: {
         "cellspacing": "0",
     },
 
-    childView: () => GroupedRecordsRowView,
+    initialize(recordsCollection) {
+        this.collection = new models.PageableGroupedRecords(recordsCollection);
+    },
 
     onRender() {
         let theadTemplate = require('templates/tab_records/grouped_records_thead.hbs');
