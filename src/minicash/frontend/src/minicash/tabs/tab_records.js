@@ -80,8 +80,8 @@ let RecordsTabPanelView = TabPanelView.extend({
     },
 
     onRender() {
-        this.showChildView('recordsTableRegion', new FlatRecordsTableView({collection: this.collection}));
-        //this.showChildView('recordsTableRegion', new GroupedRecordsTableView(this.collection));
+        //this.showChildView('recordsTableRegion', new FlatRecordsTableView({collection: this.collection}));
+        this.showChildView('recordsTableRegion', new GroupedRecordsTableView(this.collection));
         this.showChildView('topPaginatorRegion', new PaginatorView({collection: this.collection}));
         this.showChildView('bottomPaginatorRegion', new PaginatorView({collection: this.collection}));
         this.showChildView('recordsFilterRegion', new RecordsFilterView({collection: this.collection}));
@@ -203,7 +203,7 @@ let FlatRecordsTbody = Mn.NextCollectionView.extend({
 
 let RecordRowView = Mn.View.extend({
     tagName: 'tr',
-    template: require('templates/tab_records/record_tr.hbs'),
+    template: require('templates/tab_records/flat_record_tr.hbs'),
 
     ui: {
         activeRowArea: 'td[role="button"]',
@@ -229,41 +229,36 @@ let RecordRowView = Mn.View.extend({
     editRecord() {
         minicash.navigateTo('tab_record', {id: this.model.id});
     },
-
-    onRender() {
-
-    },
 });
 
 
 /* ---- Grouped records views ---- */
 /* =============================== */
 
+let GroupedRecordsTableView = Mn.NextCollectionView.extend({
+    tagName: 'table',
+    className: 'table table-striped',
+    childView: () => GroupedRecordsView,
 
-let GroupedRecordUnifiedRowView = Mn.View.extend({
-    tagName: 'tr',
-    template: require('templates/tab_records/grouped_records_unified_row.hbs')
+    attributes: {
+        "cellspacing": "0",
+    },
 
-    // ui:
-    //     toggleSubRecordsBtn: 'button[data-spec="toggle-sub-records"]'
+    initialize(recordsCollection) {
+        this.collection = new models.PageableGroupedRecords(recordsCollection);
+    },
 
-    // events:
-    //     'click @ui.toggleSubRecordsBtn': 'toggleSubRecord'
-
-    // toggleSubRecord: ->
-    //     toggleSubRecordsBtnIcon = @getUI('toggleSubRecordsBtn').children('span')
-
-    //     @_subRecordsOpen = not @_subRecordsOpen
-    //     toggleSubRecordsBtnIcon.toggleClass('glyphicon-plus', not @_subRecordsOpen)
-    //     toggleSubRecordsBtnIcon.toggleClass('glyphicon-minus', @_subRecordsOpen)
-
-    //     @triggerMethod('toggleSubRecord', @_subRecordsOpen)
+    onRender() {
+        let theadTemplate = require('templates/tab_records/grouped_records_table_thead.hbs');
+        let $tableHead = $(theadTemplate());
+        this.$el.prepend($tableHead);
+    },
 });
 
 
-let GroupedRecordsRowView = Mn.View.extend({
+let GroupedRecordsView = Mn.View.extend({
     tagName: 'tbody',
-    template: require('templates/tab_records/grouped_records_row.hbs'),
+    template: require('templates/tab_records/grouped_records_table_tr.hbs'),
 
     ui: {
         activeRowArea: 'td[role="button"]',
@@ -271,8 +266,8 @@ let GroupedRecordsRowView = Mn.View.extend({
     },
 
     regions: {
-        groupedRecordsUnifiedRowRegion: {
-            el: '[data-spec="grouped-records-unified-row-region"]',
+        groupedRecordsHeaderRowRegion: {
+            el: '[data-spec="grouped-records-header-row-region"]',
             replaceElement: true,
         },
 
@@ -291,30 +286,76 @@ let GroupedRecordsRowView = Mn.View.extend({
     },
 
     onRender() {
-        this.showChildView('groupedRecordsUnifiedRowRegion', new GroupedRecordUnifiedRowView({model: this.model}));
+        this.showChildView('groupedRecordsHeaderRowRegion', new RecordsGroupHeaderView({model: this.model}));
     }
-
 });
 
 
-let GroupedRecordsTableView = Mn.NextCollectionView.extend({
-    tagName: 'table',
-    className: 'table table-striped',
+let RecordsGroupHeaderView = views.MinicashView.extend({
+    tagName: 'tr',
+    template: require('templates/tab_records/records_group_header.hbs')
+
+    // ui:
+    //     toggleSubRecordsBtn: 'button[data-spec="toggle-sub-records"]'
+
+    // events:
+    //     'click @ui.toggleSubRecordsBtn': 'toggleSubRecord'
+
+    // toggleSubRecord: ->
+    //     toggleSubRecordsBtnIcon = @getUI('toggleSubRecordsBtn').children('span')
+
+    //     @_subRecordsOpen = not @_subRecordsOpen
+    //     toggleSubRecordsBtnIcon.toggleClass('glyphicon-plus', not @_subRecordsOpen)
+    //     toggleSubRecordsBtnIcon.toggleClass('glyphicon-minus', @_subRecordsOpen)
+
+    //     @triggerMethod('toggleSubRecord', @_subRecordsOpen)
+});
+
+
+let RecordsGroupRecordsTableView = views.MinicashView.extend({
+    tagName: 'tr',
+    template: require('templates/tab_records/records_group_table.hbs'),
 
     attributes: {
-        "cellspacing": "0",
+        'cellspacing': '0',
     },
 
-    initialize(recordsCollection) {
-        this.collection = new models.PageableGroupedRecords(recordsCollection);
+    regions: {
+        body: {
+            el: 'tbody',
+            replaceElement: true
+        }
     },
 
     onRender() {
-        let theadTemplate = require('templates/tab_records/grouped_records_thead.hbs');
-        let $tableHead = $(theadTemplate());
-        this.$el.prepend($tableHead);
+        this.showChildView('body', new GroupedRecordsTbody({
+            collection: this.model.get('records')
+        }));
     },
 });
+
+
+let GroupedRecordsTbody = Mn.NextCollectionView.extend({
+    tagName: 'tbody',
+    childView: () => GroupedRecordRowView,
+
+    onChildviewRecordSelectedChange: function(childView, e) {
+        this.triggerMethod('selected:records:change', this.getSelectedRecords());
+    },
+
+    getSelectedRecords() {
+        let selectedRecords = this.children.filter((c) => c.isSelected());
+        let selectedRecordModels = _.map(selectedRecords, 'model');
+        return selectedRecordModels;
+    },
+});
+
+
+let GroupedRecordRowView = views.MinicashView.extend({
+    tagName: 'tr',
+    template: require('templates/tab_records/records_group_record_tr.hbs'),
+});
+
 
 
 Hb.registerHelper('record_account', (assetFrom, assetTo, options) => {
