@@ -267,13 +267,13 @@ let GroupedRecordsView = Mn.View.extend({
 
     regions: {
         groupedRecordsHeaderRowRegion: {
-            el: '[data-spec="grouped-records-header-row-region"]',
+            el: 'tr[data-spec="grouped-records-header-row-region"]',
             replaceElement: true,
         },
 
-        groupedRecordsRegion: {
-            el: '[data-spec="grouped-records-region"]',
-            replaceElement: true,
+        groupedRecordsRecordsRowRegion: {
+            el: 'td[data-spec="grouped-records-region"]',
+            replaceElement: false,
         }
     },
 
@@ -286,7 +286,8 @@ let GroupedRecordsView = Mn.View.extend({
     },
 
     onRender() {
-        this.showChildView('groupedRecordsHeaderRowRegion', new RecordsGroupHeaderView({model: this.model}));
+        this.showChildView('groupedRecordsHeaderRowRegion', new RecordsGroupHeaderView());
+        this.showChildView('groupedRecordsRecordsRowRegion', new RecordsGroupRecordsTableView({model: this.model}));
     }
 });
 
@@ -313,12 +314,13 @@ let RecordsGroupHeaderView = views.MinicashView.extend({
 
 
 let RecordsGroupRecordsTableView = views.MinicashView.extend({
-    tagName: 'tr',
-    template: require('templates/tab_records/records_group_table.hbs'),
-
+    tagName: 'table',
+    className: 'table table-bordered table-striped table-fixed',
     attributes: {
-        'cellspacing': '0',
+        'data-spec': 'grouped-records-table',
     },
+
+    template: require('templates/tab_records/records_group_table.hbs'),
 
     regions: {
         body: {

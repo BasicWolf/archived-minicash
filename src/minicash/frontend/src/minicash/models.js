@@ -122,18 +122,17 @@ export let PageableRecords = base.MinicashPageableCollection.extend(RecordsMixin
 
 
 export let RecordsGroup = base.MinicashModel.extend({
-    initialize(attributes, options) {
-        attributes.records = new Records(attributes.records);
-        base.MinicashModel.prototype.initialize.apply(this, arguments);
-    }
+
 });
 
-export let GroupedRecordsBase = {
+
+export let PageableGroupedRecords = base.MinicashPageableCollection.extend({
     model: RecordsGroup,
 
-    initialize(recordsCollection) {
+    constructor(recordsCollection, options) {
         this.recordsCollection = recordsCollection;
         this.listenTo(this.recordsCollection, 'update', this.onRecordsUpdate);
+        base.MinicashPageableCollection.prototype.constructor.call(this, null, options);
     },
 
     onRecordsUpdate(recordsCollection, options) {
@@ -141,13 +140,11 @@ export let GroupedRecordsBase = {
 
         let gropedRecords = recordsCollection.groupBy((rec) => rec.get('created_dt'));
         let modelsData = _.map(gropedRecords, (value, key) => {
-            return {key: key, records: value};
+            return {key: key, records: new Records(value)};
         });
         this.set(modelsData);
     }
-};
-
-export let PageableGroupedRecords = base.MinicashPageableCollection.extend(GroupedRecordsBase);
+});
 
 
 export let ReportWidget = base.MinicashModel.extend({

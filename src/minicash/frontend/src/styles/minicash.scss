@@ -166,6 +166,27 @@ table[data-spec="record-multi-entries-table"] {
 }
 
 
+table[data-spec="grouped-records-table"] {
+    td {
+        border: 0px;
+    }
+
+    th.delta {
+        $width: 80px;
+        max-width: $width;
+        width: $width;
+        text-align: right;
+    }
+
+    th.tags {
+        $width: 300px;
+        max-width: $width;
+        width: $width;
+    }
+
+    margin-bottom: 0px;
+}
+
 /* ====== Overrides ====== */
 /* ======================= */
 
