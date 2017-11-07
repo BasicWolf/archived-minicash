@@ -107,7 +107,6 @@ let AssetsTableView = Mn.NextCollectionView.extend({
 
     attributes: {
         "data-spec": "assets-table",
-        "cellspacing": "0",
         "width": "100%",
     },
 

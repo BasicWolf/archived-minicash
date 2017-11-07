@@ -99,12 +99,12 @@ table.table-fixed {
 
 /* ----- Generic table ---- */
 
-td.select-item-checkbox {
+th.select-item-checkbox,td.select-item-checkbox {
     text-align: center;
 }
 
 th.select-item-checkbox {
-    width: 12px;
+    width: 40px;
 }
 
 

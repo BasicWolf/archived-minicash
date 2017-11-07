@@ -108,7 +108,6 @@ let TagsTableView = Mn.NextCollectionView.extend({
 
     attributes: {
         "data-spec": "tags-table",
-        "cellspacing": "0",
         "width": "100%",
     },
 

@@ -4,7 +4,7 @@
 
 import Decimal from 'decimal.js';
 import Hb from 'handlebars/runtime';
-import {tr} from 'minicash/utils';
+import {tr, decimalToString} from 'minicash/utils';
 
 
 /*--------- Handlebars -----------*/
@@ -23,11 +23,12 @@ Hb.registerPartial(
 );
 
 
-/* ---------- Helpers ------------ */
+/* ============ Helpers =============== */
 Hb.registerHelper('log', function(v) {
     console.log(v);
 });
 
+/* ----------- Conditionals ---------- */
 Hb.registerHelper('ifnot', function(v, options) {
     return v? options.inverse(this) : options.fn(this);
 });
@@ -56,9 +57,14 @@ Hb.registerHelper('iflte', function(v, v2, options) {
     return v <= v2 ? options.fn(this) : options.inverse(this);
 });
 
+Hb.registerHelper('ifgt', function(v, v2, options) {
+    return v > v2 ? options.fn(this) : options.inverse(this);
+});
+/*-----------------------------------*/
+
 Hb.registerHelper('decimal', function(options) {
     let val = new Decimal(options.fn(this));
-    let text = val.toFixed(2).toString();
+    let text = decimalToString(val);
     return new Hb.SafeString(text);
 });
 

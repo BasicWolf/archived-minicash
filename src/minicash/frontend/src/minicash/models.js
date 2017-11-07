@@ -2,7 +2,10 @@
 
 /* global _,minicash,moment */
 
+import Decimal from 'decimal.js';
+
 import * as base from './models_base';
+
 
 export let ID_NOT_SAVED = -1;
 
@@ -66,7 +69,6 @@ export let Asset = base.MinicashModel.extend({
         'pk',
         'name',
         'description',
-        'owner',
         'balance',
     ],
 });
@@ -95,7 +97,6 @@ export let Record = base.MinicashModel.extend({
         'description',
         'extra',
         'mode',
-        'owner',
         'tags',
         'tags_names',
     ],
@@ -122,7 +123,46 @@ export let PageableRecords = base.MinicashPageableCollection.extend(RecordsMixin
 
 
 export let RecordsGroup = base.MinicashModel.extend({
+    // attributes:
+    // * key
+    // * records
 
+
+    // serverAttributes: [
+    //     'pk',
+    //     'asset_from',
+    //     'asset_to',
+    //     'created_dt',
+    //     'delta',
+    //     'description',
+    //     'extra',
+    //     'mode',
+    //     'tags',
+    //     'tags_names',
+    // ],
+
+    initialize() {
+        this.on('change:records',  this.onRecordsChange);
+        this.onRecordsChange(this, this.get('records'));
+    },
+
+    onRecordsChange(model, value, options) {
+        if (value.length === 0) {
+            throw ['Invalid grouped records collection', value];
+        }
+
+        let firstRecord = value.at(0);
+        this.set('created_dt', firstRecord.get('created_dt'));
+
+        let totalDelta =  value.reduce((memo, rec) => {
+            return memo.add(rec.get('delta'));
+        }, new Decimal(0));
+
+        this.set('total_delta', totalDelta);
+
+        this.set('asset_from', firstRecord.get('asset_from'));
+        this.set('asset_to', firstRecord.get('asset_to'));
+    }
 });
 
 
@@ -138,7 +178,10 @@ export let PageableGroupedRecords = base.MinicashPageableCollection.extend({
     onRecordsUpdate(recordsCollection, options) {
         this.state = recordsCollection.state;
 
-        let gropedRecords = recordsCollection.groupBy((rec) => rec.get('created_dt'));
+        let gropedRecords = recordsCollection.groupBy((rec) => {
+            let key = rec.chain().pick('asset_from', 'asset_to', 'created_dt', 'mode').values().join('_').value();
+            return key;
+        });
         let modelsData = _.map(gropedRecords, (value, key) => {
             return {key: key, records: new Records(value)};
         });

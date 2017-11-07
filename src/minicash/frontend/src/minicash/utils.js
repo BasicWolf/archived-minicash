@@ -84,12 +84,12 @@ export function splitToNonEmpty(s, splitter) {
 
 
 export function decimalToString(dec) {
-    return dec.toPrecision();
+    return dec.toFixed(2).toString();
 }
 
 
 export function compareStringsAsDecimals(s1, s2) {
-    return decimalToString(new Decimal(s1)) === decimalToString(new Decimal(s2));
+    return new Decimal(s1).toPrecision() === new Decimal(s2).toPrecision();
 }
 
 

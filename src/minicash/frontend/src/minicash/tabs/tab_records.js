@@ -80,8 +80,8 @@ let RecordsTabPanelView = TabPanelView.extend({
     },
 
     onRender() {
-        //this.showChildView('recordsTableRegion', new FlatRecordsTableView({collection: this.collection}));
-        this.showChildView('recordsTableRegion', new GroupedRecordsTableView(this.collection));
+        this.showChildView('recordsTableRegion', new FlatRecordsTableView({collection: this.collection}));
+        //this.showChildView('recordsTableRegion', new GroupedRecordsTableView(this.collection));
         this.showChildView('topPaginatorRegion', new PaginatorView({collection: this.collection}));
         this.showChildView('bottomPaginatorRegion', new PaginatorView({collection: this.collection}));
         this.showChildView('recordsFilterRegion', new RecordsFilterView({collection: this.collection}));
@@ -162,7 +162,6 @@ let FlatRecordsTableView = views.MinicashView.extend({
     template: require('templates/tab_records/flat_records_table.hbs'),
 
     attributes: {
-        'cellspacing': '0',
         'data-spec': 'records-table',
     },
 
@@ -240,10 +239,6 @@ let GroupedRecordsTableView = Mn.NextCollectionView.extend({
     className: 'table table-striped',
     childView: () => GroupedRecordsView,
 
-    attributes: {
-        "cellspacing": "0",
-    },
-
     initialize(recordsCollection) {
         this.collection = new models.PageableGroupedRecords(recordsCollection);
     },
@@ -286,15 +281,17 @@ let GroupedRecordsView = Mn.View.extend({
     },
 
     onRender() {
-        this.showChildView('groupedRecordsHeaderRowRegion', new RecordsGroupHeaderView());
-        this.showChildView('groupedRecordsRecordsRowRegion', new RecordsGroupRecordsTableView({model: this.model}));
+        this.showChildView('groupedRecordsHeaderRowRegion', new RecordsGroupHeaderView({model: this.model}));
+        if (this.model.get('records').length > 1) {
+            this.showChildView('groupedRecordsRecordsRowRegion', new RecordsGroupRecordsTableView({model: this.model}));
+        }
     }
 });
 
 
 let RecordsGroupHeaderView = views.MinicashView.extend({
     tagName: 'tr',
-    template: require('templates/tab_records/records_group_header.hbs')
+    template: require('templates/tab_records/grouped_records_table_tr_grouped_data_tr.hbs')
 
     // ui:
     //     toggleSubRecordsBtn: 'button[data-spec="toggle-sub-records"]'
@@ -315,7 +312,7 @@ let RecordsGroupHeaderView = views.MinicashView.extend({
 
 let RecordsGroupRecordsTableView = views.MinicashView.extend({
     tagName: 'table',
-    className: 'table table-bordered table-striped table-fixed',
+    className: 'table table-striped table-fixed',
     attributes: {
         'data-spec': 'grouped-records-table',
     },

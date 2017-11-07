@@ -90,24 +90,19 @@ Hb.registerHelper('context', function (keys, options) {
 });
 
 
-Hb.registerHelper('record_tags_names', function(recData, options) {
+Hb.registerHelper('record_tags_names', function(tags, options) {
     let tagsNames = [];
+    for (let tagId of tags) {
+        let tag = minicash.collections.tags.get(tagId);
+        let tagName;
 
-    if (recData.tags_names == null) {
-        for (let tagId of recData.tags) {
-            let tag = minicash.collections.tags.get(tagId);
-            let tagName;
-
-            if (tag) {
-                tagName = tag.get('name');
-            } else {
-                tagName = 'ERROR:tag_name()';
-            }
-
-            tagsNames.push(tagName);
+        if (tag) {
+            tagName = tag.get('name');
+        } else {
+            tagName = 'ERROR:tag_name()';
         }
-    } else {
-        tagsNames = recData.tags_names;
+
+        tagsNames.push(tagName);
     }
 
     tagsNames = _.sortBy(tagsNames);

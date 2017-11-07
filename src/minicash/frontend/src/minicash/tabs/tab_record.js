@@ -584,7 +584,7 @@ let MultiEntryFormView = views.MinicashView.extend({
                 return memo.add(delta);
             }, new Decimal(0));
 
-            totalDeltaTxt = totalDelta.toString();
+            totalDeltaTxt = utils.decimalToString(totalDelta);
         } catch (e) {
 
         }

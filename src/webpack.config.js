@@ -15,6 +15,7 @@ const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
 const srcDir = path.resolve(__dirname, 'minicash/frontend/src');
 const staticDir = path.resolve(srcDir, '../static');
+const imgDir = path.join(srcDir, 'img');
 
 
 const nodeModulesDir = path.join(
@@ -104,7 +105,7 @@ let config = {
             $: 'jquery',
             jQuery: 'jquery',
             _: 'lodash'
-        })
+        }),
     ],
 
     externals: {
@@ -128,7 +129,7 @@ let config = {
         alias: {
             node_modules: nodeModulesDir,
             templates: path.join(srcDir, 'templates'),
-            img: path.join(srcDir, 'img'),
+            img: imgDir,
 
 
             // import 'lib_name' aliases
@@ -137,6 +138,7 @@ let config = {
         }
     },
 };
+
 
 if (process.env.NODE_ENV == 'production') {
     config.plugins.push(new UglifyJSPlugin({
