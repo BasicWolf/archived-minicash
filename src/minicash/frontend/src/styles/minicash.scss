@@ -104,19 +104,17 @@ th.select-item-checkbox,td.select-item-checkbox {
 }
 
 th.select-item-checkbox {
-    width: 40px;
+    width: 30px;
 }
 
 
 /* ----- Records ----- */
-table[data-spec="records-table"] {
+
+// Columns in flat and grouped records table
+table[data-spec="flat-records-table"],table[data-spec="grouped_records_table"] {
     td {
         border: 0px;
     }
-
-    // tbody {
-    //     border: 0px;
-    // }
 
     th > .wrap{
         text-overflow:ellipsis;
@@ -125,7 +123,7 @@ table[data-spec="records-table"] {
     }
 
     th.dt-stamp {
-        $width: 120px;
+        $width: 100px;
         max-width: $width;
         width: $width;
     }
@@ -134,13 +132,62 @@ table[data-spec="records-table"] {
         $width: 80px;
         max-width: $width;
         width: $width;
-        text-align: right;
     }
 
     th.account {
         $width: 200px;
         max-width: $width;
         width: $width;
+    }
+
+    th.tags {
+        @media (max-width: 767px) {
+            $width: 100px;
+            max-width: $width;
+            width: $width;
+        }
+
+        @media (min-width: 767px) {
+            $width: 300px;
+            max-width: $width;
+            width: $width;
+        }
+    }
+
+    td.description,th.description {
+        $width: 200px;
+        max-width: $width;
+        width: $width;
+    }
+}
+
+table[data-spec="grouped_records_table"] {
+    th.expand-collapse-button {
+        $width: 30px;
+        max-width: $width;
+        width: $width;
+    }
+
+    td.description {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
+
+table[data-spec="records_group_table"] {
+    margin-bottom: 0px;
+
+    td {
+        border: 0px;
+    }
+
+    th.delta {
+        $width: 80px;
+        max-width: $width;
+        width: $width;
+        text-align: right;
     }
 
     th.tags {
@@ -151,6 +198,8 @@ table[data-spec="records-table"] {
 }
 
 
+/* Record tab */
+/* ---------- */
 table[data-spec="record-multi-entries-table"] {
     th.buttons,td.buttons {
         width:5%;
@@ -161,30 +210,10 @@ table[data-spec="record-multi-entries-table"] {
     }
 
     th.tags,th.description,td.tags,td.description {
-        width:40%;
-    }
-}
-
-
-table[data-spec="grouped-records-table"] {
-    td {
-        border: 0px;
-    }
-
-    th.delta {
-        $width: 80px;
-        max-width: $width;
+        $width: 40%;
         width: $width;
-        text-align: right;
-    }
-
-    th.tags {
-        $width: 300px;
         max-width: $width;
-        width: $width;
     }
-
-    margin-bottom: 0px;
 }
 
 /* ====== Overrides ====== */

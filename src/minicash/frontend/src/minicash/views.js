@@ -73,7 +73,7 @@ Hb.registerHelper('record_mode_sign', function (mode, options) {
     switch (mode) {
     case minicash.CONTEXT.RECORD_MODES.EXPENSE.value: sign = '−'; break;
     case minicash.CONTEXT.RECORD_MODES.INCOME.value: sign = '+'; break;
-    case minicash.CONTEXT.RECORD_MODES.TRANSFER.value: sign = ''; break;
+    case minicash.CONTEXT.RECORD_MODES.TRANSFER.value: sign = '∓'; break;
     default: sign = 'ERROR';
     }
     return sign;
@@ -90,21 +90,22 @@ Hb.registerHelper('context', function (keys, options) {
 });
 
 
-Hb.registerHelper('record_tags_names', function(tags, options) {
-    let tagsNames = [];
-    for (let tagId of tags) {
-        let tag = minicash.collections.tags.get(tagId);
-        let tagName;
+Hb.registerHelper('record_tags_names', function(recData, options) {
+    let tagsNames;
 
-        if (tag) {
-            tagName = tag.get('name');
-        } else {
-            tagName = 'ERROR:tag_name()';
-        }
-
-        tagsNames.push(tagName);
+    if (recData.tags_names == null) {
+        tagsNames = getTagsNames(recData.tags);
+    } else {
+        tagsNames = recData.tags_names;
     }
 
+    tagsNames = _.sortBy(tagsNames);
+    return tagsNames.join(', ');
+});
+
+
+Hb.registerHelper('tags_names', function(tags, options) {
+    let tagsNames = getTagsNames(tags);
     tagsNames = _.sortBy(tagsNames);
     return tagsNames.join(', ');
 });
@@ -119,3 +120,22 @@ Hb.registerHelper('tag_name', function(id, options) {
     }
 });
 
+
+function getTagsNames(tags) {
+    let tagsNames = [];
+
+    for (let tagId of tags) {
+        let tag = minicash.collections.tags.get(tagId);
+        let tagName;
+
+        if (tag) {
+            tagName = tag.get('name');
+        } else {
+            tagName = 'ERROR:tag_name()';
+        }
+
+        tagsNames.push(tagName);
+    }
+
+    return tagsNames;
+}

@@ -20,6 +20,17 @@ APP_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 BASE_DIR = os.path.abspath(os.path.join(APP_ROOT, '../../'))
 
 
+# ========== Minicash-specific settings ========== #
+# ================================================ #
+
+MINICASH = {
+    'AUTH_DEFAULT_BACKEND_DATETIME_FORMAT': '%d/%m/%Y %H:%M',
+    'DEFAULT_CURRENCY': 'EUR',
+    'PAGINATOR_DEFAULT_PAGE_SIZE': 40,
+    'PAGINATOR_MAX_PAGE_SIZE': 120,
+}
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
@@ -135,14 +146,3 @@ USE_L10N = True
 USE_TZ = True
 
 WSGI_APPLICATION = 'minicash.app.wsgi.application'
-
-
-# ========== Minicash-specific settings ========== #
-# ================================================ #
-
-MINICASH = {
-    'AUTH_DEFAULT_BACKEND_DATETIME_FORMAT': '%d/%m/%Y %H:%M',
-    'DEFAULT_CURRENCY': 'EUR',
-    'PAGINATOR_DEFAULT_PAGE_SIZE': 40,
-    'PAGINATOR_MAX_PAGE_SIZE': 120,
-}

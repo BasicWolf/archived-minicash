@@ -10,6 +10,11 @@ import * as base from './models_base';
 export let ID_NOT_SAVED = -1;
 
 
+export let UserProfile = base.MinicashModel.extend({
+
+});
+
+
 export let Tag = base.MinicashModel.extend({
     idAttribute: 'pk',
 
@@ -162,6 +167,7 @@ export let RecordsGroup = base.MinicashModel.extend({
 
         this.set('asset_from', firstRecord.get('asset_from'));
         this.set('asset_to', firstRecord.get('asset_to'));
+        this.set('mode', firstRecord.get('mode'));
     }
 });
 

@@ -80,8 +80,8 @@ let RecordsTabPanelView = TabPanelView.extend({
     },
 
     onRender() {
-        this.showChildView('recordsTableRegion', new FlatRecordsTableView({collection: this.collection}));
-        //this.showChildView('recordsTableRegion', new GroupedRecordsTableView(this.collection));
+        // this.showChildView('recordsTableRegion', new FlatRecordsTableView({collection: this.collection}));
+        this.showChildView('recordsTableRegion', new GroupedRecordsTableView(this.collection));
         this.showChildView('topPaginatorRegion', new PaginatorView({collection: this.collection}));
         this.showChildView('bottomPaginatorRegion', new PaginatorView({collection: this.collection}));
         this.showChildView('recordsFilterRegion', new RecordsFilterView({collection: this.collection}));
@@ -162,7 +162,7 @@ let FlatRecordsTableView = views.MinicashView.extend({
     template: require('templates/tab_records/flat_records_table.hbs'),
 
     attributes: {
-        'data-spec': 'records-table',
+        'data-spec': 'flat-records-table',
     },
 
     regions: {
@@ -239,6 +239,11 @@ let GroupedRecordsTableView = Mn.NextCollectionView.extend({
     className: 'table table-striped',
     childView: () => GroupedRecordsView,
 
+    attributes: {
+        'data-spec': 'grouped_records_table',
+    },
+
+
     initialize(recordsCollection) {
         this.collection = new models.PageableGroupedRecords(recordsCollection);
     },
@@ -314,7 +319,7 @@ let RecordsGroupRecordsTableView = views.MinicashView.extend({
     tagName: 'table',
     className: 'table table-striped table-fixed',
     attributes: {
-        'data-spec': 'grouped-records-table',
+        'data-spec': 'records_group_table',
     },
 
     template: require('templates/tab_records/records_group_table.hbs'),

@@ -7,10 +7,10 @@
 
 <td class="delta" role="button">{{#record_mode_sign mode}}{{/record_mode_sign}}{{#decimal}}{{delta}}{{/decimal}}</td>
 
-<td role="button">{{#record_account asset_from asset_to}}{{/record_account}}</td>
+<td class="hidden-xs" role="button">{{#record_account asset_from asset_to}}{{/record_account}}</td>
 
 <td role="button">
-  {{#record_tags_names tags}}{{/record_tags_names}}
+  {{#record_tags_names this}}{{/record_tags_names}}
 </td>
 
-<td role="button">{{description}}</td>
+<td class="hidden-xs" role="button">{{description}}</td>

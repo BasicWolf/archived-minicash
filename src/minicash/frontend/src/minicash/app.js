@@ -24,12 +24,14 @@ let tagsChannel = Radio.channel('tags');
 export default Mn.Application.extend({
     /* Public interface */
     /* ================ */
-    started: false,         // indicates whether application has started
-    status: utils.status,   // shortcut to status
-    notify: utils.notifier, // shortcut to notifications
+    CONTEXT: null,          // placeholder for server context
     controllers: null,      // placeholder for controllers
     collections: null,      // placeholder for assets and tags collections
-    CONTEXT: null,          // placeholder for server context
+    notify: utils.notifier, // shortcut to notifications
+    profile: null,          // placeholder for user profile model
+    started: false,         // indicates whether application has started
+    status: utils.status,   // shortcut to status
+
 
     url: function(name, args={}, queryArgs={}) {
         let urls = this.CONTEXT.urls[name];
@@ -82,13 +84,14 @@ export default Mn.Application.extend({
 
     /* App initialization and internals */
     /* ================================ */
-    initialize: function() {
+    initialize() {
         this.CONTEXT = window.minicash.CONTEXT;
         this._initCollections();
+        this._initProfile();
         this._bootstrapData();
     },
 
-    _initCollections: function() {
+    _initCollections() {
         this.collections = {
             assets: new models.Assets(),
             tags: new models.Tags(),
@@ -108,26 +111,31 @@ export default Mn.Application.extend({
         });
     },
 
-    _bootstrapData: function() {
+    _initProfile() {
+        this.profile = new models.UserProfile({
+
+        });
+    },
+
+    _bootstrapData() {
         this.collections.assets.reset(this.CONTEXT.bootstrap.assets);
         this.collections.tags.reset(this.CONTEXT.bootstrap.tags);
     },
 
-    onStart: function() {
+    onStart() {
         this._startControllers();
         this._startRouters();
         this._startNavigation();
         this.started = true;
     },
 
-
-    _startControllers: function() {
+    _startControllers() {
         this.controllers = {
             tabs: new TabsController(),
         };
     },
 
-    _startRouters: function() {
+    _startRouters() {
         // All routes which start with '/tab'
         let tabRoutes = {};
         for (let name in this.CONTEXT.urls) {
@@ -154,7 +162,7 @@ export default Mn.Application.extend({
 
     },
 
-    _startNavigation: function() {
+    _startNavigation() {
         this.controllers.tabs.index({show: false});
         Bb.history.start({pushState: true});
     }
