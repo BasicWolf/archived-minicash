@@ -29,6 +29,11 @@ if (!fs.existsSync(nodeModulesDir)) {
 
 
 let config = {
+    // solve issue with `fs` not found in Handlebars
+    node: {
+        fs: "empty"
+    },
+
     entry: {
         minicash: path.join(srcDir, 'minicash.js'),
         login: path.join(srcDir, 'login.js'),
@@ -131,10 +136,8 @@ let config = {
             templates: path.join(srcDir, 'templates'),
             img: imgDir,
 
-
-            // import 'lib_name' aliases
-            cocktail: 'backbone.cocktail/Cocktail.jsd',
-            typeahead: 'typeahead.js/dist/typeahead.jquery'
+            // import 'lib_name' aliases example:
+            // libalias: 'path/to/lib/name.js',
         }
     },
 };

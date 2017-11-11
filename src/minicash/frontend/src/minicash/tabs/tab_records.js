@@ -3,7 +3,7 @@
 /* global _,$,minicash,require */
 
 import * as bootbox from 'bootbox';
-import Hb from 'handlebars/runtime';
+import Hb from 'handlebars';
 import Mn from 'backbone.marionette';
 import Radio from 'backbone.radio';
 
@@ -258,11 +258,18 @@ let GroupedRecordsTableView = Mn.NextCollectionView.extend({
 
 let GroupedRecordsView = Mn.View.extend({
     tagName: 'tbody',
-    template: require('templates/tab_records/grouped_records_table_tr.hbs'),
+    template: Hb.compile(`
+        <tr data-spec="grouped-records-header-row-region"></tr>
+
+        <tr data-spec="grouped-records-row-wrapper" class="hidden">
+          <td data-spec="grouped-records-region" colspan="7"></td>
+        </tr>
+    `),
 
     ui: {
         activeRowArea: 'td[role="button"]',
         recordChk: 'input[data-spec="select-record"]',
+        groupRecordsRowWrapper: 'tr[data-spec="grouped-records-row-wrapper"]',
     },
 
     regions: {
@@ -290,28 +297,69 @@ let GroupedRecordsView = Mn.View.extend({
         if (this.model.get('records').length > 1) {
             this.showChildView('groupedRecordsRecordsRowRegion', new RecordsGroupRecordsTableView({model: this.model}));
         }
+    },
+
+    onChildviewToggleRecordsGroup(show) {
+        let region = this.getRegion('groupedRecordsRecordsRowRegion');
+
+        if (show && this.model.get('records').length > 1) {
+            region.show(new RecordsGroupRecordsTableView({model: this.model}));
+        }
+        else {
+            region.empty();
+        }
+
+        this.getUI('groupRecordsRowWrapper').toggleClass('hidden', !show);
     }
 });
 
 
 let RecordsGroupHeaderView = views.MinicashView.extend({
     tagName: 'tr',
-    template: require('templates/tab_records/grouped_records_table_tr_grouped_data_tr.hbs')
+    template: Hb.compile(`
+        <td class="select-item-checkbox">
+          {{#ifgt records.length 1}}
+            <button data-spec="toggle-records-group" type="button"
+                    class="btn btn-default btn-xs" aria-label="Left Align">
+              <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+            </button>
+          {{/ifgt}}
+        </td>
 
-    // ui:
-    //     toggleSubRecordsBtn: 'button[data-spec="toggle-sub-records"]'
+        <td role="button">{{created_dt}}</td>
 
-    // events:
-    //     'click @ui.toggleSubRecordsBtn': 'toggleSubRecord'
+        <td class="delta" role="button">{{#record_mode_sign mode}}{{/record_mode_sign}}{{#decimal}}{{total_delta}}{{/decimal}}</td>
 
-    // toggleSubRecord: ->
-    //     toggleSubRecordsBtnIcon = @getUI('toggleSubRecordsBtn').children('span')
+        <td role="button">{{#record_account asset_from asset_to}}{{/record_account}}</td>
 
-    //     @_subRecordsOpen = not @_subRecordsOpen
-    //     toggleSubRecordsBtnIcon.toggleClass('glyphicon-plus', not @_subRecordsOpen)
-    //     toggleSubRecordsBtnIcon.toggleClass('glyphicon-minus', @_subRecordsOpen)
+        <td role="button">
+          common tags + non-common tags
+        </td>
 
-    //     @triggerMethod('toggleSubRecord', @_subRecordsOpen)
+        <td role="button">
+            Description
+        </td>
+
+    `),
+
+    ui: {
+        toggleRecordsGroupBtn: 'button[data-spec="toggle-records-group"]',
+    },
+
+    events: {
+        'click @ui.toggleRecordsGroupBtn': 'toggleRecordsGroup',
+    },
+
+    _recordsGroupOpen: false,
+
+    toggleRecordsGroup() {
+        let $toggleIcon = this.getUI('toggleRecordsGroupBtn').children('span');
+        this._recordsGroupOpen = !this._recordsGroupOpen;
+        $toggleIcon.toggleClass('glyphicon-plus', !this._recordsGroupOpen);
+        $toggleIcon.toggleClass('glyphicon-minus', this._recordsGroupOpen);
+        this.triggerMethod('toggleRecordsGroup', this._recordsGroupOpen);
+    },
+
 });
 
 
@@ -322,7 +370,39 @@ let RecordsGroupRecordsTableView = views.MinicashView.extend({
         'data-spec': 'records_group_table',
     },
 
-    template: require('templates/tab_records/records_group_table.hbs'),
+    template: Hb.compile(`
+        <table>
+          <thead>
+            <tr>
+              <th class="select-item-checkbox"><!-- padding column --></th>
+              <th class="select-item-checkbox">
+                <input type="checkbox" value="">
+              </th>
+
+              <th class="delta">
+                <div class="wrap">
+                  Expense
+                </div>
+              </th>
+
+              <th class="tags">
+                <div class="wrap">
+                  Tags
+                </div>
+              </th>
+
+              <th>
+                <div class="wrap">
+                  Description
+                </div>
+              </th>
+            </tr>
+          </thead>
+
+          <tbody>
+          </tbody>
+        </table>
+    `),
 
     regions: {
         body: {
@@ -357,7 +437,20 @@ let GroupedRecordsTbody = Mn.NextCollectionView.extend({
 
 let GroupedRecordRowView = views.MinicashView.extend({
     tagName: 'tr',
-    template: require('templates/tab_records/records_group_record_tr.hbs'),
+    template: Hb.compile(`
+        <td class="select-item-checkbox"><!-- padding column --></td>
+        <td class="select-item-checkbox">
+          <input data-spec="select-record" type="checkbox" value="">
+        </td>
+
+        <td>{{#decimal}}{{delta}}{{/decimal}}</td>
+        <td>
+          {{#each tags}}
+            {{this}}{{#ifnot @last}}, {{/ifnot}}
+          {{/each}}
+        </td>
+        <td>{{description}}</td>
+    `),
 });
 
 

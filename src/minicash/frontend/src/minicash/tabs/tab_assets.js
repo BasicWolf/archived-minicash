@@ -1,7 +1,7 @@
 'use strict';
 
 /* global _,$,minicash,require */
-import Hb from 'handlebars/runtime';
+import Hb from 'handlebars';
 import Mn from 'backbone.marionette';
 import * as bootbox from 'bootbox';
 

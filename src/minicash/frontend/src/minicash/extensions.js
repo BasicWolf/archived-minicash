@@ -3,12 +3,17 @@
 /* global _,$,console,document,jQuery,minicash,require */
 
 import Decimal from 'decimal.js';
-import Hb from 'handlebars/runtime';
+import Hb from 'handlebars';
+import {Handlebars as LoaderHb} from 'handlebars-template-loader';
 import {tr, decimalToString} from 'minicash/utils';
 
 
 /*--------- Handlebars -----------*/
 /*================================*/
+
+/* This early hack is required due to handlebars-template-loader
+   creating a separate instance of Handlebars environment */
+LoaderHb.default = Hb.default;
 
 /* ---------- Partials ----------- */
 

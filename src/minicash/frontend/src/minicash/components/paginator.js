@@ -3,7 +3,7 @@
 /* global _,$,minicash,require */
 
 import Bb from 'backbone';
-import Hb from 'handlebars/runtime';
+import Hb from 'handlebars';
 import Mn from 'backbone.marionette';
 
 

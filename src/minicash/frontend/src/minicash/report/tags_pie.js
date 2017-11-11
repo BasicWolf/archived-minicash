@@ -4,7 +4,7 @@
 
 import Chart from 'chart.js';
 import Decimal from 'decimal.js';
-import Hb from 'handlebars/runtime';
+import Hb from 'handlebars';
 import Mn from 'backbone.marionette';
 
 import * as models from 'minicash/models';
