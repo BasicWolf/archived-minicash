@@ -129,22 +129,14 @@ export let PageableRecords = base.MinicashPageableCollection.extend(RecordsMixin
 
 export let RecordsGroup = base.MinicashModel.extend({
     // attributes:
-    // * key
-    // * records
-
-
-    // serverAttributes: [
-    //     'pk',
-    //     'asset_from',
-    //     'asset_to',
-    //     'created_dt',
-    //     'delta',
-    //     'description',
-    //     'extra',
-    //     'mode',
-    //     'tags',
-    //     'tags_names',
-    // ],
+    // key
+    // records
+    // asset_from
+    // asset_to
+    // individualTags
+    // mode
+    // sharedTags
+    // total_delta
 
     initialize() {
         this.on('change:records',  this.onRecordsChange);
@@ -168,6 +160,31 @@ export let RecordsGroup = base.MinicashModel.extend({
         this.set('asset_from', firstRecord.get('asset_from'));
         this.set('asset_to', firstRecord.get('asset_to'));
         this.set('mode', firstRecord.get('mode'));
+
+        /* Tags: shared and individual */
+        let recordTags = value.reduce((result, record) => {
+            let tags = record.get('tags');
+            _.each(tags, (tag) => {
+                if (result[tag] == null) {
+                    result[tag] = 0;
+                }
+                result[tag] += 1;
+            });
+            return result;
+        }, {});
+
+        let sharedTags = _.chain(recordTags)
+            .pickBy((val, key) => val > 1)
+            .keys()
+            .value();
+
+        let individualTags = _.chain(recordTags)
+            .pickBy((val, key) => val == 1)
+            .keys()
+            .value();
+
+        this.set('shared_tags', sharedTags);
+        this.set('individual_tags', individualTags);
     }
 });
 

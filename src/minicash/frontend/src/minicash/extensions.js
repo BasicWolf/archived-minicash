@@ -18,11 +18,6 @@ LoaderHb.default = Hb.default;
 /* ---------- Partials ----------- */
 
 Hb.registerPartial(
-    'components/records_filter',
-    require('templates/components/records_filter.hbs')
-);
-
-Hb.registerPartial(
     'components/non_field_errors',
     require('templates/components/non_field_errors.hbs')
 );
@@ -67,29 +62,9 @@ Hb.registerHelper('ifgt', function(v, v2, options) {
 });
 /*-----------------------------------*/
 
-Hb.registerHelper('decimal', function(options) {
-    let val = new Decimal(options.fn(this));
-    let text = decimalToString(val);
-    return new Hb.SafeString(text);
-});
-
-Hb.registerHelper('times', function(n, start, options) {
-    start = start || 0;
-    let out = '';
-    let data = null;
-
-    if (options.data) {
-        let data = Hb.createFrame(options.data);
-    }
-
-    for (let i = start; i < n; i++) {
-        if (data) {
-            data.index = i;
-        }
-
-        out += options.fn(i, {data: data});
-    }
-    return out;
+Hb.registerHelper('decimal', function(s, options) {
+    let val = new Decimal(s);
+    return decimalToString(val);
 });
 
 /*================================*/

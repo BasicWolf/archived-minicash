@@ -328,12 +328,12 @@ let RecordsGroupHeaderView = views.MinicashView.extend({
 
         <td role="button">{{created_dt}}</td>
 
-        <td class="delta" role="button">{{#record_mode_sign mode}}{{/record_mode_sign}}{{#decimal}}{{total_delta}}{{/decimal}}</td>
+        <td class="delta" role="button">{{record_mode_sign mode}}{{decimal total_delta}}</td>
 
-        <td role="button">{{#record_account asset_from asset_to}}{{/record_account}}</td>
+        <td role="button">{{record_account asset_from asset_to}}</td>
 
         <td role="button">
-          common tags + non-common tags
+          <strong>{{tags_names shared_tags trailComma="1"}}</strong>{{tags_names individual_tags}}
         </td>
 
         <td role="button">
@@ -443,7 +443,7 @@ let GroupedRecordRowView = views.MinicashView.extend({
           <input data-spec="select-record" type="checkbox" value="">
         </td>
 
-        <td>{{#decimal}}{{delta}}{{/decimal}}</td>
+        <td>{{decimal delta}}</td>
         <td>
           {{#each tags}}
             {{this}}{{#ifnot @last}}, {{/ifnot}}
@@ -453,6 +453,14 @@ let GroupedRecordRowView = views.MinicashView.extend({
     `),
 });
 
+
+/* ========= Handlebars ========= */
+/* ============================== */
+
+Hb.registerPartial(
+    'components/records_filter',
+    require('templates/components/records_filter.hbs')
+);
 
 
 Hb.registerHelper('record_account', (assetFrom, assetTo, options) => {
@@ -466,3 +474,79 @@ Hb.registerHelper('record_account', (assetFrom, assetTo, options) => {
 
     return `${assetFromName} ➡ ${assetToName}`.trim();
 });
+
+
+
+Hb.registerHelper('record_mode_sign', function (mode, options) {
+    let sign = '';
+    switch (mode) {
+    case minicash.CONTEXT.RECORD_MODES.EXPENSE.value: sign = '−'; break;
+    case minicash.CONTEXT.RECORD_MODES.INCOME.value: sign = '+'; break;
+    case minicash.CONTEXT.RECORD_MODES.TRANSFER.value: sign = '∓'; break;
+    default: sign = 'ERROR';
+    }
+    return sign;
+});
+
+
+Hb.registerHelper('record_tags_names', function(recData, options) {
+    let tagsNames;
+
+    if (recData.tags_names == null) {
+        tagsNames = getTagsNames(recData.tags);
+    } else {
+        tagsNames = recData.tags_names;
+    }
+
+    tagsNames = _.sortBy(tagsNames);
+    return tagsNames.join(', ');
+});
+
+
+Hb.registerHelper('tags_names', function(tags, options) {
+    /* options.hash: {
+           trailComma: "0" | "1"  // add trailing comma to result
+       }
+    */
+    let tagsNames = getTagsNames(tags);
+    tagsNames = _.sortBy(tagsNames);
+    let ret = tagsNames.join(', ');
+
+    if (options.hash.trailComma && ret) {
+        ret += ', ';
+    }
+
+    return ret;
+});
+
+
+Hb.registerHelper('tag_name', function(id, options) {
+    let tag = minicash.collections.tags.get(id);
+    if (tag) {
+        return tag.get('name');
+    } else {
+        return 'ERROR:tag_name()';
+    }
+});
+
+
+function getTagsNames(tags) {
+    let tagsNames = [];
+
+    for (let tagId of tags) {
+        let tag = minicash.collections.tags.get(tagId);
+        let tagName;
+
+        if (tag) {
+            tagName = tag.get('name');
+        } else {
+            tagName = 'ERROR:tag_name()';
+        }
+
+        tagsNames.push(tagName);
+    }
+
+    return tagsNames;
+}
+
+/* --------------------------------------------------------- */
