@@ -18,6 +18,12 @@ import {RecordTab} from './tab_record';
 let recordsChannel = Radio.channel('records');
 
 
+let VIEW_MODE = {
+    FLAT: 1,
+    GROUPED: 2,
+};
+
+
 export let RecordsTab = TabModel.extend({
     defaults() {
         let parentDefaults = TabModel.prototype.defaults.apply(this, arguments);
@@ -48,12 +54,6 @@ let RecordsTabPanelView = TabPanelView.extend({
         'change:queryArgs': 'onQueryArgsChange',
     },
 
-    ui: {
-        newRecordBtn: 'button[data-spec="start-new-record"]',
-        deleteRecordBtn: 'button[data-spec="delete-record"]',
-        toggleFilterBtn: 'button[data-spec="toggle-filter"]',
-    },
-
     regions: {
         recordsTableRegion: {el: '[data-spec="records-table-region"]'},
         topPaginatorRegion: {el: '[data-spec="top-paginator-region"]'},
@@ -61,10 +61,18 @@ let RecordsTabPanelView = TabPanelView.extend({
         recordsFilterRegion: {el: '[data-spec="records-filter-region"]'},
     },
 
+    ui: {
+        newRecordBtn: 'button[data-spec="start-new-record"]',
+        deleteRecordBtn: 'button[data-spec="delete-record"]',
+        toggleFilterBtn: 'button[data-spec="toggle-filter"]',
+        flatGroupedChk: 'input[data-spec="flat-grouped"]',
+    },
+
     events: {
         'click @ui.newRecordBtn': 'startNewRecord',
         'click @ui.deleteRecordBtn': 'deleteSelectedRecords',
         'click @ui.toggleFilterBtn': 'toggleFilter',
+        'switchChange.bootstrapSwitch @ui.flatGroupedChk': 'onFlatGroupedChkChange',
     },
 
     childViewEvents: {
@@ -80,11 +88,18 @@ let RecordsTabPanelView = TabPanelView.extend({
     },
 
     onRender() {
+        this.renderFlatGroupedSwitch();
         // this.showChildView('recordsTableRegion', new FlatRecordsTableView({collection: this.collection}));
         this.showChildView('recordsTableRegion', new GroupedRecordsTableView(this.collection));
         this.showChildView('topPaginatorRegion', new PaginatorView({collection: this.collection}));
         this.showChildView('bottomPaginatorRegion', new PaginatorView({collection: this.collection}));
         this.showChildView('recordsFilterRegion', new RecordsFilterView({collection: this.collection}));
+    },
+
+    renderFlatGroupedSwitch() {
+        this.getUI('flatGroupedChk').bootstrapSwitch({
+            state: this.model.get('viewMode') == VIEW_MODE.FLAT,
+        });
     },
 
     onQueryArgsChange: function(model, queryArgs=null) {
@@ -337,7 +352,7 @@ let RecordsGroupHeaderView = views.MinicashView.extend({
         </td>
 
         <td role="button">
-            Description
+          {{description}}
         </td>
 
     `),
@@ -444,11 +459,7 @@ let GroupedRecordRowView = views.MinicashView.extend({
         </td>
 
         <td>{{decimal delta}}</td>
-        <td>
-          {{#each tags}}
-            {{this}}{{#ifnot @last}}, {{/ifnot}}
-          {{/each}}
-        </td>
+        <td>{{tags_names tags}}</td>
         <td>{{description}}</td>
     `),
 });
@@ -482,7 +493,7 @@ Hb.registerHelper('record_mode_sign', function (mode, options) {
     switch (mode) {
     case minicash.CONTEXT.RECORD_MODES.EXPENSE.value: sign = '−'; break;
     case minicash.CONTEXT.RECORD_MODES.INCOME.value: sign = '+'; break;
-    case minicash.CONTEXT.RECORD_MODES.TRANSFER.value: sign = '∓'; break;
+    case minicash.CONTEXT.RECORD_MODES.TRANSFER.value: sign = '±'; break;
     default: sign = 'ERROR';
     }
     return sign;

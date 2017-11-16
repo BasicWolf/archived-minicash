@@ -163,7 +163,6 @@ export let RecordTabPanelView = TabPanelView.extend({
 
     renderSingleMultiSwitch() {
         this.getUI('singleMultiChk').bootstrapSwitch({
-            onSwitchChange: this.onSingleMultiToggle,
             state: this.model.get('viewMode') == VIEW_MODE.SINGLE,
         });
     },
@@ -221,10 +220,6 @@ export let RecordTabPanelView = TabPanelView.extend({
         });
 
         return dfd;
-    },
-
-    onSingleMultiToggle: function(evt, state) {
-
     },
 
     lockControls() {

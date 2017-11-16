@@ -29,11 +29,6 @@ if (!fs.existsSync(nodeModulesDir)) {
 
 
 let config = {
-    // solve issue with `fs` not found in Handlebars
-    node: {
-        fs: "empty"
-    },
-
     entry: {
         minicash: path.join(srcDir, 'minicash.js'),
         login: path.join(srcDir, 'login.js'),
@@ -140,6 +135,11 @@ let config = {
             // libalias: 'path/to/lib/name.js',
         }
     },
+
+    // solve issue with `fs` not found in Handlebars
+    node: {
+        fs: "empty"
+    },
 };
 
 
@@ -162,6 +162,7 @@ if (process.env.NODE_ENV == 'production') {
     }));
 
 } else {
+    config.devtool = "source-map";
     config.module.rules.push({
         enforce: "pre",
         test: /\.js$/,

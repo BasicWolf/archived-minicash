@@ -143,15 +143,15 @@ export let RecordsGroup = base.MinicashModel.extend({
         this.onRecordsChange(this, this.get('records'));
     },
 
-    onRecordsChange(model, value, options) {
-        if (value.length === 0) {
-            throw ['Invalid grouped records collection', value];
+    onRecordsChange(model, records, options) {
+        if (records.length === 0) {
+            throw ['Invalid grouped records collection', records];
         }
 
-        let firstRecord = value.at(0);
+        let firstRecord = records.at(0);
         this.set('created_dt', firstRecord.get('created_dt'));
 
-        let totalDelta =  value.reduce((memo, rec) => {
+        let totalDelta =  records.reduce((memo, rec) => {
             return memo.add(rec.get('delta'));
         }, new Decimal(0));
 
@@ -162,7 +162,7 @@ export let RecordsGroup = base.MinicashModel.extend({
         this.set('mode', firstRecord.get('mode'));
 
         /* Tags: shared and individual */
-        let recordTags = value.reduce((result, record) => {
+        let recordTags = records.reduce((result, record) => {
             let tags = record.get('tags');
             _.each(tags, (tag) => {
                 if (result[tag] == null) {
@@ -185,6 +185,20 @@ export let RecordsGroup = base.MinicashModel.extend({
 
         this.set('shared_tags', sharedTags);
         this.set('individual_tags', individualTags);
+
+        /* Description */
+        let joinedDescription = records.chain()
+            .filter((rec) => rec.get('description'))
+            .map((rec) => rec.get('description'))
+            .join('; ')
+            .value();
+
+        // let description = records.reduce((result, record) => {
+        //     let recDesc = record.get('description');
+        //     let desc = recDesc ? recDesc + '; ' : '';
+        //     return result + recordDescription;
+        // }, '');
+        this.set('description', joinedDescription);
     }
 });
 

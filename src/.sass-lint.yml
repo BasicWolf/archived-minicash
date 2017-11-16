@@ -1,0 +1,7 @@
+rules:
+  no-ids: false
+
+  indentation:
+    - 4
+    -
+      size: 4
