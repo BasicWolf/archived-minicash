@@ -100,13 +100,6 @@ table.table-fixed {
 
 /* ----- Generic table ---- */
 
-th.select-item-checkbox,td.select-item-checkbox {
-    text-align: center;
-}
-
-th.select-item-checkbox {
-    width: 30px;
-}
 
 
 /* ----- Records ----- */
@@ -160,6 +153,12 @@ table[data-spec="flat-records-table"],table[data-spec="grouped_records_table"] {
         max-width: $width;
         width: $width;
     }
+
+    .select-item-checkbox {
+        text-align: center;
+        vertical-align:middle;
+        width: 30px;
+    }
 }
 
 table[data-spec="grouped_records_table"] {
@@ -173,6 +172,10 @@ table[data-spec="grouped_records_table"] {
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+    }
+
+    > tbody + tbody {
+        border-top: 0px;
     }
 }
 

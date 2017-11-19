@@ -193,11 +193,6 @@ export let RecordsGroup = base.MinicashModel.extend({
             .join('; ')
             .value();
 
-        // let description = records.reduce((result, record) => {
-        //     let recDesc = record.get('description');
-        //     let desc = recDesc ? recDesc + '; ' : '';
-        //     return result + recordDescription;
-        // }, '');
         this.set('description', joinedDescription);
     }
 });
@@ -210,9 +205,11 @@ export let PageableGroupedRecords = base.MinicashPageableCollection.extend({
         this.recordsCollection = recordsCollection;
         this.listenTo(this.recordsCollection, 'update', this.onRecordsUpdate);
         base.MinicashPageableCollection.prototype.constructor.call(this, null, options);
+        this.onRecordsUpdate();
     },
 
     onRecordsUpdate(recordsCollection, options) {
+        recordsCollection = recordsCollection || this.recordsCollection;
         this.state = recordsCollection.state;
 
         let gropedRecords = recordsCollection.groupBy((rec) => {

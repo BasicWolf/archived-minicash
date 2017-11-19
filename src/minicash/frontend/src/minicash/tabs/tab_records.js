@@ -32,6 +32,7 @@ export let RecordsTab = TabModel.extend({
             title: 'Records',
             singleInstance: true,
             viewClass: RecordsTabPanelView,
+            viewMode: VIEW_MODE.GROUPED,
         });
     },
 });
@@ -52,6 +53,7 @@ let RecordsTabPanelView = TabPanelView.extend({
 
     modelEvents: {
         'change:queryArgs': 'onQueryArgsChange',
+        'change:viewMode': 'renderTableView',
     },
 
     regions: {
@@ -89,8 +91,7 @@ let RecordsTabPanelView = TabPanelView.extend({
 
     onRender() {
         this.renderFlatGroupedSwitch();
-        // this.showChildView('recordsTableRegion', new FlatRecordsTableView({collection: this.collection}));
-        this.showChildView('recordsTableRegion', new GroupedRecordsTableView(this.collection));
+        this.renderTableView();
         this.showChildView('topPaginatorRegion', new PaginatorView({collection: this.collection}));
         this.showChildView('bottomPaginatorRegion', new PaginatorView({collection: this.collection}));
         this.showChildView('recordsFilterRegion', new RecordsFilterView({collection: this.collection}));
@@ -102,10 +103,25 @@ let RecordsTabPanelView = TabPanelView.extend({
         });
     },
 
+    renderTableView() {
+        let tableView;
+
+        if (this.model.get('viewMode') === VIEW_MODE.FLAT) {
+            tableView = new FlatRecordsTableView({collection: this.collection});
+        } else {
+            tableView = new GroupedRecordsTableView({recordsCollection: this.collection});
+        }
+        this.showChildView('recordsTableRegion', tableView);
+    },
+
     onQueryArgsChange: function(model, queryArgs=null) {
         queryArgs = queryArgs || this.model.get('queryArgs');
         let page = parseInt(queryArgs.page) || 1;
         this.collection.getPage(page);
+    },
+
+    onFlatGroupedChkChange: function(e, state) {
+        this.model.set('viewMode', state ? VIEW_MODE.FLAT: VIEW_MODE.GROUPED);
     },
 
     startNewRecord() {
@@ -252,15 +268,17 @@ let RecordRowView = Mn.View.extend({
 let GroupedRecordsTableView = Mn.NextCollectionView.extend({
     tagName: 'table',
     className: 'table table-striped',
-    childView: () => GroupedRecordsView,
+    childView: () => {
+        console.log();
+        return GroupedRecordsView;
+    },
 
     attributes: {
         'data-spec': 'grouped_records_table',
     },
 
-
-    initialize(recordsCollection) {
-        this.collection = new models.PageableGroupedRecords(recordsCollection);
+    initialize(options) {
+        this.collection = new models.PageableGroupedRecords(options.recordsCollection);
     },
 
     onRender() {
@@ -332,7 +350,7 @@ let GroupedRecordsView = Mn.View.extend({
 let RecordsGroupHeaderView = views.MinicashView.extend({
     tagName: 'tr',
     template: Hb.compile(`
-        <td class="select-item-checkbox">
+        <td class="toggle-records-group-cell">
           {{#ifgt records.length 1}}
             <button data-spec="toggle-records-group" type="button"
                     class="btn btn-default btn-xs" aria-label="Left Align">
