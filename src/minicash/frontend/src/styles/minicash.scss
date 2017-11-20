@@ -105,36 +105,37 @@ table.table-fixed {
 /* ----- Records ----- */
 
 // Columns in flat and grouped records table
-table[data-spec="flat-records-table"],table[data-spec="grouped_records_table"] {
+[data-spec='flat-records-table'],
+[data-spec='grouped_records_table'] {
     td {
-        border: 0px;
+        border: 0;
     }
 
-    th > .wrap{
-        text-overflow:ellipsis;
-        overflow:hidden;
-        white-space:nowrap;
+    th > .wrap {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
-    th.dt-stamp {
+    .dt-stamp {
         $width: 100px;
         max-width: $width;
         width: $width;
     }
 
-    th.delta {
+    .delta {
         $width: 80px;
         max-width: $width;
         width: $width;
     }
 
-    th.account {
+    .account {
         $width: 200px;
         max-width: $width;
         width: $width;
     }
 
-    th.tags {
+    .tags {
         @media (max-width: 767px) {
             $width: 100px;
             max-width: $width;
@@ -148,7 +149,7 @@ table[data-spec="flat-records-table"],table[data-spec="grouped_records_table"] {
         }
     }
 
-    td.description,th.description {
+    .description {
         $width: 200px;
         max-width: $width;
         width: $width;
@@ -156,46 +157,52 @@ table[data-spec="flat-records-table"],table[data-spec="grouped_records_table"] {
 
     .select-item-checkbox {
         text-align: center;
-        vertical-align:middle;
+        vertical-align: middle;
         width: 30px;
     }
 }
 
-table[data-spec="grouped_records_table"] {
-    th.expand-collapse-button {
+[data-spec='grouped_records_table'] {
+    .expand-collapse-button {
         $width: 30px;
         max-width: $width;
         width: $width;
     }
 
-    td.description {
+    .description {
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
     }
 
     > tbody + tbody {
-        border-top: 0px;
+        border-top: 0;
     }
 }
 
 
-table[data-spec="records_group_table"] {
-    margin-bottom: 0px;
+[data-spec='records_group_table'] {
+    margin-bottom: 0;
 
     td {
-        border: 0px;
+        border: 0;
     }
 
-    th.delta {
+    .delta {
         $width: 80px;
         max-width: $width;
-        width: $width;
         text-align: right;
+        width: $width;
     }
 
-    th.tags {
-        $width: 300px;
+    .tags {
+        $width: 50%;
+        max-width: $width;
+        width: $width;
+    }
+
+    .description {
+        $width: 50%;
         max-width: $width;
         width: $width;
     }
@@ -205,19 +212,20 @@ table[data-spec="records_group_table"] {
 
 /* Record tab */
 /* ---------- */
-table[data-spec="record-multi-entries-table"] {
-    th.buttons,td.buttons {
-        width:5%;
+[data-spec='record-multi-entries-table'] {
+    .buttons {
+        width: 5%;
     }
 
-    th.delta,td.delta {
-        width:15%;
+    .delta {
+        width: 15%;
     }
 
-    th.tags,th.description,td.tags,td.description {
+    .tags,
+    .description, {
         $width: 40%;
-        width: $width;
         max-width: $width;
+        width: $width;
     }
 }
 

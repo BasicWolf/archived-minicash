@@ -189,7 +189,7 @@ let RecordsTabPanelView = TabPanelView.extend({
 
 let FlatRecordsTableView = views.MinicashView.extend({
     tagName: 'table',
-    className: 'table table-striped',
+    className: 'table table-hover',
     template: require('templates/tab_records/flat_records_table.hbs'),
 
     attributes: {
@@ -267,7 +267,7 @@ let RecordRowView = Mn.View.extend({
 
 let GroupedRecordsTableView = Mn.NextCollectionView.extend({
     tagName: 'table',
-    className: 'table table-striped',
+    className: 'table table-hover',
     childView: () => {
         console.log();
         return GroupedRecordsView;
@@ -398,7 +398,7 @@ let RecordsGroupHeaderView = views.MinicashView.extend({
 
 let RecordsGroupRecordsTableView = views.MinicashView.extend({
     tagName: 'table',
-    className: 'table table-striped table-fixed',
+    className: 'table table-hover',
     attributes: {
         'data-spec': 'records_group_table',
     },
@@ -424,7 +424,7 @@ let RecordsGroupRecordsTableView = views.MinicashView.extend({
                 </div>
               </th>
 
-              <th>
+              <th class="description">
                 <div class="wrap">
                   Description
                 </div>
