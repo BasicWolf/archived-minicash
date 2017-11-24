@@ -5,6 +5,7 @@ from behave import given, then
 from django.contrib.auth import get_user_model
 
 from minicash.core.models import Asset, Record, Tag
+from minicash.core.serializers import CreateRecordSerializer
 from minicash.core.tests.factories import AssetFactory, RecordFactory
 
 
@@ -20,15 +21,38 @@ def create_assets(context):
         Asset.objects.create(**item)
 
 
-@given(u'tags')
+@given('tags')
 def create_tags(context):
     for item in context.items:
         item['owner'] = get_user_model().objects.get(pk=item['owner'])
         Tag.objects.create(**item)
 
 
-@given(u'{count:int} random records')
-def create_records(context, count):
+@given('records')
+def create_records(context):
+    for item in context.items:
+        # extract Many-to-many related tags to add after an object is created
+        tags = item.pop('tags', '').split(' ')
+
+        r = Record()
+        r.owner = get_user_model().objects.get(pk=item['owner'])
+        r.mode = getattr(Record, item['mode'])
+
+        if 'asset_from' in item:
+            r.asset_from = Asset.objects.get(pk=item['asset_from'])
+
+        r.created_dt = item['created_dt']
+        r.delta = item['delta']
+        r.description = item['description']
+        r.save()
+
+        for tag_name in tags:
+            tag = Tag.objects.for_owner(r.owner).get_or_create(name=tag_name, owner=r.owner)
+            r.tags_set.add(tag)
+
+
+@given('{count:int} random records')
+def create_random_records(context, count):
     user = get_user_model().objects.all()[0]
     asset_from = AssetFactory()
     RecordFactory.create_batch(count, owner=user, asset_from=asset_from)

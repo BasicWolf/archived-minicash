@@ -274,7 +274,7 @@ let GroupedRecordsTableView = Mn.NextCollectionView.extend({
     },
 
     attributes: {
-        'data-spec': 'grouped_records_table',
+        'data-spec': 'grouped-records-table',
     },
 
     initialize(options) {

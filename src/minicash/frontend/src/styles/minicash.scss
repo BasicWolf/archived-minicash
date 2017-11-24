@@ -106,7 +106,7 @@ table.table-fixed {
 
 // Columns in flat and grouped records table
 [data-spec='flat-records-table'],
-[data-spec='grouped_records_table'] {
+[data-spec='grouped-records-table'] {
     td {
         border: 0;
     }
@@ -162,7 +162,7 @@ table.table-fixed {
     }
 }
 
-[data-spec='grouped_records_table'] {
+[data-spec='grouped-records-table'] {
     .expand-collapse-button {
         $width: 30px;
         max-width: $width;

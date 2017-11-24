@@ -13,7 +13,7 @@ REQUIREMENTS_FILE = requirements.txt
 
 PYLINT_APPS := minicash.utils minicash.core minicash.auth minicash.frontend
 TEST_APPS := minicash.app minicash.utils minicash.core minicash.auth minicash.frontend
-BEHAVE_FEATURES :=  # $(BEHAVE_FEATURES_DIR)/tab_record.feature
+BEHAVE_FEATURES :=  $(BEHAVE_FEATURES_DIR)/tab_records.feature
 TEST_ENV := REQUIREMENTS_PATH=$(realpath $(REQUIREMENTS_FILE))
 
 all:

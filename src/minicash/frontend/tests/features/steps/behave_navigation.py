@@ -14,7 +14,7 @@ def step_nagivate_to_tab(context, route):
 
 @when('I click "{button}" panel button')
 def step_click_button(context, button):
-    btn = context.minicash.get_active_tab().find_element_by_xpath(f'.//button[@data-spec="{button}"]')
+    btn = context.minicash.get_active_tab().find_element_by_xpath(f'.//*[@data-spec="{button}"]')
     btn.click()
 
 
@@ -38,7 +38,7 @@ def step_paginator_has_pages(context, count):
     test.assertEqual(count + 2, len(pages))
 
 
-@then('paginator active page is "{number}"')
+@then('paginator active page is {number}')
 def step_paginator_active_page_is(context, number):
     test = context.test
     paginator = context.minicash.get_active_tab().find_element_by_xpath('.//ul[contains(@class, "pagination")]')

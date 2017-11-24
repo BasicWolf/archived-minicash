@@ -72,7 +72,7 @@ Feature: Records management
       |  pk |
       | 200 |
     And assets
-      |  pk | owner | name | balance | initial_balance |
+      |   pk | owner | name | balance | initial_balance |
       | 2000 |   200 | CA   |    1200 |            1200 |
     When I navigate to "tab_new_record"
     And I switch to multi-entries mode
