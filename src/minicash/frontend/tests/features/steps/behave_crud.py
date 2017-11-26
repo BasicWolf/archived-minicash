@@ -32,7 +32,7 @@ def create_tags(context):
 def create_records(context):
     for item in context.items:
         # extract Many-to-many related tags to add after an object is created
-        tags = item.pop('tags', '').split(' ')
+        tags = item.pop('tags', '').split(',')
 
         r = Record()
         r.owner = get_user_model().objects.get(pk=item['owner'])
@@ -46,9 +46,9 @@ def create_records(context):
         r.description = item['description']
         r.save()
 
-        for tag_name in tags:
-            tag = Tag.objects.for_owner(r.owner).get_or_create(name=tag_name, owner=r.owner)
-            r.tags_set.add(tag)
+        for tag_pk in tags:
+            tag = Tag.objects.for_owner(r.owner).get(pk=tag_pk)
+            r.tags.add(tag)
 
 
 @given('{count:int} random records')
