@@ -1,25 +1,25 @@
 Feature: Records tab
-  # Scenario: Single page pagination
-  #   Given an authenticated user
-  #   And 10 random records
-  #   When I navigate to "tab_records"
-  #   Then paginator has 1 pages
-  #   And paginator active page is 1
+  Scenario: Single page pagination
+    Given an authenticated user
+    And 10 random records
+    When I navigate to "tab_records"
+    Then paginator has 1 pages
+    And paginator active page is 1
 
-  # Scenario: Default view is Grouped
-  #   Given an authenticated user
-  #   And 10 random records
-  #   When I navigate to "tab_records"
-  #   Then view is in grouped mode
+  Scenario: Default view is Grouped
+    Given an authenticated user
+    And 10 random records
+    When I navigate to "tab_records"
+    Then view is in grouped mode
 
-  # Scenario: Switch grouped view to flat and back
-  #   Given an authenticated user
-  #   And 10 random records
-  #   When I navigate to "tab_records"
-  #   And I click mode switch
-  #   Then view is in flat mode
-  #   When I click mode switch
-  #   Then view is in grouped mode
+  Scenario: Switch grouped view to flat and back
+    Given an authenticated user
+    And 10 random records
+    When I navigate to "tab_records"
+    And I click mode switch
+    Then view is in flat mode
+    When I click mode switch
+    Then view is in grouped mode
 
   Scenario: grouped records
     Given an authenticated user
@@ -43,3 +43,4 @@ Feature: Records tab
     When I navigate to "tab_records"
     And I expand first records group
     Then first grouped record total delta is "−600.00"
+    And first grouped records table has 3 rows

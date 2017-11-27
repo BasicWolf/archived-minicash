@@ -5,7 +5,6 @@ from behave import given, then
 from django.contrib.auth import get_user_model
 
 from minicash.core.models import Asset, Record, Tag
-from minicash.core.serializers import CreateRecordSerializer
 from minicash.core.tests.factories import AssetFactory, RecordFactory
 
 
