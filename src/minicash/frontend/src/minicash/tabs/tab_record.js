@@ -137,9 +137,13 @@ export let RecordTabPanelView = TabPanelView.extend({
     initialize() {
         // load bound record
         if (this.model.get('recordId')) {
+            minicash.status.show(tr('Loading record'));
+
             let record = new models.Record({pk: this.model.get('recordId')});
             record.fetch().then(() => {
                 this.model.set('record', record);
+            }).always(() => {
+                minicash.status.hide();
             });
         } else {
             this.model.set('record', new models.Record());

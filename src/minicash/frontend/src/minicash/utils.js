@@ -115,6 +115,7 @@ export function rejectedPromise() {
     return emptyDfd.promise();
 }
 
+
 export function getLocale() {
     let supported = ['en'];
     let defaultLang = 'en';
@@ -130,6 +131,19 @@ export function getLocale() {
         return lang;
     } else {
         return defaultLang;
+    }
+}
+
+
+export function assert(condition, message='') {
+    // from https://stackoverflow.com/questions/15313418/what-is-assert-in-javascript
+    if (!condition) {
+        debugger; // jshint ignore:line
+        message = message || "Assertion failed";
+        if (typeof Error !== "undefined") {
+            throw new Error(message);
+        }
+        throw message; // Fallback
     }
 }
 

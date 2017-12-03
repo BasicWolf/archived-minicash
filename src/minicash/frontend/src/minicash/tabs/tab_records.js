@@ -12,7 +12,7 @@ import * as views from 'minicash/views';
 import {PaginatorView} from 'minicash/components/paginator';
 import {RecordsFilterView} from 'minicash/components/records_filter';
 import {TabPanelView, TabModel} from 'minicash/components/tabbar';
-import {tr} from 'minicash/utils';
+import {tr, assert} from 'minicash/utils';
 import {RecordTab} from './tab_record';
 
 let recordsChannel = Radio.channel('records');
@@ -300,7 +300,6 @@ let GroupedRecordsView = Mn.View.extend({
     `),
 
     ui: {
-        activeRowArea: 'td[role="button"]',
         recordChk: 'input[data-spec="select-record"]',
         groupRecordsRowWrapper: 'tr[data-spec="grouped-records-row-wrapper"]',
     },
@@ -315,10 +314,6 @@ let GroupedRecordsView = Mn.View.extend({
             el: 'td[data-spec="grouped-records-region"]',
             replaceElement: false,
         }
-    },
-
-    events: {
-        'click @ui.activeRowArea': 'editRecord',
     },
 
     modelEvents: {
@@ -359,27 +354,34 @@ let RecordsGroupHeaderView = views.MinicashView.extend({
           {{/ifgt}}
         </td>
 
-        <td role="button">{{created_dt}}</td>
+        <td {{#ifeq records.length 1}}role="button"{{/ifeq}}>
+          {{created_dt}}
+        </td>
 
-        <td class="delta" role="button">{{record_mode_sign mode}}{{decimal total_delta}}</td>
+        <td class="delta" {{#ifeq records.length 1}}role="button"{{/ifeq}}>
+          {{record_mode_sign mode}}{{decimal total_delta}}
+        </td>
 
-        <td role="button">{{record_account asset_from asset_to}}</td>
+        <td {{#ifeq records.length 1}}role="button"{{/ifeq}}>
+          {{record_account asset_from asset_to}}
+        </td>
 
-        <td role="button">
+        <td {{#ifeq records.length 1}}role="button"{{/ifeq}}>
           <strong>{{tags_names shared_tags trailComma="1"}}</strong>{{tags_names individual_tags}}
         </td>
 
-        <td role="button">
+        <td {{#ifeq records.length 1}}role="button"{{/ifeq}}>
           {{description}}
         </td>
-
     `),
 
     ui: {
+        activeRowArea: 'td[role="button"]',
         toggleRecordsGroupBtn: 'button[data-spec="toggle-records-group"]',
     },
 
     events: {
+        'click @ui.activeRowArea': 'editRecord',
         'click @ui.toggleRecordsGroupBtn': 'toggleRecordsGroup',
     },
 
@@ -393,6 +395,12 @@ let RecordsGroupHeaderView = views.MinicashView.extend({
         this.triggerMethod('toggleRecordsGroup', this._recordsGroupOpen);
     },
 
+    editRecord() {
+        let records = this.model.get('records');
+        assert(records.length == 1, 'records length should be exactly 1');
+        let record = records.head();
+        minicash.navigateTo('tab_record', {id: record.id});
+    },
 });
 
 
@@ -476,10 +484,22 @@ let GroupedRecordRowView = views.MinicashView.extend({
           <input data-spec="select-record" type="checkbox" value="">
         </td>
 
-        <td>{{decimal delta}}</td>
-        <td>{{tags_names tags}}</td>
-        <td>{{description}}</td>
+        <td role="button">{{decimal delta}}</td>
+        <td role="button">{{tags_names tags}}</td>
+        <td role="button">{{description}}</td>
     `),
+
+    ui: {
+        activeRowArea: 'td[role="button"]',
+    },
+
+    events: {
+        'click @ui.activeRowArea': 'editRecord',
+    },
+
+    editRecord() {
+        minicash.navigateTo('tab_record', {id: this.model.id});
+    },
 });
 
 
