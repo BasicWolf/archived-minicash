@@ -212,6 +212,10 @@ let FlatRecordsTableView = views.MinicashView.extend({
             collection: this.collection
         }));
     },
+
+    getSelectedRecords() {
+        return this.getChildView('body').getSelectedRecords();
+    }
 });
 
 

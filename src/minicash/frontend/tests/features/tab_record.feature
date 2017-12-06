@@ -47,7 +47,7 @@ Feature: Records management
       |  pk |
       | 200 |
     And assets
-      |  pk | owner | name | balance | initial_balance |
+      |   pk | owner | name | balance | initial_balance |
       | 2000 |   200 | CA   |    1200 |            1200 |
     When I navigate to "tab_new_record"
     And I switch to multi-entries mode
@@ -60,8 +60,8 @@ Feature: Records management
     And I click "save" panel button
     Then "Home" tab is activated
     And record exist on the backend
-       | mode    | created_dt       | asset_from | delta | tags        | description           |
-       | EXPENSE | 07/08/2017 22:18 |       2000 |   111 | hello world | description for__2000 |
+      | mode    | created_dt       | asset_from | delta | tags        | description           |
+      | EXPENSE | 07/08/2017 22:18 |       2000 |   111 | hello world | description for__2000 |
     And asset exists on the backend
       |   pk | balance |
       | 2000 |    1089 |
@@ -89,11 +89,43 @@ Feature: Records management
     And I click "save" panel button
     Then "Home" tab is activated
     And record exist on the backend
-       | mode    | created_dt       | asset_from | delta | tags        | description           |
-       | EXPENSE | 07/08/2017 22:18 |       2000 |   111 | hello world | description for__2000 |
+      | mode    | created_dt       | asset_from | delta | tags        | description           |
+      | EXPENSE | 07/08/2017 22:18 |       2000 |   111 | hello world | description for__2000 |
     And record exist on the backend
-       | mode    | created_dt       | asset_from | delta | tags | description           |
-       | EXPENSE | 07/08/2017 22:18 |       2000 |   222 | whoa | description for__3000 |
+      | mode    | created_dt       | asset_from | delta | tags | description           |
+      | EXPENSE | 07/08/2017 22:18 |       2000 |   222 | whoa | description for__3000 |
+    And asset exists on the backend
+      |   pk | balance |
+      | 2000 |     867 |
+
+
+  Scenario: Save multiple expense records in multi-mode
+    Given an authenticated user
+      |  pk |
+      | 200 |
+    And assets
+      |   pk | owner | name | balance | initial_balance |
+      | 2000 |   200 | CA   |    1200 |            1200 |
+    When I navigate to "tab_new_record"
+    And I switch to multi-entries mode
+    And I fill record tab with data
+      | Mode    | Date/Time        | From | Common tags |
+      | EXPENSE | 07/08/2017 22:18 | 2000 | cities      |
+    And I fill last multi-entry row with data
+      | Expense | Tags        | Description           |
+      |     111 | hello world | description for__2000 |
+    And I click on "Add new entry"
+    And I fill last multi-entry row with data
+      | Expense | Tags | Description           |
+      |     222 | whoa | description for__3000 |
+    And I click "save" panel button
+    Then "Home" tab is activated
+    And record exist on the backend
+      | mode    | created_dt       | asset_from | delta | tags               | description           |
+      | EXPENSE | 07/08/2017 22:18 |       2000 |   111 | cities hello world | description for__2000 |
+    And record exist on the backend
+      | mode    | created_dt       | asset_from | delta | tags        | description           |
+      | EXPENSE | 07/08/2017 22:18 |       2000 |   222 | cities whoa | description for__3000 |
     And asset exists on the backend
       |   pk | balance |
       | 2000 |     867 |

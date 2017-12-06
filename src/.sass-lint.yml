@@ -1,6 +1,7 @@
 rules:
   no-ids: false
-
+  no-css-comments: false
+  
   indentation:
     - 4
     -

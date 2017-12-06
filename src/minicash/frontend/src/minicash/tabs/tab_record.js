@@ -290,7 +290,8 @@ let CommonFormViewBase = {
     getCommonViewData() {
         let formData = this.getUI('form').serializeForm();
         formData = this._updateFormDataMode(formData);
-        let commonData = _.pick(formData, ['asset_from', 'asset_to', 'created_dt', 'mode']);
+        let commonData = _.pick(formData, ['asset_from', 'asset_to', 'created_dt', 'mode', 'tags']);
+        debugger;
         return commonData;
     },
 
@@ -314,6 +315,23 @@ let CommonFormViewBase = {
         this.renderModeSelectState($(e.target).val());
     },
 };
+
+
+function renderTagsSelect($select) {
+    let data = minicash.collections.tags.map((it) => {
+        let name = it.get('name');
+        return {id: name, text: name};
+    });
+
+    let opts = {
+        data: data,
+        allowClear: true,
+        placeholder: '',
+        tags: true,
+    };
+
+    $select.select2(opts);
+}
 
 
 let SingleEntryFormView = views.MinicashView.extend({
@@ -371,19 +389,7 @@ let SingleEntryFormView = views.MinicashView.extend({
     },
 
     renderTagsSelect() {
-        let data = minicash.collections.tags.map((it) => {
-            let name = it.get('name');
-            return {id: name, text: name};
-        });
-
-        let opts = {
-            data: data,
-            allowClear: true,
-            placeholder: '',
-            tags: true,
-        };
-
-        this.getUI('tagsSelect').select2(opts);
+        renderTagsSelect(this.getUI('tagsSelect'));
     },
 
     saveForm() {
@@ -445,6 +451,7 @@ let MultiEntryFormView = views.MinicashView.extend({
         dtStampInput: 'input[name="created_dt"]',
         toAssetSelect: 'select[name="asset_to"]',
         fromAssetSelect: 'select[name="asset_from"]',
+        commonTagsSelect: 'select[name="tags"]',
         addEntryBtn: 'button[data-spec="add-entry"]',
         form: 'form',
         totalDelta: 'span[data-spec="total-delta"]',
@@ -483,11 +490,16 @@ let MultiEntryFormView = views.MinicashView.extend({
         this.updateValidator();
 
         this.renderDateTimePicker();
+        this.renderCommonTagsSelect();
         this.renderModeSelectState();
     },
 
     updateValidator() {
         this.validator = this.getUI('form').validate();
+    },
+
+    renderCommonTagsSelect() {
+        renderTagsSelect(this.getUI('commonTagsSelect'));
     },
 
     serializeModel() {
@@ -533,10 +545,22 @@ let MultiEntryFormView = views.MinicashView.extend({
         let formData = this.getUI('form').serializeForm();
         let commonData = this.getCommonViewData(formData);
 
+        commonData.tags = [];
+        commonData.tags_names = this.getUI('commonTagsSelect').select2().val();
+
         let tbodyView = this.getRegion('entriesTBody').currentView;
+
+        let tagsNamesMergeCustomizer = function (objValue, srcValue, key) {
+            if (key === 'tags_names' && _.isArray(objValue)) {
+                return _.uniq(objValue.concat(srcValue));
+            }
+            return undefined;
+        };
+
         this.collection.forEach((rec) => {
             let entryRowView = tbodyView.children.findByModelCid(rec.cid);
-            let recordData = _.assign({}, commonData, entryRowView.getFormData());
+            let recordData = _.mergeWith({}, commonData, entryRowView.getFormData(),
+                                         tagsNamesMergeCustomizer);
             rec.set(recordData);
         });
     },
@@ -626,19 +650,7 @@ let RecordEntryRowView = views.MinicashView.extend({
     },
 
     renderTagsSelect() {
-        let data = minicash.collections.tags.map((it) => {
-            let name = it.get('name');
-            return {id: name, text: name};
-        });
-
-        let opts = {
-            data: data,
-            allowClear: true,
-            placeholder: '',
-            tags: true,
-        };
-
-        this.getUI('tagsSelect').select2(opts);
+        renderTagsSelect(this.getUI('tagsSelect'));
     },
 
     serializeModel() {

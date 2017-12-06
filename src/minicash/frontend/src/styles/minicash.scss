@@ -212,6 +212,14 @@ table.table-fixed {
 
 /* Record tab */
 /* ---------- */
+[data-spec='single-entry-record-form'] {
+    textarea {
+        &[name='description'] {
+            overflow: hidden;
+        }
+    }
+}
+
 [data-spec='record-multi-entries-table'] {
     .buttons {
         width: 5%;
@@ -234,16 +242,16 @@ table.table-fixed {
 
 /* Bootstrap modal vertically centered */
 .modal {
+    padding: 0;
     text-align: center;
-    padding: 0!important;
-}
 
-.modal:before {
-    content: '';
-    display: inline-block;
-    height: 100%;
-    vertical-align: middle;
-    margin-right: -4px;
+    ::before {
+        content: '';
+        display: inline-block;
+        height: 100%;
+        margin-right: -4px;
+        vertical-align: middle;
+    }
 }
 
 .modal-dialog {
@@ -253,7 +261,11 @@ table.table-fixed {
 }
 
 .select2-container .select2-selection--multiple .select2-selection__rendered {
-    display:block;
+    display: block;
+}
+
+.select2-dropdown--below {
+    overflow-y: hidden;
 }
 
 /*-------------------------*/

@@ -41,6 +41,10 @@ def fill_record_with_data(context):
         tags_select_el = form.find_element_by_xpath('.//select[@name="tags"]')
         fill_tags(tags_select_el, item['Tags'].split(' '))
 
+    if 'Common tags' in item:
+        tags_select_el = form.find_element_by_xpath('.//select[@name="tags"]')
+        fill_tags(tags_select_el, item['Common tags'].split(' '))
+
     # description
     if 'Description' in item:
         description_el = form.find_element_by_xpath('.//textarea[@name="description"]')
