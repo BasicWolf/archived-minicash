@@ -134,15 +134,6 @@ $.ajaxSetup({
         if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
             xhr.setRequestHeader("X-CSRFToken", csrfToken);
         }
-
-        /*===== Trailing slash =====*/
-        if (!this.crossDomain) {
-            let url = settings.url;
-            let lastChar = url.slice(-1);
-            if (lastChar != '/') {
-                settings.url = url + '/';
-            }
-        }
     },
 
     complete: function(xhr, status) {

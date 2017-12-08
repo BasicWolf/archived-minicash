@@ -33,29 +33,34 @@ let tabAliasToType = _.transform(
 );
 
 export let TabsController = Mn.Object.extend({
-    initialize: function(options) {
+    initialize(options) {
         this.tabbarView = new tabbar.TabbarView();
         this.tabbarView.render();
     },
 
-    openTab: function(tabModel, options={}) {
+    openTab(tabModel, options={}) {
         options = _.extend({show: true}, options);
         this.tabbarView.add(tabModel, options);
     },
 
-    index: function(options={}) {
+    index(options={}) {
         this.openTab(new HomeTab({route: '/'}), options);
     },
 
-    tab_record: function(recordId) {
+    tab_record(recordId) {
         this.openTab(new RecordTab({recordId: recordId}));
     },
 
-    tab_records: function(query) {
+    tab_records_group(recordsIdsStr='') {
+        let recordsIds = recordsIdsStr.split(',');
+        this.openTab(new RecordTab({recordsIds: recordsIds}));
+    },
+
+    tab_records(query) {
         this.openTab(new RecordsTab());
     },
 
-    tab_new_record: function(newRecordId) {
+    tab_new_record(newRecordId) {
         if (!newRecordId) {
             newRecordId = utils.generateId();
         }
@@ -64,7 +69,7 @@ export let TabsController = Mn.Object.extend({
         this.openTab(recordTab);
     },
 
-    tab_assets: function(assetId) {
+    tab_assets(assetId) {
         if (assetId) {
             this.openTab(new AssetTab({assetId: assetId}));
         } else {
@@ -72,7 +77,7 @@ export let TabsController = Mn.Object.extend({
         }
     },
 
-    tab_new_asset: function(newAssetId) {
+    tab_new_asset(newAssetId) {
         if (!newAssetId) {
             newAssetId = utils.generateId();
         }
@@ -80,7 +85,7 @@ export let TabsController = Mn.Object.extend({
         this.openTab(assetTab);
     },
 
-    tab_tags: function(tagId) {
+    tab_tags(tagId) {
         if (tagId) {
             this.openTab(new TagTab({tagId: tagId}));
         } else {
@@ -88,7 +93,7 @@ export let TabsController = Mn.Object.extend({
         }
     },
 
-    tab_new_tag: function(newTagId) {
+    tab_new_tag(newTagId) {
         if (!newTagId) {
             newTagId = utils.generateId();
         }
@@ -96,12 +101,12 @@ export let TabsController = Mn.Object.extend({
         this.openTab(tagTab);
     },
 
-    tab_report: function() {
+    tab_report() {
         let reportTab = new ReportTab();
         this.openTab(reportTab);
     },
 
-    getActiveTab: function() {
+    getActiveTab() {
         return this.tabbarView.collection.getFirstChosen();
     }
 

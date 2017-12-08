@@ -358,23 +358,23 @@ let RecordsGroupHeaderView = views.MinicashView.extend({
           {{/ifgt}}
         </td>
 
-        <td {{#ifeq records.length 1}}role="button"{{/ifeq}}>
+        <td role="button">
           {{created_dt}}
         </td>
 
-        <td class="delta" {{#ifeq records.length 1}}role="button"{{/ifeq}}>
+        <td class="delta" role="button">
           {{record_mode_sign mode}}{{decimal total_delta}}
         </td>
 
-        <td {{#ifeq records.length 1}}role="button"{{/ifeq}}>
+        <td role="button">
           {{record_account asset_from asset_to}}
         </td>
 
-        <td {{#ifeq records.length 1}}role="button"{{/ifeq}}>
+        <td role="button">
           <strong>{{tags_names shared_tags trailComma="1"}}</strong>{{tags_names individual_tags}}
         </td>
 
-        <td {{#ifeq records.length 1}}role="button"{{/ifeq}}>
+        <td role="button">
           {{description}}
         </td>
     `),
@@ -401,9 +401,14 @@ let RecordsGroupHeaderView = views.MinicashView.extend({
 
     editRecord() {
         let records = this.model.get('records');
-        assert(records.length == 1, 'records length should be exactly 1');
-        let record = records.head();
-        minicash.navigateTo('tab_record', {id: record.id});
+        if (records.length == 1) {
+            let record = records.head();
+            minicash.navigateTo('tab_record', {id: record.id});
+        } else {
+            let ids = records.map((val) => val.id);
+            let idsStr = _.join(ids);
+            minicash.navigateTo('tab_records_group', {ids: idsStr});
+        }
     },
 });
 

@@ -37,6 +37,9 @@ export let RecordTab = TabModel.extend({
         if (this.get('recordId')) {
             this.set('title', tr('Edit record'));
             this.set('viewMode', VIEW_MODE.SINGLE);
+        } else if (this.get('recordsIds')) {
+            this.set('title', tr('Edit records'));
+            this.set('viewMode', VIEW_MODE.MULTI);
         } else {
             this.set('title', tr('New record'));
         }
@@ -291,7 +294,6 @@ let CommonFormViewBase = {
         let formData = this.getUI('form').serializeForm();
         formData = this._updateFormDataMode(formData);
         let commonData = _.pick(formData, ['asset_from', 'asset_to', 'created_dt', 'mode', 'tags']);
-        debugger;
         return commonData;
     },
 
@@ -470,7 +472,16 @@ let MultiEntryFormView = views.MinicashView.extend({
     },
 
     initialize() {
-        this.collection = new models.Records();
+        let recordsIds = this.model.get('recordsIds') || [];
+        this.collection = new models.PageableRecords([]);
+        this.collection.state.pageSize = 100; console.log('TODO: 100');
+
+        if (recordsIds.length) {
+            this.collection.queryArgs = {
+                'pk': this.model.get('recordsIds')
+            };
+            this.collection.getPage(1);
+        }
     },
 
     onAttach() {

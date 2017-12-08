@@ -10,11 +10,11 @@ def user_tags(request):
 def user_assets(request):
     return Asset.objects.for_owner(request.user)
 
-
 class RecordFilter(filters.FilterSet):
     class Meta:
         model = Record
         fields = [
+            'pk',
             'assets_from',
             'assets_to',
             'dt_from',
@@ -24,8 +24,15 @@ class RecordFilter(filters.FilterSet):
             'mode',
         ]
 
+    pk = filters.AllValuesMultipleFilter(
+        name='pk',
+        conjoined=False,
+    )
+
     dt_from = filters.DateTimeFilter(name='created_dt', lookup_expr='gte')
+
     dt_to = filters.DateTimeFilter(name='created_dt', lookup_expr='lte')
+
     tags_or = filters.ModelMultipleChoiceFilter(
         name='tags__pk',
         to_field_name='pk',
