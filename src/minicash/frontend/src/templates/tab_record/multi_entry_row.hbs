@@ -7,15 +7,19 @@
 
 <td class="delta" data-spec="delta">
   <input name="delta_{{_cid}}" data-spec="delta-input" type="text" class="form-control"
-         autofocus data-rule-required="true" data-rule-number="true" data-rule-min="0">
+         autofocus data-rule-required="true" data-rule-number="true" data-rule-min="0"
+         value="{{delta}}">
 </td>
 
 <td class="tags" data-spec="tags">
   <select name="tags_{{_cid}}" data-spec="tags-select" multiple class="form-control" style="width:100%">
+    {{#each tags}}
+      <option value="{{#tag_name this}}{{/tag_name}}" selected="selected">{{#tag_name this}}{{/tag_name}}</option>
+    {{/each}}
   </select>
 </td>
 
 <td class="description" data-spec="description-input">
-  <input name="description_{{_cid}}" data-spec="description-input" type="text" class="form-control">
+  <input name="description_{{_cid}}" data-spec="description-input" type="text" class="form-control"
+         value="{{description}}">
 </td>
-

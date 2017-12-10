@@ -442,10 +442,6 @@ _.extend(SingleEntryFormView.prototype, CommonFormViewBase);
 let MultiEntryFormView = views.MinicashView.extend({
     collection: null,
 
-    collectionEvents: {
-        update: 'updateTotalDelta'
-    },
-
     template: require('templates/tab_record/multi_entry_form.hbs'),
 
     ui: {
@@ -474,13 +470,21 @@ let MultiEntryFormView = views.MinicashView.extend({
     initialize() {
         let recordsIds = this.model.get('recordsIds') || [];
         this.collection = new models.PageableRecords([]);
+
+        this.listenTo(this.collection, 'update', this.onCollectionUpdate);
+
         this.collection.state.pageSize = 100; console.log('TODO: 100');
 
         if (recordsIds.length) {
             this.collection.queryArgs = {
                 'pk': this.model.get('recordsIds')
             };
-            this.collection.getPage(1);
+
+            minicash.status.show(tr('Loading records'));
+
+            this.collection.getPage(1).always(() => {
+                minicash.status.hide();
+            });
         }
     },
 
@@ -511,6 +515,22 @@ let MultiEntryFormView = views.MinicashView.extend({
 
     renderCommonTagsSelect() {
         renderTagsSelect(this.getUI('commonTagsSelect'));
+    },
+
+    onCollectionUpdate() {
+        this.updateTotalDelta();
+        this.updateCommonTags();
+    },
+
+    updateCommonTags() {
+        let tagsOccurence = {};
+        this.collection.forEach((record) => {
+            record.get('tags').forEach((tag) => {
+                let occurence = _.get(tagsOccurence, tag, 0);
+                tagsOccurence[tag] = occurence + 1;
+            });
+        });
+        debugger;
     },
 
     serializeModel() {

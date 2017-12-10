@@ -74,7 +74,7 @@ export let TabModel = Bb.Model.extend({
     }
 
 }, {
-    _routeIdRegex: new RegExp('[\/?=]', 'g')
+    _routeIdRegex: new RegExp('[\/?=,]', 'g')
 });
 
 
