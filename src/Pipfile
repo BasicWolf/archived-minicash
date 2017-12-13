@@ -1,0 +1,45 @@
+[[source]]
+
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+
+[dev-packages]
+bpython="*"
+behave-django="*"  # requires phantomjs
+django-debug-toolbar="*"
+django-extensions="*"
+django-pdb="*"
+factory_boy="*"
+flake8="*"
+gunicorn="*"
+ipython="*"
+lizard="*"
+mypy="*"
+pudb="*"
+pyflakes="*"
+pylint="*"
+pylint-django="*"
+safety="*"
+selenium="*"
+werkzeug="*"
+
+[packages]
+django = "==1.11.*"
+djangorestframework = "==3.7.*"
+djangorestframework-bulk = "*"
+django-jsonfield = "==1.0.*"
+django-money = "==0.11.*"
+django-settings-export = "*"
+dj-database-url = "==0.4.*"
+django-filter = "==1.0.*"
+
+# Whitenoise bundle
+brotlipy = "==0.7.*"
+whitenoise = "==3.3.*"
+
+"psycopg2" = "==2.7.*"
+
+[requires]
+python_version = "3.6"

@@ -50,7 +50,7 @@ class Record(models.Model):
     description = models.TextField(blank=True)
     extra = JSONField(default={})
     mode = models.PositiveIntegerField(choices=MODES)
-    owner = models.ForeignKey(User, related_name='records')
+    owner = models.ForeignKey(User, related_name='records', on_delete=models.CASCADE)
     tags = models.ManyToManyField('Tag', blank=True, related_name='records')
 
     def update_assets_after_create(self, refresh_assets=False):
@@ -125,7 +125,7 @@ class Tag(models.Model):
 
     name = models.CharField(max_length=32, db_index=True)
     description = models.TextField(blank=True, default='')
-    owner = models.ForeignKey(User, related_name='tags')
+    owner = models.ForeignKey(User, related_name='tags', on_delete=models.CASCADE)
 
     class Meta:
         unique_together = (('name', 'owner'))
@@ -150,7 +150,7 @@ class Asset(models.Model):
 
     name = models.CharField(max_length=32)
     description = models.TextField(blank=True, default='')
-    owner = models.ForeignKey(User, related_name='assets')
+    owner = models.ForeignKey(User, related_name='assets', on_delete=models.CASCADE)
     balance = MoneyField(
         max_digits=MAX_DIGITS,
         decimal_places=DECIMAL_PLACES,

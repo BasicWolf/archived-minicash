@@ -1,2 +1,0 @@
--r dev.in
-psycopg2==2.7.*
