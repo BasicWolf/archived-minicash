@@ -18,6 +18,7 @@ from .views import RouteView
 
 
 tabs_urls = [
+    url(r'^tabs/home$', RouteView.as_view(), name='tab_home'),
     url(r'^tabs/records/$', RouteView.as_view(), name='tab_records'),
     url(r'^tabs/records/(?P<id>\d+)$', RouteView.as_view(), name='tab_record'),
     url(r'^tabs/records_group/(?P<ids>[\d,]+)$', RouteView.as_view(), name='tab_records_group'),

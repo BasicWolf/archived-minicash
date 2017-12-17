@@ -30,14 +30,14 @@ if (!fs.existsSync(nodeModulesDir)) {
 
 let config = {
     entry: {
-        minicash: path.join(srcDir, 'main.js'),
+        minicash: path.join(srcDir, 'app.js'),
         login: path.join(srcDir, 'login.js'),
     },
 
     module: {
         rules: [
             {
-                test: /\.js?$/,
+                test: /\.js$/,
                 exclude: /node_modules/,
                 use: [
                     {
@@ -58,20 +58,47 @@ let config = {
                 ]
             },
 
+            {
+                test: /\.vue$/,
+                use: [
+                    {
+                        loader: 'vue-loader',
+                    },
+                ]
+            },
+
+
             /* CSS and SCSS */
+            /*==============*/
             {
                 test: /login.scss.standalone$/,
                 use: extractLoginCSS.extract({
                     use: ['css-loader', 'sass-loader'],
                 })
             },
-            { test: /\.css$/, loaders: ["style-loader", "css-loader"] },
+
             {
                 test: /\.scss$/,
-                loader: extractSASS.extract({
-                    use: ['css-loader', 'sass-loader'],
-                })
+                use: [{
+                    loader: 'style-loader', // inject CSS to page
+                }, {
+                    loader: 'css-loader', // translates CSS into CommonJS modules
+                }, {
+                    loader: 'postcss-loader', // Run post css actions
+                    options: {
+                        plugins: function () { // post css plugins, can be exported to postcss.config.js
+                            return [
+                                require('precss'),
+                                require('autoprefixer')
+                            ];
+                        }
+                    }
+                }, {
+                    loader: 'sass-loader' // compiles SASS to CSS
+                }]
             },
+
+            { test: /\.css$/, loaders: ["style-loader", "css-loader", 'sass-loader'] },
 
             /* Binary and related */
             { test: /\.eot(\?v=\d+\.\d+\.\d+)?$/, loader: "file-loader?name=[name].[ext]" },
@@ -90,6 +117,17 @@ let config = {
     plugins: [
         extractSASS,
         extractLoginCSS,
+
+        new webpack.ProvidePlugin({
+            $: 'jquery',
+            jQuery: 'jquery',
+            'window.jQuery': 'jquery',
+            Popper: ['popper.js', 'default'],
+            // // In case you imported plugins individually, you must also require them here:
+            // Util: "exports-loader?Util!bootstrap/js/dist/util",
+            // Dropdown: "exports-loader?Dropdown!bootstrap/js/dist/dropdown",
+            // ...
+        })
     ],
 
     resolve: {
@@ -98,16 +136,35 @@ let config = {
             path.join(srcDir, 'minicash'),
             'node_modules',
         ],
-        extensions: ['.js'],
+        extensions: ['.js', '.vue', '.json'],
         alias: {
             node_modules: nodeModulesDir,
-            templates: path.join(srcDir, 'templates'),
             img: imgDir,
+            '~': path.join(srcDir, 'minicash'),
+
+            'vue': 'vue/dist/vue.esm.js',
 
             // import 'lib_name' aliases example:
             // libalias: 'path/to/lib/name.js',
         }
     },
+
+    externals: {
+        "jquery": "jQuery"
+    },
+
+    node: {
+        // prevent webpack from injecting useless setImmediate polyfill because Vue
+        // source contains it (although only uses it if it's native).
+        setImmediate: false,
+        // prevent webpack from injecting mocks to Node native modules
+        // that does not make sense for the client
+        dgram: 'empty',
+        fs: 'empty',
+        net: 'empty',
+        tls: 'empty',
+        child_process: 'empty'
+    }
 };
 
 

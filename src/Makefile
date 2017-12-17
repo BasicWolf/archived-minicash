@@ -73,21 +73,8 @@ $(NODE_MODULES_DIR):
 	npm install .
 
 frontend-create-dev-symlinks: ${FRONTEND_STATIC_IMG_DIR} ${FRONTEND_STATIC_LIB_DIR}
-	ln -sr -f ./node_modules/backbone/backbone.js ${FRONTEND_STATIC_LIB_DIR}
-	ln -sr -f ./node_modules/backbone.marionette/lib/backbone.marionette.js ${FRONTEND_STATIC_LIB_DIR}
-	ln -sr -f ./node_modules/backbone.radio/build/backbone.radio.js ${FRONTEND_STATIC_LIB_DIR}
-	ln -sr -f ./node_modules/backbone.radio/build/backbone.radio.js.map ${FRONTEND_STATIC_LIB_DIR}
 	ln -sr -f ./node_modules/lodash/lodash.js ${FRONTEND_STATIC_LIB_DIR}
 	ln -sr -f ./node_modules/jquery/dist/jquery.js ${FRONTEND_STATIC_LIB_DIR}
-	ln -sr -f ./node_modules/jquery-validation/dist/jquery.validate.js ${FRONTEND_STATIC_LIB_DIR}
-	ln -sr -f ./node_modules/bootstrap/dist/js/bootstrap.js ${FRONTEND_STATIC_LIB_DIR}
-	ln -sr -f ./node_modules/bootstrap-notify/bootstrap-notify.js ${FRONTEND_STATIC_LIB_DIR}
-	ln -sr -f ./node_modules/bootstrap/dist/css/bootstrap.min.css ${FRONTEND_STATIC_LIB_DIR}
-	ln -sr -f ./node_modules/bootstrap/dist/fonts ${FRONTEND_STATIC_DIR}
-	ln -sr -f ./node_modules/eonasdan-bootstrap-datetimepicker/src/js/bootstrap-datetimepicker.js ${FRONTEND_STATIC_LIB_DIR}
-	ln -sr -f ./node_modules/moment/moment.js ${FRONTEND_STATIC_LIB_DIR}
-	ln -sr -f ./node_modules/select2/dist/js/select2.js ${FRONTEND_STATIC_LIB_DIR}
-	ln -sr -f ./node_modules/select2/dist/css/select2.css ${FRONTEND_STATIC_LIB_DIR}
 
 ${FRONTEND_STATIC_LIB_DIR}:
 	mkdir -p ${FRONTEND_STATIC_LIB_DIR}

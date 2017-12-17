@@ -5,16 +5,20 @@
   "engines": {
     "npm": "5.2.0"
   },
-  "scripts": {
-    "postinstall": "NPM_CONFIG_PRODUCTION=false NODE_ENV=production node_modules/.bin/webpack --progress --profile --colors --display-error-details"
-  },
+  "scripts": {},
   "dependencies": {
+    "bootstrap": "^4.0.0-beta.2",
+    "bootstrap-vue": "^1.4.0",
     "chart.js": "latest",
     "decimal.js": "latest",
+    "lodash": "^4.17.4",
     "moment": "latest",
     "moment-timezone": "latest",
+    "popper.js": "^1.12.9",
     "sprintf-js": "latest",
-    "vue": "latest"
+    "vue": "latest",
+    "vue-router": "latest",
+    "vuex": "latest"
   },
   "devDependencies": {
     "babel-core": "latest",
@@ -25,13 +29,14 @@
     "cssnano": "latest",
     "eslint": "latest",
     "eslint-loader": "latest",
-    "extract-text-webpack-plugin": "latest",
+    "extract-text-webpack-plugin": "^3.0.2",
     "file-loader": "latest",
     "jshint": "latest",
     "jshint-loader": "latest",
     "node-sass": "latest",
-    "optimize-css-assets-webpack-plugin": "latest",
-    "sass-loader": "latest",
+    "optimize-css-assets-webpack-plugin": "^3.2.0",
+    "postcss-loader": "^2.0.9",
+    "sass-loader": "^6.0.6",
     "style-loader": "latest",
     "uglify-js": "latest",
     "uglifyjs-webpack-plugin": "latest",
@@ -40,6 +45,6 @@
     "vue-html-loader": "latest",
     "vue-loader": "latest",
     "vue-template-compiler": "latest",
-    "webpack": "latest"
+    "webpack": "^3.10.0"
   }
 }

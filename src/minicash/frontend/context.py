@@ -74,9 +74,9 @@ def _build_tags(user, **kwargs):
 def build_routes_maps(**kwargs):
     url_patterns = urlresolvers.get_resolver().reverse_dict.items()
     urls = {}
-    bb_route_re = re.compile(r'\%\((\w+)\)s')
+    vue_route_re = re.compile(r'\%\((\w+)\)s')
 
-    def bb_route_repl(mo):
+    def vue_route_repl(mo):
         return ':' + mo.group(1)
 
     for name_or_callable, pattern in url_patterns:
@@ -88,7 +88,7 @@ def build_routes_maps(**kwargs):
             # srintf-formattable url
             'sprintf_url': '/' + url_pattern,
             # Backbone/Marionette-friendly route e.g. /tabs/records/:id
-            'bb_route': re.sub(bb_route_re, bb_route_repl, url_pattern),
+            'vue_route': '/' + re.sub(vue_route_re, vue_route_repl, url_pattern),
             'args': pattern_args
         } for url_pattern, pattern_args in pattern[0]]
     return {'urls': urls}
