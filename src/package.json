@@ -23,7 +23,8 @@
   "devDependencies": {
     "babel-core": "latest",
     "babel-loader": "latest",
-    "babel-plugin-transform-es2015-modules-commonjs": "latest",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-plugin-webpack-alias": "^2.1.2",
     "babel-preset-env": "latest",
     "css-loader": "latest",
     "cssnano": "latest",

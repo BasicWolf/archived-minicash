@@ -44,17 +44,12 @@ let config = {
                         loader: 'babel-loader',
                         query: {
                             presets: ['env'],
-                            plugins: [
-                                // use with es2015 preset
-                                ["transform-es2015-modules-commonjs", {
-                                    "allowTopLevelThis": false
-                                }],
-                            ]
                         }
                     },
-                    {
-                        loader: 'jshint-loader',
-                    }
+                    // disable till 2.10 is released
+                    // {
+                    //     loader: 'jshint-loader',
+                    // }
                 ]
             },
 
@@ -117,6 +112,12 @@ let config = {
     plugins: [
         extractSASS,
         extractLoginCSS,
+
+        new webpack.DefinePlugin({
+            'process.env': {
+                NODE_ENV: JSON.stringify(process.env.NODE_ENV),
+            },
+        }),
 
         new webpack.ProvidePlugin({
             $: 'jquery',
